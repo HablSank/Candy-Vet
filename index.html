@@ -1,13 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>CandyVet - Best Vet For Your Best Pet</title>
+    <link href="/dist/output.css" rel="stylesheet"> 
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
-<body>
-    <nav>
-        
+<body class="bg-[#FEF3E2]" style="font-family: 'Poppins', sans-serif;">
+
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#FEF3E2]/80 backdrop-blur-md border-b border-gray-200/50">
+        <div class="container mx-auto flex items-center justify-between h-20 px-4">
+            <a href="#" class="flex items-center space-x-2">
+                <img src="assets/logo.png" alt="CandyVet Logo" class="h-[120px] w-[120px]">
+                <span class="font-bold text-2xl text-gray-800"><span class="text-[#FAB12F]">Candy</span><span class="text-[#F4631E]">Vet</span></span>
+            </a>
+
+            <ul class="hidden md:flex items-center space-x-8">
+                <li><a href="#home" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
+                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
+                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
+                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
+                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
+            </ul>
+
+            <a href="#" class="hidden md:block bg-[#F4631E] text-white font-semibold py-2 px-6 rounded-lg hover:bg-opacity-90 transition-colors">
+                Buat Janji
+            </a>
+
+            </div>
     </nav>
+
+    <section id="home" class="pt-[60px] pb-[1000px]">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col-reverse md:flex-row gap-12 items-center">
+                
+                <div class="flex-1 text-center md:text-left pl-[20px]">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">
+                        <span class="text-[#F4631E]">Best Vet</span> For Your <span class="text-[#F4631E]"><br>Best Pet</span>
+                    </h1>
+                    <p class="mt-4 text-lg text-gray-600 md:w-4/5 text-justify">
+                        Memberikan standar perawatan medis tertinggi untuk sahabat kesayangan Anda adalah misi kami. Didukung oleh tim dokter hewan profesional dan fasilitas modern, Candy Vet siap melayani setiap kebutuhan kesehatan hewan Anda.
+                    </p>
+                    <div class="mt-8 flex justify-center md:justify-start space-x-4">
+                        <a href="#" class="bg-[#F4631E] text-white font-bold py-3 px-8 rounded-lg hover:bg-opacity-90 transition-colors text-lg">
+                            Buat Janji
+                        </a>
+                        <a href="#" class="bg-white text-[#F4631E] font-bold py-3 px-8 rounded-lg border-2 border-[#F4631E] hover:bg-orange-50 transition-colors text-lg">
+                            Hubungi Kami
+                        </a>
+                    </div> 
+                </div>
+                
+                <div class="flex-1">
+                    <img src="assets/hero_image.png" alt="Ilustrasi anjing dan kucing di klinik hewan CandyVet" class="w-full h-auto">
+                </div>
+
+            </div>
+        </div>
+    </section>
+
 </body>
 </html>
