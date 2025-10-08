@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,14 +12,14 @@
 </head>
 <body class="bg-[#FEF3E2]" style="font-family: 'Poppins', sans-serif;">
 
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#FEF3E2]/80 backdrop-blur-md border-b border-gray-200/50">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#FEF3E2]/80 backdrop-blur-md border- md:border-gray-200/50">
         <div class="container mx-auto flex items-center justify-between h-20 px-4">
             <a href="#" class="flex items-center space-x-2">
-                <img src="assets/logo.png" alt="CandyVet Logo" class="h-[120px] w-[120px]">
-                <span class="font-bold text-2xl text-gray-800"><span class="text-[#FAB12F]">Candy</span><span class="text-[#F4631E]">Vet</span></span>
+                <img src="assets/logo.png" alt="CandyVet Logo" class="h-14 w-auto xl:h-24 xl:w-24">
+                <span class="font-bold text-xl lg:text-2xl text-gray-800"><span class="text-[#FAB12F]">Candy</span><span class="text-[#F4631E]">Vet</span></span>
             </a>
 
-            <ul class="hidden md:flex items-center space-x-8">
+            <ul class="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8">
                 <li><a href="#home" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
                 <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
                 <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
@@ -31,25 +31,50 @@
                 Buat Janji
             </a>
 
+            <div class="md:hidden">
+                <button id="hamburger-btn">
+                    <svg id="hamburger-icon" class="h-6 w-6 text-[#9E00BA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                    <svg id="close-icon" class="h-6 w-6 text-[#9E00BA] hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden absolute top-20 w-full bg-[#FEF3E2]/90 backdrop-blur-lg overflow-hidden transition-all duration-300 ease-in-out max-h-0">
+            <ul class="flex flex-col items-center space-y-4 pt-8 pb-8">
+                <li><a href="#home" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
+                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
+                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
+                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
+                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
+                <li>
+                    <a href="#" class="block bg-[#F4631E] text-white font-semibold py-2 px-6 rounded-lg hover:bg-opacity-90 transition-colors">
+                        Buat Janji
+                    </a>
+                </li>
+            </ul>
+        </div>
     </nav>
 
-    <section id="home" class="pt-[60px] pb-[1000px]">
+    <section id="home" class="pt-32 pb-16 xl:px-8 xl:pt-10">
         <div class="container mx-auto px-4">
             <div class="flex flex-col-reverse md:flex-row gap-12 items-center">
                 
-                <div class="flex-1 text-center md:text-left pl-[20px] pr-[20px]">
-                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">
+                <div class="flex-1 text-center md:text-left">
+                    <h1 class="text-4xl lg:text-5xl font-extrabold text-gray-800 leading-tight">
                         <span class="text-[#F4631E]">Best Vet</span> For Your <span class="text-[#F4631E]"><br>Best Pet</span>
                     </h1>
                     <p class="mt-4 text-lg text-gray-600 md:w-4/5 text-justify">
                         Memberikan standar perawatan medis tertinggi untuk sahabat kesayangan Anda adalah misi kami. Didukung oleh tim dokter hewan profesional dan fasilitas modern, Candy Vet siap melayani setiap kebutuhan kesehatan hewan Anda.
                     </p>
                     <div class="mt-8 flex justify-center md:justify-start space-x-4">
-                        <a href="#" class="bg-[#F4631E] text-white font-bold py-3 px-8 rounded-lg hover:bg-opacity-90 transition-colors text-lg">
+                        <a href="#" class="bg-[#F4631E] text-white font-bold py-3 px-8 md:py-3 md:px-4 lg:py-3 lg:px-8 rounded-lg hover:bg-opacity-90 transition-colors text-md lg:text-lg">
                             Buat Janji
                         </a>
-                        <a href="#" class="bg-white text-[#F4631E] font-bold py-3 px-8 rounded-lg border-2 border-[#F4631E] hover:bg-orange-50 transition-colors text-lg">
+                        <a href="#" class="bg-white text-[#F4631E] font-bold py-3 px-8 md:py-3 md:px-4 lg:py-3 lg:px-8 rounded-lg border-2 border-[#F4631E] hover:bg-orange-50 transition-colors text-md lg:text-lg">
                             Hubungi Kami
                         </a>
                     </div> 
@@ -62,6 +87,8 @@
             </div>
         </div>
     </section>
+
+    <script src="script.js"></script>
 
 </body>
 </html>
