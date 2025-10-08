@@ -20,9 +20,9 @@
             </a>
 
             <ul class="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8">
-                <li><a href="#home" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
+                <li><a href="#beranda" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
                 <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
-                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
+                <li><a href="#layanan" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
                 <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
                 <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
             </ul>
@@ -45,9 +45,9 @@
 
         <div id="mobile-menu" class="md:hidden absolute top-20 w-full bg-[#FEF3E2]/90 backdrop-blur-lg overflow-hidden transition-all duration-300 ease-in-out max-h-0">
             <ul class="flex flex-col items-center space-y-4 pt-8 pb-8">
-                <li><a href="#home" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
+                <li><a href="#beranda" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
                 <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
-                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
+                <li><a href="#layanan" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
                 <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
                 <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
                 <li>
@@ -59,7 +59,7 @@
         </div>
     </nav>
 
-    <section id="home" class="pt-32 pb-16 xl:px-8 xl:pt-10">
+    <section id="beranda" class="pt-32 pb-16 xl:px-8 xl:pt-10">
         <div class="container mx-auto px-4">
             <div class="flex flex-col-reverse md:flex-row gap-12 items-center">
                 
@@ -88,7 +88,46 @@
         </div>
     </section>
 
-    <script src="script.js"></script>
+    
+    <section id="layanan" class="py-24 lg:py-24 bg-repeat bg-center" >
+    <div class="container mx-auto px-4 pb-24" style="background-image: url('assets/paw-pattern.png');">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-24">
+            <span class="text-[#9E00BA]">Layanan</span> <span class="text-[#FAB12F]">Yang</span> <span class="text-[#F4631E]">Tersedia</span>
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-24 max-w-4xl mx-auto">
+            <div class="bg-[#FAB12F] p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col">
+                <div class="overflow-hidden rounded-xl mb-4">
+                    <img src="assets/pet_hotel.jpg" alt="Pet Hotel CandyVet" class="w-full h-48 object-cover">
+                </div>
+                <h3 class="font-bold text-2xl text-gray-800 mb-2 text-center">PET HOTEL</h3>
+                <p class="text-gray-600 text-sm mb-6 flex-grow">
+                    Menyediakan dokter hewan yang selalu siap, serta lingkungan yang luas dan bersih. CandyVet Pet Hotel menjamin kenyamanan maksimal untuk hewan kesayanganmu.
+                </p>
+                <a href="#fasilitas" class="font-semibold text-black hover:text-[#9E00BA] self-end">
+                    Lihat lebih lanjut &raquo;
+                </a>
+            </div>
 
+            <div class="bg-[#FAB12F] p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col">
+                <div class="overflow-hidden rounded-xl mb-4">
+                    <img src="assets/pemeriksaan.jpg" alt="Pemeriksaan Hewan CandyVet" class="w-full h-48 object-cover">
+                </div>
+                <h3 class="font-bold text-2xl text-gray-800 mb-2 text-center">PEMERIKSAAN</h3>
+                <p class="text-gray-600 text-sm mb-6 flex-grow">
+                    Memeriksa kesehatan hewan secara menyeluruh untuk mencegah penyakit agar hewan tetap sehat dan aktif.
+                </p>
+                <a href="#" class="font-semibold text-black hover:text-[#9E00BA] self-end">
+                    Lihat lebih lanjut &raquo;
+                </a>
+            </div>
+        </div>
+    </div>
+    </section>
+
+
+
+
+
+    <script src="script.js"></script>
 </body>
 </html>
