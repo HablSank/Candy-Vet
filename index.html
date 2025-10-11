@@ -21,9 +21,9 @@
 
             <ul class="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8">
                 <li><a href="#beranda" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
-                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
+                <li><a href="#tentang" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
                 <li><a href="#layanan" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
-                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
+                <li><a href="#fasilitas" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
                 <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
             </ul>
 
@@ -46,9 +46,9 @@
         <div id="mobile-menu" class="md:hidden absolute top-20 w-full bg-[#FEF3E2]/90 backdrop-blur-lg overflow-hidden transition-all duration-300 ease-in-out max-h-0">
             <ul class="flex flex-col items-center space-y-4 pt-8 pb-8">
                 <li><a href="#beranda" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
-                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
+                <li><a href="#tentang" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
                 <li><a href="#layanan" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
-                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
+                <li><a href="#fasilitas" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
                 <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
                 <li>
                     <a href="#" class="block bg-[#F4631E] text-white font-semibold py-2 px-6 rounded-lg hover:bg-opacity-90 transition-colors">
@@ -89,9 +89,9 @@
     </section>
 
     
-    <section id="tentangkami" class="flex flex-col md:flex-row items-center justify-center text-center md:text-left bg-[#FEF3E2] p-8 mt-10 w-full">
+    <section id="tentang" class="flex flex-col md:flex-row items-center justify-center text-center md:text-left bg-[#FEF3E2] p-8 mt-10 w-full">
 
-        <div class="w-full md:w-1/3 flex justify-center mb-6 md:mb-0">
+        <div class="w-full md:w-1/3 flex justify-center mb-6 pt-24 md:mb-0">
             <img
             src="assets/tentangkami.png"
             alt="Cute Dog"
@@ -99,7 +99,7 @@
             />
         </div>
 
-        <div class="w-full md:w-1/2 p-4 md:p-6 flex flex-col justify-center items-center md:items-start text-justify">
+            <div class="w-full md:w-1/2 p-4 md:p-6 flex flex-col justify-center items-center md:items-start text-center md:text-justify">
             <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">
             Kenapa Harus
             </h1>
@@ -123,8 +123,8 @@
 
 </section>   
 
-<section id="layanan" class="py-24 lg:py-24 bg-repeat bg-center" >
-    <div class="container mx-auto px-4 pb-24" style="background-image: url('assets/paw-pattern.png');">
+<section id="layanan" class="py-24 lg:py-24 bg-repeat bg-center" style="background-image: url('assets/paw-pattern.png');">
+    <div class="container mx-auto px-4 pb-24">
         <h2 class="text-3xl md:text-4xl font-bold text-center mb-24">
             <span class="text-[#9E00BA]">Layanan</span> <span class="text-[#FAB12F]">Yang</span> <span class="text-[#F4631E]">Tersedia</span>
         </h2>
@@ -158,10 +158,75 @@
     </div>
     </section>
 
-    
 
-    <section id="owner" class="flex flex-col items-center justify-center bg-[#FEF3E2] py-12 px-6">
-        <h2 class="text-3xl sm:text-5xl font-bold text-center mb-6" style="background-image: url('assets/paw-pattern.png');">
+    <section id="fasilitas" class="py-16 lg:py-24">
+    <div class="container mx-auto px-4 pt-10 lg:px-12 xl:px-20">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">
+            <span class="text-[#9E00BA]">Fasilitas</span> <span class="text-[#FAB12F]">Yang</span> <span class="text-[#F4631E]">Tersedia</span>
+        </h2>
+
+        <div class="mb-24">
+            <div class="flex items-center gap-2 mb-6">
+                <h3 class="font-bold text-2xl md:text-3xl text-[#F4631E] drop-shadow-lg">PET HOTEL</h3>
+                <img src="assets/logo_pethotel.png" alt="Logo pet hotel" class="w-auto h-12 relative bottom-1.5">
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (6).jpg" alt="Kandang Pet Hotel" class="w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (4).jpg" alt="Litter Box Kucing" class="w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (3).jpg" alt="Pohon Kucing" class="w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (2).jpg" alt="Anjing makan" class="w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (9).jpg" alt="Kucing makan" class="w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (7).jpg" alt="Jalan-jalan dengan anjing" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="flex items-center gap-2 mb-6">
+                <h3 class="font-bold text-2xl md:text-3xl text-[#F4631E] drop-shadow-lg">PEMERIKSAAN</h3>
+                <img src="assets/logo_pemeriksaan.png" alt="Logo pet hotel" class="w-auto h-12 relative bottom-1.5">
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (5).jpg" alt="Kasur pemeriksaan" class="w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (10).jpg" alt="Alat-alat kesehatan" class="w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (8).jpg" alt="Meja pemeriksaan" class="w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (12).jpg" alt="Kandang peliharaan" class="w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (1).jpg" alt="Ruangan pemeriksaan" class="w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md">
+                    <img src="assets/fasilitas_image (11).jpg" alt="Anjing di mobil" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </section>
+
+
+    <section id="owner" class="flex flex-col items-center justify-center bg-[#FEF3E2] py-12 px-6"  style="background-image: url('assets/paw-pattern.png');">
+        <h2 class="text-3xl sm:text-5xl font-bold text-center mb-6 pt-24">
             <span class="text-[#FAB12F]">O</span><span class="text-[#F4631E]">W</span><span class="text-[#F4631E]">N</span><span class="text-[#9E00BA]">E</span><span class="text-[#9E00BA]">R</span>
       </h2>
 
@@ -182,11 +247,11 @@
 
         <div class="flex flex-col items-center">
             <img
-            src="assets/logo cakar.png"
+            src="assets/logo_cakar.png"
             alt="Logo CandyVet"
             class="w-[90px] h-[90px] "
             />
-            <p class="flex text-3xl sm:text-3xl font-bold text-gray-900">
+            <p class="flex text-3xl sm:text-3xl font-bold text-gray-900 text-center">
             drh. Riza Norma Septiarini
             </p>
         </div>
