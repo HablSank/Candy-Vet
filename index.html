@@ -9,17 +9,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#FEF3E2]" style="font-family: 'Poppins', sans-serif;">
+<body class="bg-[#FEF3E2]" style="font-family: 'Source Sans 3', sans-serif;">
 
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#FEF3E2]/80 backdrop-blur-md border- md:border-gray-200/50">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#FEF3E2]/80 backdrop-blur-md border- md:border-gray-200/50" style="font-family: 'Poppins';">
         <div class="container mx-auto flex items-center justify-between h-20 px-4">
             <a href="index.html" class="flex items-center space-x-2">
                 <img src="assets/logo.png" alt="CandyVet Logo" class="h-[100px] w-auto xl:h-24 xl:w-24">
                 <span class="font-bold text-xl lg:text-2xl text-gray-800"><span class="text-[#FAB12F]">Candy</span><span class="text-[#F4631E]">Vet</span></span>
             </a>
 
-            <ul class="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8">
+            <ul class="hidden md:flex items-center space-x-4 lg:space-x-10 xl:space-x-12">
                 <li><a href="#beranda" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
                 <li><a href="#tentang" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
                 <li><a href="#layanan" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
@@ -43,7 +44,7 @@
             </div>
         </div>
 
-        <div id="mobile-menu" class="md:hidden absolute top-20 w-full bg-[#FEF3E2]/90 backdrop-blur-lg overflow-hidden transition-all duration-300 ease-in-out max-h-0">
+        <div id="mobile-menu" class="lg:hidden absolute top-20 w-full bg-[#FEF3E2]/90 backdrop-blur-lg overflow-hidden transition-all duration-300 ease-in-out max-h-0">
             <ul class="flex flex-col items-center space-y-4 pt-8 pb-8">
                 <li><a href="#beranda" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
                 <li><a href="#tentang" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
@@ -59,22 +60,22 @@
         </div>
     </nav>
 
-    <section id="beranda" class="pt-32 pb-16 xl:px-8 xl:pt-10">
+    <section id="beranda" class="pt-32 xl:px-8 xl:pt-10">
         <div class="container mx-auto px-4">
             <div class="flex flex-col-reverse md:flex-row gap-12 items-center">
                 
                 <div class="flex-1 text-center md:text-left">
-                    <h1 class="text-4xl lg:text-5xl font-extrabold text-gray-800 leading-tight">
+                    <h1 class="text-4xl lg:text-5xl font-extrabold text-gray-800 leading-tight" style="font-family: 'Poppins'">
                         <span class="text-[#F4631E]">Best Vet</span> For Your <span class="text-[#F4631E]"><br>Best Pet</span>
                     </h1>
-                    <p class="mt-4 text-lg text-gray-600 md:w-4/5 text-justify">
+                    <p class="mt-8 text-lg md:text-xl text-gray-600 md:w-4/5 text-justify">
                         Memberikan standar perawatan medis tertinggi untuk sahabat kesayangan Anda adalah misi kami. Didukung oleh tim dokter hewan profesional dan fasilitas modern, Candy Vet siap melayani setiap kebutuhan kesehatan hewan Anda.
                     </p>
-                    <div class="mt-8 flex justify-center md:justify-start space-x-4">
-                        <a href="booking.php" class="bg-[#F4631E] text-white font-bold py-3 px-8 md:py-3 md:px-4 lg:py-3 lg:px-8 rounded-lg hover:bg-opacity-90 transition-colors text-md lg:text-lg">
+                    <div class="mt-8 flex justify-center md:justify-start space-x-4" style="font-family: 'Poppins'">
+                        <a href="booking.php" class="bg-[#F4631E] text-white font-bold py-3 px-6 md:py-3 md:px-4 lg:py-3 lg:px-8 rounded-lg hover:bg-opacity-90 transition-transform hover:scale-105 text-md lg:text-lg">
                             Buat Janji
                         </a>
-                        <a href="#" class="bg-white text-[#F4631E] font-bold py-3 px-8 md:py-3 md:px-4 lg:py-3 lg:px-8 rounded-lg border-2 border-[#F4631E] hover:bg-orange-50 transition-colors text-md lg:text-lg">
+                        <a href="#footer" class="bg-white text-[#F4631E] font-bold py-3 px-8 md:py-3 md:px-4 lg:py-3 lg:px-8 rounded-lg border-2 border-[#F4631E] hover:bg-opacity-90 transition-transform hover:scale-105 text-md lg:text-lg">
                             Hubungi Kami
                         </a>
                     </div> 
@@ -89,9 +90,9 @@
     </section>
 
     
-    <section id="tentang" class="flex flex-col md:flex-row items-center justify-center text-center md:text-left bg-[#FEF3E2] p-8 mt-10 w-full">
+    <section id="tentang" class="flex flex-col md:flex-row items-center justify-center text-center md:text-left bg-[#FEF3E2] pt-28 sm:pb-[350px] mt-10 w-full">
 
-        <div class="w-full md:w-1/3 flex justify-center mb-6 pt-24 md:mb-0">
+        <div class="w-full md:w-1/3 flex justify-center mb-6 pt-18 md:mb-0">
             <img
             src="assets/tentangkami.png"
             alt="Cute Dog"
@@ -100,14 +101,17 @@
         </div>
 
             <div class="w-full md:w-1/2 p-4 md:p-6 flex flex-col justify-center items-center md:items-start text-center md:text-justify">
+            <div style="font-family: 'Poppins'">
             <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">
             Kenapa Harus
             </h1>
             <p class="mt-1 text-3xl sm:text-4xl font-bold text-gray-900 leading-relaxed">
             Memilih <span class="text-[#FAB12F]">Candy</span><span class="text-[#F4631E]">Vet</span>?
             </p>
+            </div>
 
-            <div class="mt-6 space-y-6 max-w-[600px]">
+
+            <div class="mt-6 space-y-6 max-w-[600px] text-lg">
             <p class="text-gray-700 leading-relaxed text-justify">
                 Kami memberikan standar perawatan medis tertinggi untuk sahabat kesayangan Anda.
                 Didukung oleh tim dokter hewan profesional dan fasilitas modern.
@@ -125,7 +129,7 @@
 
 <section id="layanan" class="py-24 lg:py-24 bg-repeat bg-center" style="background-image: url('assets/paw-pattern.png');">
     <div class="container mx-auto px-4 pb-24">
-        <h2 class="text-3xl md:text-4xl font-bold text-center mb-24">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-24" style="font-family: 'Poppins'">
             <span class="text-[#9E00BA]">Layanan</span> <span class="text-[#FAB12F]">Yang</span> <span class="text-[#F4631E]">Tersedia</span>
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-24 max-w-4xl mx-auto">
@@ -134,11 +138,11 @@
                     <img src="assets/pet_hotel.jpg" alt="Pet Hotel CandyVet" class="w-full h-48 object-cover">
                 </div>
                 <h3 class="font-bold text-2xl text-gray-800 mb-2 text-center">PET HOTEL</h3>
-                <p class="text-gray-600 text-sm mb-6 flex-grow">
+                <p class="text-gray-800 text-sm mb-6 flex-grow">
                     Menyediakan dokter hewan yang selalu siap, serta lingkungan yang luas dan bersih. CandyVet Pet Hotel menjamin kenyamanan maksimal untuk hewan kesayanganmu.
                 </p>
                 <a href="#fasilitas" class="font-semibold text-black hover:text-[#9E00BA] self-end">
-                    Lihat lebih lanjut <span class="text-4xl font-light relative top-1.5">&raquo;</span>
+                    Lihat lebih lanjut <span class="text-4xl font-light relative top-1">&raquo;</span>
                 </a>
             </div>
 
@@ -147,11 +151,11 @@
                     <img src="assets/pemeriksaan.jpg" alt="Pemeriksaan Hewan CandyVet" class="w-full h-48 object-cover">
                 </div>
                 <h3 class="font-bold text-2xl text-gray-800 mb-2 text-center">PEMERIKSAAN</h3>
-                <p class="text-gray-600 text-sm mb-6 flex-grow">
+                <p class="text-gray-800 text-sm mb-6 flex-grow">
                     Memeriksa kesehatan hewan secara menyeluruh untuk mencegah penyakit agar hewan tetap sehat dan aktif.
                 </p>
                 <a href="#" class="font-semibold text-black hover:text-[#9E00BA] self-end">
-                    Lihat lebih lanjut <span class="text-4xl font-light relative top-1.5">&raquo;</span>
+                    Lihat lebih lanjut <span class="text-4xl font-light relative top-1">&raquo;</span>
                 </a>
             </div>
         </div>
@@ -159,7 +163,7 @@
     </section>
 
 
-    <section id="fasilitas" class="py-16 lg:py-24">
+    <section id="fasilitas" class="py-16 lg:py-24" style="font-family: 'Poppins'">
     <div class="container mx-auto px-4 pt-10 lg:px-12 xl:px-20">
         <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">
             <span class="text-[#9E00BA]">Fasilitas</span> <span class="text-[#FAB12F]">Yang</span> <span class="text-[#F4631E]">Tersedia</span>
@@ -226,7 +230,7 @@
 
 
     <section id="owner" class="flex flex-col items-center justify-center bg-[#FEF3E2] py-12 px-6"  style="background-image: url('assets/paw-pattern.png');">
-        <h2 class="text-3xl sm:text-5xl font-bold text-center mb-6 pt-24">
+        <h2 class="text-3xl sm:text-5xl font-bold text-center mb-6 pt-24" style="font-family: 'Poppins'">
             <span class="text-[#FAB12F]">O</span><span class="text-[#F4631E]">W</span><span class="text-[#F4631E]">N</span><span class="text-[#9E00BA]">E</span><span class="text-[#9E00BA]">R</span>
       </h2>
 
@@ -251,10 +255,51 @@
             alt="Logo CandyVet"
             class="w-[90px] h-[90px] "
             />
-            <p class="flex text-xl sm:text-3xl font-bold text-gray-900 text-center">
+            <p class="flex text-xl sm:text-2xl font-bold text-gray-900 text-center">
             drh. Riza Norma Septiarini
             </p>
         </div>
+    </section>
+
+    <section class="bg-[#FEF3E2] py-[300px]">
+        <h1 class="text-center">INI BUAT SECTION ULASAN</h1>
+    </section>
+
+    <section id="panduan-booking" class="py-16 lg:py-24 bg-repeat bg-center px-20" style="background-image: url('assets/paw-pattern.png');">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-20" style="font-family: 'Poppins'">
+            <span class="text-[#9E00BA]">Panduan</span> <span class="text-[#FAB12F]">Mengisi Form</span> <span class="text-[#F4631E]">Booking</span>
+        </h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-center">
+            
+            <div class="bg-[#FAB12F] p-8 rounded-2xl shadow-lg text-gray-800 lg:col-span-3">
+                <ol class="list-decimal list-inside space-y-3 text-left leading-relaxed">
+                    <li><strong>Nama:</strong> isi dengan nama lengkap Anda sebagai pemilik.</li>
+                    <li><strong>Email:</strong> Masukkan alamat email Anda yang aktif.</li>
+                    <li><strong>No. Telp:</strong> Tulis nomor telepon/WhatsApp Anda yang bisa dihubungi.</li>
+                    <li><strong>Nama Hewan:</strong> isi dengan nama panggilan hewan peliharaan Anda.</li>
+                    <li><strong>Jenis Hewan:</strong> Sebutkan jenisnya (misal: Kucing, Anjing, Hamster).</li>
+                    <li><strong>Usia Hewan:</strong> Tulis usia hewan Anda saat ini (misal: 2 tahun, 5 bulan).</li>
+                    <li><strong>Jenis Kelamin Hewan:</strong> Tulis jenis kelaminnya (Jantan atau Betina).</li>
+                </ol>
+                <div class="mt-4 space-y-3 text-left leading-relaxed">
+                    <p><strong class="font-bold">Keluhan:</strong> Jelaskan secara singkat dan jelas masalah atau gejala yang dialami hewan Anda (misal: "Tidak mau makan sejak kemarin", "Muntah dan lemas", "Kaki belakang pincang").</p>
+                    <p><strong class="font-bold">Kirim:</strong> Setelah semua terisi, klik tombol ini untuk mengirim formulir.</p>
+                </div>
+            </div>
+
+            <div class="text-center lg:col-span-2">
+                <p class="text-xl lg:text-2xl font-bold text-gray-800 mb-6 leading-relaxed">
+                    <span class="text-[#F4631E]">Paw-rents,</span> kesehatan anabul tidak bisa menunggu. Klik tombol dibawah untuk booking jadwal konsultasi anda sekarang!
+                </p>
+                <a href="booking.php" class="inline-block bg-[#F4631E] text-white font-bold py-3 px-10 rounded-lg shadow-xl hover:bg-opacity-90 transition-transform hover:scale-105" style="font-family: 'Poppins'">
+                    Buat Janji
+                </a>
+            </div>
+
+        </div>
+    </div>
     </section>
 
 
@@ -264,7 +309,7 @@
         <div>
             <div class="flex items-center gap-3 mb-2 justify-center md:justify-start">
                 <img src="assets/logo.png" alt="CandyVet Logo" class="h-[100px] w-auto xl:h-24 xl:w-24">
-                <span class="font-bold text-xl lg:text-2xl text-gray-800">
+                <span class="font-bold text-xl lg:text-2xl text-gray-800" style="font-family: 'Poppins'">
                     <span class="text-[#FAB12F]">Candy</span><span class="text-[#F4631E]">Vet</span>
                 </span>
             </div>

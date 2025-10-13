@@ -50,7 +50,7 @@ if(isset($_POST['submit'])) {
                 <li><a href="index.html#tentang" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
                 <li><a href="index.html#layanan" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
                 <li><a href="index.html#fasilitas" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
-                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
+                <li><a href="index.html#footer" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
             </ul>
 
             <div class="md:hidden">
@@ -71,7 +71,7 @@ if(isset($_POST['submit'])) {
                 <li><a href="index.html#tentang" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
                 <li><a href="index.html#layanan" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
                 <li><a href="index.html#fasilitas" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
-                <li><a href="#" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
+                <li><a href="index.html#footer" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
             </ul>
         </div>
     </nav>
@@ -147,5 +147,6 @@ if(isset($_POST['submit'])) {
         </form>
     </section>
 
+    <script src="script.js"></script>
 </body>
 </html>
