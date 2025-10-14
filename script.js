@@ -39,3 +39,45 @@ document.addEventListener('click', (event) => {
         toggleMenu(); // Panggil fungsi toggle untuk menutup menu
     }
 });
+
+
+// --- Kode untuk Slider Testimoni (Swiper.js Revisi FINAL) ---
+document.addEventListener('DOMContentLoaded', (event) => {
+    
+    // Inisialisasi Swiper
+    const swiper = new Swiper('.mySwiper', {
+        // DIUBAH: Menggunakan effect 'creative' untuk kontrol penuh atas transform
+        effect: 'creative',
+        
+        grabCursor: true,
+        centeredSlides: true,
+        slidesPerView: 'auto',
+        loop: true,
+        
+        // DIUBAH: Ini adalah kunci untuk efek scale & opacity
+        creativeEffect: {
+            prev: {
+                // Properti untuk slide di sebelah kiri
+                translate: ['-120%', 0, -500],
+                scale: 0.85,
+                opacity: 0.7
+            },
+            next: {
+                // Properti untuk slide di sebelah kanan
+                translate: ['120%', 0, -500],
+                scale: 0.85,
+                opacity: 0.7
+            },
+        },
+
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+    });
+});
