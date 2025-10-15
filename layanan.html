@@ -76,75 +76,343 @@
 
         <div class="max-w-4xl mx-auto space-y-4">
 
-            <div x-data="{ open: true }" class="bg-white rounded-xl shadow-sm border border-gray-200">
-                <h2>
-                    <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
-                        <span>Check Up Kesehatan Hewan</span>
-                        <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                </h2>
-                <div x-show="open" x-transition class="p-6 pt-0">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="text-gray-600 space-y-4">
-                            <p>
-                                Check up kesehatan adalah langkah proaktif terbaik untuk mendeteksi potensi masalah sejak dini, sebelum berkembang menjadi lebih serius. Tim dokter kami akan melakukan pemeriksaan menyeluruh dari kepala hingga ekor untuk memberikan gambaran lengkap tentang kondisi kesehatan sahabat Anda.
-                            </p>
-                        </div>
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-2">
-                                <span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span>
-                                <span class="text-gray-700">Pemeriksaan Fisik Menyeluruh</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span>
-                                <span class="text-gray-700">Pengecekan Suhu, Berat Badan</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span>
-                                <span class="text-gray-700">Konsultasi Dengan Dokter Hewan</span>
-                            </div>
-                        </div>
-                    </div>
-                        <p class="font-semibold mt-10 text-gray-700 text-center">Mulai Dari Rp 150.000</p>
-                </div>
-            </div>
+<div class="max-w-4xl mx-auto space-y-4">
 
-            <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
-                <h2>
-                    <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
-                        <span>Konsultasi</span>
-                        <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                </h2>
-                <div x-show="open" x-transition class="p-6 pt-0">
-                    <p class="text-gray-600">Detail untuk layanan Konsultasi akan ditampilkan di sini.</p>
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Check Up Kesehatan Hewan</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div class="text-gray-600 space-y-4">
+                    <p>Check up kesehatan adalah langkah proaktif terbaik untuk mendeteksi potensi masalah sejak dini, sebelum berkembang menjadi lebih serius. Tim dokter kami akan melakukan pemeriksaan menyeluruh untuk memberikan gambaran lengkap tentang kondisi kesehatan sahabat Anda.</p>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Pemeriksaan Fisik Menyeluruh</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Pengecekan Suhu & Berat Badan</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Konsultasi Dengan Dokter Hewan</span></div>
                 </div>
             </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 150.000</p>
+        </div>
+    </div>
 
-            <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
-                <h2>
-                    <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
-                        <span>ICU Cage</span>
-                        <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                </h2>
-                <div x-show="open" x-transition class="p-6 pt-0">
-                    <p class="text-gray-600">Detail untuk layanan ICU Cage akan ditampilkan di sini.</p>
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Konsultasi</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Punya pertanyaan seputar gizi, perilaku, atau perawatan harian anabul Anda? Sesi konsultasi bersama dokter hewan kami memberikan Anda kesempatan untuk berdiskusi dan mendapatkan solusi terbaik yang disesuaikan dengan kebutuhan spesifik hewan Anda.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Konsultasi Nutrisi & Pola Makan</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Diskusi Perilaku & Masalah Harian</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Rekomendasi Perawatan Preventif</span></div>
+                </div>         
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 100.000</p>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Operasi & Scaling</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Kami melayani berbagai tindakan bedah (minor & mayor) dengan dukungan peralatan anestesi modern. Selain itu, kami menyediakan layanan scaling (pembersihan karang gigi) untuk menjaga kesehatan mulut dan mencegah bau mulut pada anabul Anda.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Tindakan Bedah Terencana</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Pembersihan Karang Gigi (Scaling)</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Perawatan Pasca-Operasi</span></div>
                 </div>
             </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Harga Tergantung Tindakan</p>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Pertolongan Partus</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Proses kelahiran adalah momen krusial. Tim kami siap memberikan bantuan persalinan (partus), baik secara normal maupun melalui tindakan caesar jika diperlukan, untuk memastikan keselamatan induk dan anak-anaknya.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Bantuan Persalinan Normal</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Operasi Caesar (C-Section)</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Perawatan Neonatal (Bayi Hewan)</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 500.000</p>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Uji Mikroskopis</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Pemeriksaan sampel di bawah mikroskop untuk mendiagnosa berbagai kondisi, seperti infeksi jamur pada kulit, parasit darah, atau masalah lainnya yang tidak terlihat oleh mata telanjang.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Pemeriksaan Kerokan Kulit (Jamur/Tungau)</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Pemeriksaan Swab Telinga (Infeksi)</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Analisa Feses (Parasit/Cacing)</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 85.000</p>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Pemasangan Microchip</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Memberikan identitas digital permanen yang aman seukuran butir beras untuk anabul Anda. Microchip sangat penting untuk membantu melacak dan mengidentifikasi jika hewan kesayangan Anda hilang atau tersesat.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Identifikasi Permanen & Aman</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Standar Internasional (ISO)</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Proses Cepat & Minimal Rasa Sakit</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 250.000</p>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Pemeriksaan Darah</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Tes darah lengkap membantu dokter dalam mendiagnosa penyakit, memeriksa fungsi organ vital seperti hati dan ginjal, serta memantau kondisi kesehatan anabul secara keseluruhan, terutama sebelum tindakan operasi.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Cek Darah Lengkap (Hematologi)</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Cek Kimia Darah (Fungsi Organ)</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Screening Penyakit Sebelum Operasi</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 200.000</p>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>USG (Ultrasonografi)</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Pemeriksaan non-invasif menggunakan gelombang suara untuk melihat kondisi organ dalam, seperti lambung, ginjal, kandung kemih, dan rahim. Sangat berguna untuk diagnosa kebuntingan atau mendeteksi adanya tumor dan kelainan organ lainnya.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Pemeriksaan Kebuntingan</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Diagnosa Penyakit Organ Dalam</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Cepat, Aman, dan Tanpa Radiasi</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 250.000</p>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Test Kit Penyakit</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Diagnosa cepat untuk penyakit-penyakit menular spesifik pada hewan, seperti Panleukopenia dan Calici pada kucing, atau Parvo dan Distemper pada anjing. Hasil yang cepat membantu penanganan yang lebih efektif.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Tes Parvo & Distemper (Anjing)</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Tes Panleukopenia & Calici (Kucing)</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Hasil Cepat (10-15 Menit)</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 150.000</p>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Opname (Rawat Inap)</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Untuk hewan yang membutuhkan perawatan intensif dan observasi berkelanjutan. Fasilitas rawat inap kami yang bersih dan nyaman memastikan anabul Anda mendapatkan pemantauan terbaik selama proses pemulihan.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Pemantauan 24 Jam oleh Staf</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Kandang Steril dan Individual</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Perawatan Infus dan Pemberian Obat Teratur</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 150.000 / hari</p>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Nebulizer</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Terapi uap yang digunakan untuk mengatasi gangguan pernapasan seperti asma, flu, atau batuk pada hewan. Obat diubah menjadi uap halus agar bisa langsung masuk ke paru-paru dan bekerja lebih cepat.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Melegakan Saluran Pernapasan</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Mengencerkan Dahak</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Pengobatan Non-Invasif</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 75.000</p>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Vaksinasi</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Pencegahan adalah kunci. Kami menyediakan paket vaksinasi lengkap untuk anjing dan kucing (termasuk vaksin rabies) untuk membangun kekebalan tubuh dan melindunginya dari penyakit-penyakit berbahaya.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Vaksinasi Awal (Puppy/Kitten)</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Vaksinasi Ulangan Tahunan</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Termasuk Vaksin Rabies</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 180.000</p>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>Sterilisasi (Kastrasi/Ovariohisterektomi)</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Tindakan operasi untuk mengangkat organ reproduksi pada hewan jantan (kastrasi) atau betina (ovariohisterektomi). Sangat direkomendasikan untuk mengontrol populasi, mengurangi risiko kanker, dan membuat anabul lebih tenang serta panjang umur.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Mencegah Kehamilan Tidak Diinginkan</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Mengurangi Risiko Penyakit Reproduksi</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Mengurangi Perilaku Agresif/Birahi</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 600.000</p>
+        </div>
+    </div>
+    
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>House Call & Antar Jemput</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Tidak sempat datang ke klinik? Tim kami siap datang ke rumah Anda untuk melakukan pemeriksaan atau vaksinasi (House Call). Kami juga menyediakan layanan antar jemput anabul Anda dari dan ke klinik untuk kenyamanan Anda.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Pemeriksaan & Vaksinasi di Rumah</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Layanan Antar Jemput Hewan Sakit</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Mengurangi Stres pada Hewan</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Harga Disesuaikan Jarak</p>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2>
+            <button @click="open = !open" type="button" class="flex items-center justify-between w-full p-6 font-semibold text-left text-gray-800">
+                <span>ICU Cage (Kandang Oksigen)</span>
+                <svg class="w-6 h-6 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+        </h2>
+        <div x-show="open" x-transition class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="text-gray-600 space-y-4">
+                <p>Kandang perawatan intensif yang dilengkapi dengan kontrol suhu dan aliran oksigen. Sangat vital untuk pasien dalam kondisi kritis, pasca operasi besar, atau yang mengalami kesulitan bernapas parah, untuk membantu menstabilkan kondisinya.</p>
+            </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Terapi Oksigen Intensif</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Kontrol Suhu dan Kelembapan</span></div>
+                    <div class="flex items-center gap-2"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</span><span class="text-gray-700">Pemantauan Pasien Kritis</span></div>
+                </div>  
+            </div>
+            <p class="font-semibold mt-6 text-gray-700 text-center border-t pt-4">Mulai Dari Rp 250.000 / hari</p>
+        </div>
+    </div>
+</div>
 
         </div>
     </div>
 </section> 
 </body>
-
-
 
     <script src="script.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
