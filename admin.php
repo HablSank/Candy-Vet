@@ -61,11 +61,11 @@ $status_filter = isset($_GET['status']) ? $_GET['status'] : 'semua';
 
 // Buat query berdasarkan filter
 if($status_filter == 'semua'){
-    $query = "SELECT * FROM tb_form ORDER BY id DESC";
+    $query = "SELECT * FROM tb_form ORDER BY id ASC";
 } else {
     // Hindari SQL Injection dengan mysqli_real_escape_string
     $status_filter_safe = mysqli_real_escape_string($conn, $status_filter);
-    $query = "SELECT * FROM tb_form WHERE status = '$status_filter_safe' ORDER BY id DESC";
+    $query = "SELECT * FROM tb_form WHERE status = '$status_filter_safe' ORDER BY id ASC";
 }
 $result = mysqli_query($conn, $query);
 
