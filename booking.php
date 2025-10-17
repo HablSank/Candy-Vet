@@ -1,7 +1,15 @@
 <?php
+// Panggil library PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Sesuaikan path ini jika kamu tidak menggunakan Composer
+require 'vendor/autoload.php';
+
 include 'koneksi.php';
 
 if(isset($_POST['submit'])) {
+    // --- Bagian 1: Simpan data ke database (kode temanmu, tidak diubah) ---
     $stmt = $conn->prepare("INSERT INTO tb_form (nm_majikan, email_majikan, no_tlp_majikan, nm_hewan, jenis_hewan, usia_hewan, jenis_kelamin_hewan, keluhan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     
     $stmt->bind_param("ssssssss", 
@@ -16,7 +24,67 @@ if(isset($_POST['submit'])) {
     );
     
     if($stmt->execute()){
-        echo '<script>alert("Data Berhasil Disimpan! Terima kasih sudah melakukan booking, mohon tunggu konfirmasi dari admin via WhatsApp."); window.location.href="booking.php";</script>';
+        // --- Bagian 2: Kirim email konfirmasi ke user ---
+        $mail = new PHPMailer(true);
+
+        try {
+            // --- PENGATURAN YANG PERLU KAMU UBAH ---
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';                     // Server SMTP Gmail
+            $mail->SMTPAuth   = true;
+            $mail->Username   = '***REMOVED***';                // GANTI DENGAN EMAIL GMAIL-MU
+            $mail->Password   = '***REMOVED***';                   // GANTI DENGAN 16 KARAKTER APP PASSWORD-MU
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port       = 465;
+            // -----------------------------------------
+
+            // Pengirim & Penerima
+            $mail->setFrom('no-reply@candyvet.com', 'Admin CandyVet'); // Email "Dari" (bisa fiktif) dan Nama Pengirim
+            $mail->addAddress($_POST['email_majikan'], $_POST['nm_majikan']); // Kirim ke email yang diisi di form
+
+            // Konten Email
+            $mail->isHTML(true);
+            $mail->Subject = 'Bukti Booking Anda di CandyVet';
+            $mail->Body    = "
+                <h2>Terima Kasih, " . htmlspecialchars($_POST['nm_majikan']) . "!</h2>
+                <p>Booking Anda telah kami terima. Berikut adalah detailnya:</p>
+                <table border='1' cellpadding='10' style='border-collapse: collapse; width: 100%;'>
+                    <tr><td style='background-color: #f2f2f2; width: 30%;'><strong>Nama Hewan</strong></td><td>" . htmlspecialchars($_POST['nm_hewan']) . "</td></tr>
+                    <tr><td style='background-color: #f2f2f2;'><strong>Jenis Hewan</strong></td><td>" . htmlspecialchars($_POST['jenis_hewan']) . "</td></tr>
+                    <tr><td style='background-color: #f2f2f2;'><strong>Keluhan</strong></td><td>" . htmlspecialchars($_POST['keluhan']) . "</td></tr>
+                </table>
+                <p>Mohon tunggu konfirmasi jadwal dari admin kami via WhatsApp. Jangan balas email ini.</p>
+            ";
+
+            $mail->send(); // Kirim email
+
+        } catch (Exception $e) {
+            // Jika email gagal, proses tetap lanjut, tidak perlu hentikan user
+        }
+
+        // --- Bagian 3: Siapkan & Redirect ke WhatsApp ---
+        
+        // --- PENGATURAN YANG PERLU KAMU UBAH ---
+        $nomorAdminWA = "***REMOVED***";
+        // -----------------------------------------
+
+        $pesanWA = "Halo Admin CandyVet, saya ingin booking jadwal atas nama:\n\n" .
+                   "Nama Majikan: " . $_POST['nm_majikan'] . "\n" .
+                   "No. Telp: " . $_POST['no_tlp_majikan'] . "\n" .
+                   "Nama Hewan: " . $_POST['nm_hewan'] . "\n" .
+                   "Jenis Hewan: " . $_POST['jenis_hewan'] . "\n" .
+                   "Keluhan: " . $_POST['keluhan'] . "\n\n" .
+                   "Mohon konfirmasi jadwalnya. Terima kasih.";
+        
+        $pesanWAEncoded = urlencode($pesanWA);
+        $whatsappURL = "https://api.whatsapp.com/send?phone=" . $nomorAdminWA . "&text=" . $pesanWAEncoded;
+
+        // Beri notifikasi ke user lalu redirect
+        echo "<script>
+                alert('Booking Terkirim! Anda akan dialihkan ke WhatsApp. Bukti booking juga telah dikirim ke email Anda.');
+                window.location.href = '$whatsappURL';
+              </script>";
+
     } else {
         echo '<script>alert("Data Gagal Disimpan, silakan coba lagi.");</script>';
     }
