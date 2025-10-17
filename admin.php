@@ -2,12 +2,19 @@
 // Include file koneksi database
 include 'koneksi.php'; // Pastikan file ini ada dan berisi koneksi MySQL
 
+// Cek apakah koneksi berhasil di-include dan variabel $conn tersedia
+if (!isset($conn)) {
+    // Tambahkan penanganan error jika koneksi gagal
+    die("Koneksi database gagal dimuat. Pastikan 'koneksi.php' mendefinisikan \$conn.");
+}
+
 // ========== PROSES BATALKAN BOOKING ==========
 if(isset($_GET['batalkan'])){
     $id = $_GET['batalkan'];
     
     // Query untuk update status menjadi 'Dibatalkan'
-    $query = "UPDATE tb_form SET status = 'Dibatalkan' WHERE id = $id";
+    // PERHATIAN: PENGGUNAAN VARIABEL LANGSUNG DI QUERY SANGAT RENTAN SQL INJECTION.
+    $query = "UPDATE tb_form SET status = 'Dibatalkan' WHERE id = " . mysqli_real_escape_string($conn, $id);
     
     if(mysqli_query($conn, $query)){
         header("Location: admin.php?pesan=dibatalkan");
@@ -22,7 +29,7 @@ if(isset($_GET['selesai'])){
     $id = $_GET['selesai'];
     
     // Query untuk update status menjadi 'Selesai'
-    $query = "UPDATE tb_form SET status = 'Selesai' WHERE id = $id";
+    $query = "UPDATE tb_form SET status = 'Selesai' WHERE id = " . mysqli_real_escape_string($conn, $id);
     
     if(mysqli_query($conn, $query)){
         header("Location: admin.php?pesan=selesai");
@@ -32,12 +39,13 @@ if(isset($_GET['selesai'])){
     }
 }
 
-// ========== PROSES MENGAKTIFKAN KEMBALI BOOKING (Dibatalkan -> Aktif) ==========
+// ========== PROSES MENGAKTIFKAN KEMBALI BOOKING (Dibatalkan/Selesai -> Aktif) ==========
 if(isset($_GET['aktifkan'])){
     $id = $_GET['aktifkan'];
     
     // Query untuk update status kembali menjadi 'Aktif'
-    $query = "UPDATE tb_form SET status = 'Aktif' WHERE id = $id";
+    // Proses ini digunakan untuk status Dibatalkan DAN Selesai
+    $query = "UPDATE tb_form SET status = 'Aktif' WHERE id = " . mysqli_real_escape_string($conn, $id);
     
     if(mysqli_query($conn, $query)){
         header("Location: admin.php?pesan=aktifkan");
@@ -55,12 +63,16 @@ $status_filter = isset($_GET['status']) ? $_GET['status'] : 'semua';
 if($status_filter == 'semua'){
     $query = "SELECT * FROM tb_form ORDER BY id DESC";
 } else {
-    // Hindari SQL Injection, namun untuk contoh ini kita asumsikan input bersih
+    // Hindari SQL Injection dengan mysqli_real_escape_string
     $status_filter_safe = mysqli_real_escape_string($conn, $status_filter);
     $query = "SELECT * FROM tb_form WHERE status = '$status_filter_safe' ORDER BY id DESC";
 }
-
 $result = mysqli_query($conn, $query);
+
+// Cek jika query gagal (misalnya karena koneksi hilang)
+if (!$result) {
+    die("Query gagal: " . mysqli_error($conn));
+}
 ?>
 
 <!DOCTYPE html>
@@ -69,6 +81,7 @@ $result = mysqli_query($conn, $query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - CandyVet</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
         * {
             margin: 0;
@@ -101,9 +114,11 @@ $result = mysqli_query($conn, $query);
             margin-bottom: 40px;
         }
         
+        /* Style untuk gambar logo */
         .logo img {
-            width: 50px;
-            height: 50px;
+            width: 60px; /* Sesuaikan ukuran sesuai kebutuhan */
+            height: 60px; /* Sesuaikan ukuran sesuai kebutuhan */
+            object-fit: contain; /* Memastikan gambar tidak terdistorsi */
         }
         
         .logo h2 {
@@ -146,9 +161,14 @@ $result = mysqli_query($conn, $query);
         .menu-item.active:hover {
             background: #7B2FEF;
         }
-        
-        .menu-icon {
+
+        /* Style untuk ikon Boxicons di sidebar */
+        .menu-icon i {
             font-size: 24px;
+        }
+        /* Pastikan warna ikon diubah saat menu aktif */
+        .menu-item.active .menu-icon i {
+            color: white; 
         }
         
         .logout {
@@ -305,8 +325,8 @@ $result = mysqli_query($conn, $query);
         }
         
         thead tr {
-            background: #FF9933; /* Mengganti FDB54E dengan FF9933 (warna logo/header) */
-            color: white; /* Mengganti teks hitam menjadi putih agar kontras */
+            background: #FF9933; /* Warna Header/Aksen */
+            color: white;
         }
         
         th {
@@ -392,14 +412,34 @@ $result = mysqli_query($conn, $query);
             width: 35px;
             height: 35px;
             border: none;
-            border-radius: 8px;
+            border-radius: 8px; /* Bentuk kotak dengan sudut melengkung */
             cursor: pointer;
             font-size: 16px;
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            text-decoration: none; /* Tambahkan ini agar link terlihat seperti tombol */
+            text-decoration: none;
+        }
+        
+        /* Style untuk SVG/Boxicons di dalam tombol */
+        .btn-icon svg, .btn-icon i {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor; /* Hanya berlaku untuk SVG */
+            fill: none; /* Hanya berlaku untuk SVG */
+            color: currentColor; /* Untuk Boxicons */
+            transition: all 0.3s;
+        }
+        /* Override Boxicons size */
+        .btn-icon i {
+            font-size: 18px; 
+        }
+
+        /* Ikon Pencarian */
+        .search-box button svg {
+            width: 20px;
+            height: 20px;
         }
         
         .btn-detail {
@@ -412,9 +452,10 @@ $result = mysqli_query($conn, $query);
             color: white;
             transform: scale(1.1);
         }
+        .btn-detail:hover svg, .btn-detail:hover i { stroke: white; color: white; }
         
         .btn-edit {
-            background: #FFF3E0; /* Warna Orange Muda untuk Edit */
+            background: #FFF3E0;
             color: #FF9933;
         }
         
@@ -423,8 +464,9 @@ $result = mysqli_query($conn, $query);
             color: white;
             transform: scale(1.1);
         }
+        .btn-edit:hover svg, .btn-edit:hover i { stroke: white; color: white; }
 
-        .btn-complete { /* Tombol Selesai */
+        .btn-complete {
             background: #E8F5E9;
             color: #388E3C;
         }
@@ -434,8 +476,9 @@ $result = mysqli_query($conn, $query);
             color: white;
             transform: scale(1.1);
         }
+        .btn-complete:hover svg, .btn-complete:hover i { stroke: white; color: white; }
 
-        .btn-revert { /* Tombol Aktifkan Kembali */
+        .btn-revert {
             background: #E6D5F5; 
             color: #8B3DFF;
         }
@@ -445,6 +488,7 @@ $result = mysqli_query($conn, $query);
             color: white;
             transform: scale(1.1);
         }
+        .btn-revert:hover svg, .btn-revert:hover i { stroke: white; color: white; }
         
         .btn-delete {
             background: #FFEBEE;
@@ -456,6 +500,7 @@ $result = mysqli_query($conn, $query);
             color: white;
             transform: scale(1.1);
         }
+        .btn-delete:hover svg, .btn-delete:hover i { stroke: white; color: white; }
         
         /* Floating Action Button */
         .fab {
@@ -483,11 +528,20 @@ $result = mysqli_query($conn, $query);
             box-shadow: 0 12px 30px rgba(139, 61, 255, 0.5);
         }
         
+        .fab i {
+            font-size: 24px;
+        }
+        
         .no-data {
             text-align: center;
             padding: 60px 20px;
             color: #999;
             font-size: 18px;
+        }
+        .no-data i {
+            font-size: 30px;
+            display: block;
+            margin-bottom: 10px;
         }
         
         /* Responsive */
@@ -547,24 +601,21 @@ $result = mysqli_query($conn, $query);
 <body>
     <div class="sidebar">
         <div class="logo">
-            <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="25" cy="25" r="25" fill="#FF9933"/>
-                <path d="M25 10C18.37 10 13 15.37 13 22C13 30 25 40 25 40C25 40 37 30 37 22C37 15.37 31.63 10 25 10ZM25 26C22.79 26 21 24.21 21 22C21 19.79 22.79 18 25 18C27.21 18 29 19.79 29 22C29 24.21 27.21 26 25 26Z" fill="white"/>
-            </svg>
+            <img src="candyvet-removebg-preview 1.png" alt="CandyVet Logo"> 
             <h2>CandyVet</h2>
         </div>
         
         <ul class="menu">
             <li class="menu-item active">
-                <span class="menu-icon">📋</span>
+                <span class="menu-icon"><i class='bx bx-clipboard'></i></span>
                 <span class="menu-text">Booking</span>
             </li>
             <li class="menu-item">
-                <span class="menu-icon">💝</span>
+                <span class="menu-icon"><i class='bx bx-heart'></i></span>
                 <span class="menu-text">Layanan</span>
             </li>
             <li class="menu-item logout">
-                <span class="menu-icon">🚪</span>
+                <span class="menu-icon"><i class='bx bx-log-out'></i></span>
                 <span class="menu-text">Keluar</span>
             </li>
         </ul>
@@ -575,12 +626,14 @@ $result = mysqli_query($conn, $query);
             <h1>RIWAYAT BOOKING</h1>
             <div class="search-box">
                 <input type="text" placeholder="Cari" id="searchInput">
-                <button>🔍</button>
+                <button>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
             </div>
         </div>
         
         <?php
-        // Tampilkan notifikasi jika ada
+        // Tampilkan notifikasi 
         if(isset($_GET['pesan'])){
             $alert_text = '';
             if($_GET['pesan'] == 'dibatalkan'){
@@ -588,7 +641,7 @@ $result = mysqli_query($conn, $query);
             } elseif($_GET['pesan'] == 'selesai'){
                 $alert_text = '✓ Booking berhasil ditandai selesai!';
             } elseif($_GET['pesan'] == 'aktifkan'){
-                $alert_text = '✓ Booking berhasil diaktifkan kembali!';
+                $alert_text = '✓ Status booking berhasil diaktifkan kembali!';
             }
             if($alert_text) {
                 echo '<div class="alert">' . $alert_text . '</div>';
@@ -648,34 +701,45 @@ $result = mysqli_query($conn, $query);
                                 ?>
                                 <tr>
                                     <td><?php echo $no++; ?></td>
-                                    <td><strong><?php echo $row['nm_majikan']; ?></strong></td>
-                                    <td><?php echo $row['nm_hewan']; ?></td>
-                                    <td><?php echo $row['jenis_hewan']; ?></td>
-                                    <td><?php echo $row['usia_hewan']; ?> tahun</td>
+                                    <td><strong><?php echo htmlspecialchars($row['nm_majikan']); ?></strong></td>
+                                    <td><?php echo htmlspecialchars($row['nm_hewan']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['jenis_hewan']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['usia_hewan']); ?> tahun</td>
                                     <td>
                                         <span class="badge <?php echo $badge_class; ?>">
-                                            <?php echo $row['status']; ?>
+                                            <?php echo htmlspecialchars($row['status']); ?>
                                         </span>
                                     </td>
                                     <td>
                                         <div class="action-btns">
                                             <a href="detail_booking.php?id=<?php echo $row['id']; ?>" 
-                                               class="btn-icon btn-detail" title="Detail">📄</a>
+                                            class="btn-icon btn-detail" title="Detail">
+                                             <i class='bx bx-file-text'></i> </a>
                                             
                                             <a href="edit_booking.php?id=<?php echo $row['id']; ?>" 
-                                               class="btn-icon btn-edit" title="Edit">✏️</a>
+                                            class="btn-icon btn-edit" title="Edit">
+                                             <i class='bx bx-pencil'></i> </a>
 
-                                            <?php if($row['status'] == 'Aktif'){ ?>
-                                                <a href="#" class="btn-icon btn-complete" 
-                                                   onclick="if(confirm('Tandai booking ini sebagai selesai?')) window.location.href='admin.php?selesai=<?php echo $row['id']; ?>'"
-                                                   title="Tandai Selesai">✓</a>
-                                                <a href="#" class="btn-icon btn-delete" 
-                                                   onclick="if(confirm('Yakin ingin membatalkan booking ini?')) window.location.href='admin.php?batalkan=<?php echo $row['id']; ?>'"
-                                                   title="Batalkan">🗑️</a>
-                                            <?php } elseif($row['status'] == 'Dibatalkan'){ ?>
-                                                <a href="#" class="btn-icon btn-revert" 
-                                                   onclick="if(confirm('Aktifkan kembali booking ini?')) window.location.href='admin.php?aktifkan=<?php echo $row['id']; ?>'"
-                                                   title="Aktifkan Kembali">🔄</a>
+                                            <?php 
+                                            // Aksi untuk status 'Aktif'
+                                            if($row['status'] == 'Aktif'){ 
+                                            ?>
+                                            <a href="#" class="btn-icon btn-complete" 
+                                             onclick="if(confirm('Tandai booking ini sebagai selesai?')) window.location.href='admin.php?selesai=<?php echo $row['id']; ?>'"
+                                             title="Tandai Selesai">
+                                             <i class='bx bx-check-circle'></i> </a>
+                                            <a href="#" class="btn-icon btn-delete" 
+                                             onclick="if(confirm('Yakin ingin membatalkan booking ini?')) window.location.href='admin.php?batalkan=<?php echo $row['id']; ?>'"
+                                             title="Batalkan">
+                                             <i class='bx bx-trash'></i> </a>
+                                            <?php 
+                                            // Aksi untuk status 'Selesai' atau 'Dibatalkan'
+                                            } elseif($row['status'] == 'Selesai' || $row['status'] == 'Dibatalkan'){ 
+                                            ?>
+                                            <a href="#" class="btn-icon btn-revert" 
+                                             onclick="if(confirm('Aktifkan kembali status booking ini menjadi Aktif?')) window.location.href='admin.php?aktifkan=<?php echo $row['id']; ?>'"
+                                             title="Aktifkan Kembali">
+                                             <i class='bx bx-undo'></i> </a>
                                             <?php } ?>
                                         </div>
                                     </td>
@@ -683,7 +747,7 @@ $result = mysqli_query($conn, $query);
                                 <?php
                             }
                         } else {
-                            echo '<tr><td colspan="7" class="no-data">📭 Tidak ada data booking</td></tr>';
+                            echo '<tr><td colspan="7" class="no-data"><i class="bx bx-folder-open"></i> Tidak ada data booking</td></tr>';
                         }
                         ?>
                     </tbody>
@@ -692,7 +756,7 @@ $result = mysqli_query($conn, $query);
         </div>
         
         <button class="fab">
-            <span style="font-size: 24px;">➕</span>
+                        <i class='bx bx-plus'></i>
             Tambah Booking Baru
         </button>
     </div>
@@ -711,8 +775,9 @@ $result = mysqli_query($conn, $query);
     </script>
 </body>
 </html>
-
 <?php
-// Tutup koneksi database
-mysqli_close($conn);
+// Tutup koneksi database di akhir file PHP
+if (isset($conn)) {
+    mysqli_close($conn);
+}
 ?>
