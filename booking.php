@@ -5,7 +5,8 @@ use PHPMailer\PHPMailer\Exception;
 
 // Sesuaikan path ini jika kamu tidak menggunakan Composer
 require 'vendor/autoload.php';
-
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__); 
+$dotenv->load();
 include 'koneksi.php';
 
 if(isset($_POST['submit'])) {
