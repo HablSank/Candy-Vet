@@ -32,8 +32,8 @@ if(isset($_POST['submit'])) {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';                     // Server SMTP Gmail
             $mail->SMTPAuth   = true;
-            $mail->Username   = '***REMOVED***';                // GANTI DENGAN EMAIL GMAIL-MU
-            $mail->Password   = '***REMOVED***';                   // GANTI DENGAN 16 KARAKTER APP PASSWORD-MU
+            $mail->Username   = $_ENV['GMAIL_USERNAME'];                // GANTI DENGAN EMAIL GMAIL-MU
+            $mail->Password   = $_ENV['GMAIL_APP_PASSWORD'];                   // GANTI DENGAN 16 KARAKTER APP PASSWORD-MU
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
             // -----------------------------------------
@@ -65,7 +65,7 @@ if(isset($_POST['submit'])) {
         // --- Bagian 3: Siapkan & Redirect ke WhatsApp ---
         
         // --- PENGATURAN YANG PERLU KAMU UBAH ---
-        $nomorAdminWA = "***REMOVED***";
+        $nomorAdminWA = $_ENV['ADMIN_WHATSAPP'];
         // -----------------------------------------
 
         $pesanWA = "Halo Admin CandyVet, saya ingin booking jadwal atas nama:\n\n" .
