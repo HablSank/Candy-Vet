@@ -1,19 +1,12 @@
 <?php
-// Include file koneksi database
-include 'koneksi.php'; // Pastikan file ini ada dan berisi koneksi MySQL
+include 'koneksi.php'; 
 
-// Cek apakah koneksi berhasil di-include dan variabel $conn tersedia
 if (!isset($conn)) {
-    // Tambahkan penanganan error jika koneksi gagal
     die("Koneksi database gagal dimuat. Pastikan 'koneksi.php' mendefinisikan \$conn.");
 }
 
-// ========== PROSES BATALKAN BOOKING ==========
 if(isset($_GET['batalkan'])){
     $id = $_GET['batalkan'];
-    
-    // Query untuk update status menjadi 'Dibatalkan'
-    // PERHATIAN: PENGGUNAAN VARIABEL LANGSUNG DI QUERY SANGAT RENTAN SQL INJECTION.
     $query = "UPDATE tb_form SET status = 'Dibatalkan' WHERE id = " . mysqli_real_escape_string($conn, $id);
     
     if(mysqli_query($conn, $query)){
@@ -24,11 +17,8 @@ if(isset($_GET['batalkan'])){
     }
 }
 
-// ========== PROSES TANDAI SELESAI ==========
 if(isset($_GET['selesai'])){
     $id = $_GET['selesai'];
-    
-    // Query untuk update status menjadi 'Selesai'
     $query = "UPDATE tb_form SET status = 'Selesai' WHERE id = " . mysqli_real_escape_string($conn, $id);
     
     if(mysqli_query($conn, $query)){
@@ -39,12 +29,8 @@ if(isset($_GET['selesai'])){
     }
 }
 
-// ========== PROSES MENGAKTIFKAN KEMBALI BOOKING (Dibatalkan/Selesai -> Aktif) ==========
 if(isset($_GET['aktifkan'])){
     $id = $_GET['aktifkan'];
-    
-    // Query untuk update status kembali menjadi 'Aktif'
-    // Proses ini digunakan untuk status Dibatalkan DAN Selesai
     $query = "UPDATE tb_form SET status = 'Aktif' WHERE id = " . mysqli_real_escape_string($conn, $id);
     
     if(mysqli_query($conn, $query)){
@@ -55,21 +41,16 @@ if(isset($_GET['aktifkan'])){
     }
 }
 
-// ========== FILTER STATUS ==========
-// Ambil parameter status dari URL (jika ada)
 $status_filter = isset($_GET['status']) ? $_GET['status'] : 'semua';
 
-// Buat query berdasarkan filter
 if($status_filter == 'semua'){
     $query = "SELECT * FROM tb_form ORDER BY id ASC";
 } else {
-    // Hindari SQL Injection dengan mysqli_real_escape_string
     $status_filter_safe = mysqli_real_escape_string($conn, $status_filter);
     $query = "SELECT * FROM tb_form WHERE status = '$status_filter_safe' ORDER BY id ASC";
 }
 $result = mysqli_query($conn, $query);
 
-// Cek jika query gagal (misalnya karena koneksi hilang)
 if (!$result) {
     die("Query gagal: " . mysqli_error($conn));
 }
@@ -82,558 +63,86 @@ if (!$result) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - CandyVet</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#8B3DFF',
+                        'secondary': '#FF9933',
+                        'background': '#FDB54E',
+                        'sidebar': '#FFF4E6',
+                        'dark-text': '#333',
+                    },
+                    boxShadow: {
+                        'custom': '0 8px 30px rgba(0,0,0,0.1)',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* CSS Tambahan untuk animasi dan border-spacing */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #FDB54E;
-            min-height: 100vh;
-            display: flex;
-        }
-        
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: #FFF4E6;
-            padding: 30px 0;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 0 30px;
-            margin-bottom: 40px;
-        }
-        
-        /* Style untuk gambar logo */
-        .logo img {
-            width: 60px; /* Sesuaikan ukuran sesuai kebutuhan */
-            height: 60px; /* Sesuaikan ukuran sesuai kebutuhan */
-            object-fit: contain; /* Memastikan gambar tidak terdistorsi */
-        }
-        
-        .logo h2 {
-            color: #FF9933;
-            font-size: 28px;
-            font-weight: 700;
-        }
-        
-        .menu {
-            list-style: none;
-        }
-        
-        .menu-item {
-            padding: 15px 30px;
-            margin: 5px 0;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            text-decoration: none;
-        }
-        
-        .menu-item.active {
-            background: #8B3DFF;
-            color: white;
-            border-radius: 0 25px 25px 0;
-            margin-right: 20px;
-        }
-        
-        .menu-item:hover {
-            background: #E6D5F5;
-            border-radius: 0 25px 25px 0;
-            margin-right: 20px;
-        }
-        
-        .menu-item.active:hover {
-            background: #7B2FEF;
-        }
-
-        /* Style untuk ikon Boxicons di sidebar */
-        .menu-icon i {
-            font-size: 24px;
-        }
-        /* Pastikan warna ikon diubah saat menu aktif */
-        .menu-item.active .menu-icon i {
-            color: white; 
-        }
-        
-        .logout {
-            position: absolute;
-            bottom: 30px;
-            width: 100%;
-        }
-        
-        /* Main Content */
-        .main-content {
-            margin-left: 280px;
-            flex: 1;
-            padding: 40px;
-        }
-        
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        
-        .header h1 {
-            color: white;
-            font-size: 36px;
-            font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .search-box {
-            position: relative;
-            width: 400px;
-        }
-        
-        .search-box input {
-            width: 100%;
-            padding: 12px 45px 12px 20px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            outline: none;
-        }
-        
-        .search-box button {
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            padding: 8px 15px;
-        }
-        
-        /* Alert */
-        .alert {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            color: #155724;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        .animate-slideDown {
             animation: slideDown 0.3s ease;
         }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Card Container */
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-        }
-        
-        .card-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .card-header h2 {
-            color: #333;
-            font-size: 28px;
-            font-weight: 700;
-            position: relative;
-            display: inline-block;
-            padding-bottom: 15px;
-        }
-        
-        .card-header h2::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: #8B3DFF;
-            border-radius: 2px;
-        }
-        
-        /* Filter Tabs */
-        .filter-tabs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-        
-        .tab {
-            padding: 12px 25px;
-            background: #F5F5F5;
-            border: none;
-            border-radius: 12px;
-            text-decoration: none;
-            color: #666;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        
-        .tab:hover {
-            background: #E6D5F5;
-            transform: translateY(-2px);
-        }
-        
-        .tab.active {
-            background: #8B3DFF;
-            color: white;
-        }
-        
-        /* Table */
-        .table-wrapper {
-            overflow-x: auto;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: separate;
+        .table-spacing {
             border-spacing: 0 10px;
         }
-        
-        thead tr {
-            background: #FF9933; /* Warna Header/Aksen */
-            color: white;
-        }
-        
-        th {
-            padding: 15px;
-            text-align: left;
-            font-weight: 700;
-            font-size: 15px;
-            text-transform: capitalize;
-        }
-        
-        th:first-child {
-            border-radius: 12px 0 0 12px;
-        }
-        
-        th:last-child {
-            border-radius: 0 12px 12px 0;
-        }
-        
-        tbody tr {
-            background: #FFF8F0;
-            transition: all 0.3s;
-        }
-        
-        tbody tr:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        td {
-            padding: 18px 15px;
-            border: none;
-        }
-        
-        tbody tr td:first-child {
-            border-radius: 12px 0 0 12px;
-        }
-        
-        tbody tr td:last-child {
-            border-radius: 0 12px 12px 0;
-        }
-        
-        /* Badge Status */
-        .badge {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-            display: inline-block;
-        }
-        
-        .badge-aktif {
-            background: #E8F5E9;
-            color: #2E7D32;
-        }
-        
-        .badge-baru {
-            background: #FFF3E0;
-            color: #E65100;
-        }
-        
-        .badge-terkonfirmasi {
-            background: #E3F2FD;
-            color: #1565C0;
-        }
-        
-        .badge-selesai {
-            background: #E8EAF6;
-            color: #283593;
-        }
-        
-        .badge-dibatalkan {
-            background: #FFEBEE;
-            color: #C62828;
-        }
-        
-        /* Action Buttons */
-        .action-btns {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .btn-icon {
-            width: 35px;
-            height: 35px;
-            border: none;
-            border-radius: 8px; /* Bentuk kotak dengan sudut melengkung */
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-        
-        /* Style untuk SVG/Boxicons di dalam tombol */
-        .btn-icon svg, .btn-icon i {
-            width: 16px;
-            height: 16px;
-            stroke: currentColor; /* Hanya berlaku untuk SVG */
-            fill: none; /* Hanya berlaku untuk SVG */
-            color: currentColor; /* Untuk Boxicons */
-            transition: all 0.3s;
-        }
-        /* Override Boxicons size */
-        .btn-icon i {
-            font-size: 18px; 
-        }
-
-        /* Ikon Pencarian */
-        .search-box button svg {
-            width: 20px;
-            height: 20px;
-        }
-        
-        .btn-detail {
-            background: #E3F2FD;
-            color: #1976D2;
-        }
-        
-        .btn-detail:hover {
-            background: #1976D2;
-            color: white;
-            transform: scale(1.1);
-        }
-        .btn-detail:hover svg, .btn-detail:hover i { stroke: white; color: white; }
-        
-        .btn-edit {
-            background: #FFF3E0;
-            color: #FF9933;
-        }
-        
-        .btn-edit:hover {
-            background: #FF9933;
-            color: white;
-            transform: scale(1.1);
-        }
-        .btn-edit:hover svg, .btn-edit:hover i { stroke: white; color: white; }
-
-        .btn-complete {
-            background: #E8F5E9;
-            color: #388E3C;
-        }
-        
-        .btn-complete:hover {
-            background: #388E3C;
-            color: white;
-            transform: scale(1.1);
-        }
-        .btn-complete:hover svg, .btn-complete:hover i { stroke: white; color: white; }
-
-        .btn-revert {
-            background: #E6D5F5; 
-            color: #8B3DFF;
-        }
-        
-        .btn-revert:hover {
-            background: #8B3DFF;
-            color: white;
-            transform: scale(1.1);
-        }
-        .btn-revert:hover svg, .btn-revert:hover i { stroke: white; color: white; }
-        
-        .btn-delete {
-            background: #FFEBEE;
-            color: #D32F2F;
-        }
-        
-        .btn-delete:hover {
-            background: #D32F2F;
-            color: white;
-            transform: scale(1.1);
-        }
-        .btn-delete:hover svg, .btn-delete:hover i { stroke: white; color: white; }
-        
-        /* Floating Action Button */
-        .fab {
-            position: fixed;
-            bottom: 40px;
-            right: 40px;
-            background: #8B3DFF;
-            color: white;
-            padding: 18px 30px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 700;
-            box-shadow: 0 8px 20px rgba(139, 61, 255, 0.4);
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .fab:hover {
-            background: #7B2FEF;
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(139, 61, 255, 0.5);
-        }
-        
-        .fab i {
-            font-size: 24px;
-        }
-        
-        .no-data {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-            font-size: 18px;
-        }
-        .no-data i {
-            font-size: 30px;
-            display: block;
-            margin-bottom: 10px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 1024px) {
+        @media (min-width: 1024px) {
             .sidebar {
-                width: 80px;
-            }
-            
-            .main-content {
-                margin-left: 80px;
-            }
-            
-            .logo h2,
-            .menu-text {
-                display: none;
-            }
-            
-            .logo {
-                justify-content: center;
-            }
-            
-            .menu-item {
-                justify-content: center;
-                padding: 15px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-            
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-            
-            .header {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .search-box {
-                width: 100%;
-            }
-            
-            table {
-                font-size: 13px;
-            }
-            
-            th, td {
-                padding: 10px;
+                display: block !important;
             }
         }
     </style>
 </head>
-<body>
-    <div class="sidebar">
-        <div class="logo">
-            <img src="candyvet-removebg-preview 1.png" alt="CandyVet Logo"> 
-            <h2>CandyVet</h2>
+<body class="font-sans min-h-screen flex bg-background">
+    <div class="sidebar w-72 bg-sidebar p-8 fixed h-screen overflow-y-auto hidden lg:block">
+        <div class="logo flex items-center gap-4 mb-10">
+            <img src="candyvet-removebg-preview 1.png" alt="CandyVet Logo" class="w-16 h-16 object-contain"> 
+            <h2 class="text-secondary text-3xl font-bold">CandyVet</h2>
         </div>
         
-        <ul class="menu">
-            <li class="menu-item active">
-                <span class="menu-icon"><i class='bx bx-clipboard'></i></span>
-                <span class="menu-text">Booking</span>
+        <ul class="menu list-none">
+            <li class="menu-item">
+                <a href="#" class="flex items-center gap-4 py-4 px-6 text-lg font-semibold text-white bg-primary rounded-r-3xl my-1 transition-all duration-300 mr-5 shadow-lg active:bg-primary hover:bg-purple-700">
+                    <span class="text-2xl"><i class='bx bx-clipboard'></i></span>
+                    <span class="menu-text">Booking</span>
+                </a>
             </li>
             <li class="menu-item">
-                <span class="menu-icon"><i class='bx bx-heart'></i></span>
-                <span class="menu-text">Layanan</span>
+                <a href="#" class="flex items-center gap-4 py-4 px-6 text-lg font-semibold text-dark-text hover:bg-purple-100 rounded-r-3xl my-1 transition-all duration-300 mr-5">
+                    <span class="text-2xl"><i class='bx bx-heart'></i></span>
+                    <span class="menu-text">Layanan</span>
+                </a>
             </li>
-            <li class="menu-item logout">
-                <span class="menu-icon"><i class='bx bx-log-out'></i></span>
-                <span class="menu-text">Keluar</span>
+            <li class="menu-item absolute bottom-8 w-full left-0">
+                <a href="#" class="flex items-center gap-4 py-4 px-6 text-lg font-semibold text-dark-text hover:bg-purple-100 rounded-r-3xl my-1 transition-all duration-300 mr-5">
+                    <span class="text-2xl"><i class='bx bx-log-out'></i></span>
+                    <span class="menu-text">Keluar</span>
+                </a>
             </li>
         </ul>
     </div>
     
-    <div class="main-content">
-        <div class="header">
-            <h1>RIWAYAT BOOKING</h1>
-            <div class="search-box">
-                <input type="text" placeholder="Cari" id="searchInput">
-                <button>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <div class="main-content flex-1 p-10 lg:ml-72">
+        
+        <header class="header flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <h1 class="text-white text-4xl font-bold drop-shadow-md">RIWAYAT BOOKING</h1>
+            <div class="search-box relative w-full md:w-96">
+                <input type="text" placeholder="Cari" id="searchInput" class="w-full py-3 pl-5 pr-12 border-none rounded-full text-base focus:outline-none focus:ring-2 focus:ring-primary">
+                <button class="absolute right-1 top-1/2 transform -translate-y-1/2 bg-transparent border-none cursor-pointer p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </button>
             </div>
-        </div>
+        </header>
         
         <?php
-        // Tampilkan notifikasi 
         if(isset($_GET['pesan'])){
             $alert_text = '';
             if($_GET['pesan'] == 'dibatalkan'){
@@ -644,46 +153,50 @@ if (!$result) {
                 $alert_text = '✓ Status booking berhasil diaktifkan kembali!';
             }
             if($alert_text) {
-                echo '<div class="alert">' . $alert_text . '</div>';
+                echo '<div class="alert bg-white p-4 rounded-xl mb-5 text-green-700 font-semibold shadow-lg animate-slideDown">' . $alert_text . '</div>';
             }
         }
         ?>
         
-        <div class="card">
-            <div class="card-header">
-                <h2><?php echo ucfirst($status_filter); ?> Bookings</h2>
+        <div class="card bg-white rounded-3xl p-8 shadow-custom">
+            
+            <div class="card-header text-center mb-8">
+                <h2 class="text-dark-text text-3xl font-bold relative inline-block pb-4">
+                    <?php echo ucfirst($status_filter); ?> Bookings
+                    <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-primary rounded-full"></span>
+                </h2>
             </div>
             
-            <div class="filter-tabs">
+            <div class="filter-tabs flex gap-4 mb-6 flex-wrap">
                 <a href="admin.php?status=semua" 
-                    class="tab <?php echo ($status_filter == 'semua') ? 'active' : ''; ?>">
+                    class="tab px-6 py-2 bg-gray-100 rounded-xl text-gray-600 font-semibold text-base transition duration-300 hover:bg-purple-100 hover:scale-[1.02] <?php echo ($status_filter == 'semua') ? 'bg-primary text-white hover:bg-primary' : ''; ?>">
                     Semua
                 </a>
                 <a href="admin.php?status=Aktif" 
-                    class="tab <?php echo ($status_filter == 'Aktif') ? 'active' : ''; ?>">
+                    class="tab px-6 py-2 bg-gray-100 rounded-xl text-gray-600 font-semibold text-base transition duration-300 hover:bg-purple-100 hover:scale-[1.02] <?php echo ($status_filter == 'Aktif') ? 'bg-primary text-white hover:bg-primary' : ''; ?>">
                     Aktif
                 </a>
                 <a href="admin.php?status=Selesai" 
-                    class="tab <?php echo ($status_filter == 'Selesai') ? 'active' : ''; ?>">
+                    class="tab px-6 py-2 bg-gray-100 rounded-xl text-gray-600 font-semibold text-base transition duration-300 hover:bg-purple-100 hover:scale-[1.02] <?php echo ($status_filter == 'Selesai') ? 'bg-primary text-white hover:bg-primary' : ''; ?>">
                     Selesai
                 </a>
                 <a href="admin.php?status=Dibatalkan" 
-                    class="tab <?php echo ($status_filter == 'Dibatalkan') ? 'active' : ''; ?>">
+                    class="tab px-6 py-2 bg-gray-100 rounded-xl text-gray-600 font-semibold text-base transition duration-300 hover:bg-purple-100 hover:scale-[1.02] <?php echo ($status_filter == 'Dibatalkan') ? 'bg-primary text-white hover:bg-primary' : ''; ?>">
                     Dibatalkan
                 </a>
             </div>
             
-            <div class="table-wrapper">
-                <table>
+            <div class="table-wrapper overflow-x-auto">
+                <table class="w-full border-separate table-spacing">
                     <thead>
                         <tr>
-                            <th>No.</th>
-                            <th>Nama Majikan</th>
-                            <th>Nama Hewan</th>
-                            <th>Jenis Hewan</th>
-                            <th>Usia</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
+                            <th class="p-4 text-left font-bold text-sm uppercase text-white bg-secondary rounded-l-xl">No.</th>
+                            <th class="p-4 text-left font-bold text-sm uppercase text-white bg-secondary">Nama Majikan</th>
+                            <th class="p-4 text-left font-bold text-sm uppercase text-white bg-secondary">Nama Hewan</th>
+                            <th class="p-4 text-left font-bold text-sm uppercase text-white bg-secondary">Jenis Hewan</th>
+                            <th class="p-4 text-left font-bold text-sm uppercase text-white bg-secondary">Usia</th>
+                            <th class="p-4 text-left font-bold text-sm uppercase text-white bg-secondary">Status</th>
+                            <th class="p-4 text-left font-bold text-sm uppercase text-white bg-secondary rounded-r-xl">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -691,55 +204,52 @@ if (!$result) {
                         if(mysqli_num_rows($result) > 0){
                             $no = 1;
                             while($row = mysqli_fetch_assoc($result)){
-                                // Tentukan class badge berdasarkan status
-                                $badge_class = 'badge-aktif';
+                                $badge_class = 'bg-green-100 text-green-800';
                                 if($row['status'] == 'Selesai'){
-                                    $badge_class = 'badge-selesai';
+                                    $badge_class = 'bg-indigo-100 text-indigo-800';
                                 } elseif($row['status'] == 'Dibatalkan'){
-                                    $badge_class = 'badge-dibatalkan';
+                                    $badge_class = 'bg-red-100 text-red-800';
                                 }
                                 ?>
-                                <tr>
-                                    <td><?php echo $no++; ?></td>
-                                    <td><strong><?php echo htmlspecialchars($row['nm_majikan']); ?></strong></td>
-                                    <td><?php echo htmlspecialchars($row['nm_hewan']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['jenis_hewan']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['usia_hewan']); ?> tahun</td>
-                                    <td>
-                                        <span class="badge <?php echo $badge_class; ?>">
+                                <tr class="bg-orange-50 transition duration-300 hover:shadow-lg hover:scale-[1.005]">
+                                    <td class="p-4 rounded-l-xl"><?php echo $no++; ?></td>
+                                    <td class="p-4"><strong><?php echo htmlspecialchars($row['nm_majikan']); ?></strong></td>
+                                    <td class="p-4"><?php echo htmlspecialchars($row['nm_hewan']); ?></td>
+                                    <td class="p-4"><?php echo htmlspecialchars($row['jenis_hewan']); ?></td>
+                                    <td class="p-4"><?php echo htmlspecialchars($row['usia_hewan']); ?> tahun</td>
+                                    <td class="p-4">
+                                        <span class="badge px-4 py-2 rounded-full text-xs font-bold inline-block <?php echo $badge_class; ?>">
                                             <?php echo htmlspecialchars($row['status']); ?>
                                         </span>
                                     </td>
-                                    <td>
-                                        <div class="action-btns">
+                                    <td class="p-4 rounded-r-xl">
+                                        <div class="action-btns flex gap-2">
                                             <a href="detail_booking.php?id=<?php echo $row['id']; ?>" 
-                                            class="btn-icon btn-detail" title="Detail">
-                                             <i class='bx bx-file-text'></i> </a>
+                                            class="btn-icon w-9 h-9 flex items-center justify-center rounded-lg cursor-pointer text-blue-700 bg-blue-100 transition duration-300 hover:bg-blue-700 hover:text-white hover:scale-110" title="Detail">
+                                             <i class='bx bx-file-text text-lg'></i> </a>
                                             
                                             <a href="edit_booking.php?id=<?php echo $row['id']; ?>" 
-                                            class="btn-icon btn-edit" title="Edit">
-                                             <i class='bx bx-pencil'></i> </a>
+                                            class="btn-icon w-9 h-9 flex items-center justify-center rounded-lg cursor-pointer text-secondary bg-orange-100 transition duration-300 hover:bg-secondary hover:text-white hover:scale-110" title="Edit">
+                                             <i class='bx bx-pencil text-lg'></i> </a>
 
                                             <?php 
-                                            // Aksi untuk status 'Aktif'
                                             if($row['status'] == 'Aktif'){ 
                                             ?>
-                                            <a href="#" class="btn-icon btn-complete" 
+                                            <a href="#" class="btn-icon w-9 h-9 flex items-center justify-center rounded-lg cursor-pointer text-green-700 bg-green-100 transition duration-300 hover:bg-green-700 hover:text-white hover:scale-110" 
                                              onclick="if(confirm('Tandai booking ini sebagai selesai?')) window.location.href='admin.php?selesai=<?php echo $row['id']; ?>'"
                                              title="Tandai Selesai">
-                                             <i class='bx bx-check-circle'></i> </a>
-                                            <a href="#" class="btn-icon btn-delete" 
+                                             <i class='bx bx-check-circle text-lg'></i> </a>
+                                            <a href="#" class="btn-icon w-9 h-9 flex items-center justify-center rounded-lg cursor-pointer text-red-700 bg-red-100 transition duration-300 hover:bg-red-700 hover:text-white hover:scale-110" 
                                              onclick="if(confirm('Yakin ingin membatalkan booking ini?')) window.location.href='admin.php?batalkan=<?php echo $row['id']; ?>'"
                                              title="Batalkan">
-                                             <i class='bx bx-trash'></i> </a>
+                                             <i class='bx bx-trash text-lg'></i> </a>
                                             <?php 
-                                            // Aksi untuk status 'Selesai' atau 'Dibatalkan'
                                             } elseif($row['status'] == 'Selesai' || $row['status'] == 'Dibatalkan'){ 
                                             ?>
-                                            <a href="#" class="btn-icon btn-revert" 
+                                            <a href="#" class="btn-icon w-9 h-9 flex items-center justify-center rounded-lg cursor-pointer text-primary bg-purple-100 transition duration-300 hover:bg-primary hover:text-white hover:scale-110" 
                                              onclick="if(confirm('Aktifkan kembali status booking ini menjadi Aktif?')) window.location.href='admin.php?aktifkan=<?php echo $row['id']; ?>'"
                                              title="Aktifkan Kembali">
-                                             <i class='bx bx-undo'></i> </a>
+                                             <i class='bx bx-undo text-lg'></i> </a>
                                             <?php } ?>
                                         </div>
                                     </td>
@@ -747,7 +257,7 @@ if (!$result) {
                                 <?php
                             }
                         } else {
-                            echo '<tr><td colspan="7" class="no-data"><i class="bx bx-folder-open"></i> Tidak ada data booking</td></tr>';
+                            echo '<tr><td colspan="7" class="text-center p-16 text-gray-500 text-lg rounded-xl"><i class="bx bx-folder-open text-3xl block mb-2"></i> Tidak ada data booking</td></tr>';
                         }
                         ?>
                     </tbody>
@@ -755,14 +265,13 @@ if (!$result) {
             </div>
         </div>
         
-        <button class="fab">
-                        <i class='bx bx-plus'></i>
+        <button class="fab fixed bottom-10 right-10 bg-primary text-white px-8 py-4 rounded-full font-bold shadow-lg transition duration-300 hover:bg-purple-700 hover:-translate-y-1 hover:shadow-xl flex items-center gap-2">
+            <i class='bx bx-plus text-2xl'></i>
             Tambah Booking Baru
         </button>
     </div>
     
     <script>
-        // Simple search functionality
         document.getElementById('searchInput').addEventListener('keyup', function() {
             let filter = this.value.toLowerCase();
             let rows = document.querySelectorAll('tbody tr');
@@ -776,7 +285,6 @@ if (!$result) {
 </body>
 </html>
 <?php
-// Tutup koneksi database di akhir file PHP
 if (isset($conn)) {
     mysqli_close($conn);
 }
