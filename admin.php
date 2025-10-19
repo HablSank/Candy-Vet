@@ -1,5 +1,10 @@
 <?php
+session_start();
+if(!isset($_SESSION['user'])){
+    header('location:login.php');
+}
 include 'koneksi.php'; 
+
 
 if (!isset($conn)) {
     die("Koneksi database gagal dimuat. Pastikan 'koneksi.php' mendefinisikan \$conn.");

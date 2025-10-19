@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "connect.php";
+include "koneksi.php";
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +16,7 @@ include "connect.php";
         $username = $_POST['username'];
         $password = md5($_POST['password']);
 
-        $query = mysqli_query($connect, "SELECT*FROM login_admin where username='$username' and password='$password'");
+        $query = mysqli_query($conn, "SELECT*FROM login_admin where username='$username' and password='$password'");
         
         if(mysqli_num_rows($query) > 0){
             $data = mysqli_fetch_array($query);
