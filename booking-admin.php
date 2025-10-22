@@ -114,13 +114,13 @@ if(isset($_POST['submit'])) {
         <header class="bg-[#FEF3E2]">
         <div class="container mx-auto flex items-center justify-between h-20 px-4">
             <div class="flex items-center space-x-2">
-                <img src="assets/logo.png" alt="CandyVet Logo" class="h-14 w-auto">
+                <img src="./assets/logo.png" alt="CandyVet Logo" class="h-14 w-auto">
                 <span class="font-bold text-xl lg:text-2xl text-gray-800"><span class="text-[#FAB12F]">Candy</span><span class="text-[#F4631E]">Vet</span></span>
             </div>
 
-            <a href="dashboard.php" class="flex items-center gap-2 bg-[#FEF3E2] border-[#9E00BA] border-2 rounded-lg py-2 px-4">
+            <a href="./admin.php" class="flex items-center gap-2 bg-[#FEF3E2] border-[#9E00BA] border-2 rounded-lg py-2 px-4">
                 <span class="hidden sm:inline text-[#9E00BA] text-xl font-bold">Kembali</span>
-                <img src="assets/kembali.png" alt="logo kembali" class="w-auto h-8">
+                <img src="./assets/kembali.png" alt="logo kembali" class="w-auto h-8">
             </a>
         </div>
         </header>

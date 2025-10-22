@@ -127,7 +127,7 @@ if (!$result) {
                 </a>
             </li>
             <li class="menu-item absolute bottom-8 w-full left-0">
-                <a href="#" class="flex items-center gap-4 py-4 px-6 text-lg font-semibold text-dark-text hover:bg-purple-100 rounded-r-3xl my-1 transition-all duration-300 mr-5">
+                <a href="logout.php" class="flex items-center gap-4 py-4 px-6 text-lg font-semibold text-dark-text hover:bg-purple-100 rounded-r-3xl my-1 transition-all duration-300 mr-5">
                     <span class="text-2xl"><i class='bx bx-log-out'></i></span>
                     <span class="menu-text">Keluar</span>
                 </a>
@@ -270,10 +270,12 @@ if (!$result) {
             </div>
         </div>
         
+        <a href="booking-admin.php">
         <button class="fab fixed bottom-10 right-10 bg-primary text-white px-8 py-4 rounded-full font-bold shadow-lg transition duration-300 hover:bg-purple-700 hover:-translate-y-1 hover:shadow-xl flex items-center gap-2">
             <i class='bx bx-plus text-2xl'></i>
             Tambah Booking Baru
         </button>
+        </a>
     </div>
     
     <script>
