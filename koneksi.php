@@ -10,6 +10,6 @@ $db   = $_ENV['DB_DATABASE'];
 $conn = mysqli_connect($host, $user, $pass, $db);
 
 if(!$conn){
-    echo 'Error: ' . mysqli_connect_error($conn);
+    echo 'Error: ' . mysqli_connect_error();
 }
 ?>

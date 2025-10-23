@@ -1,63 +1,78 @@
-    <?php
-    session_start();
-    include "koneksi.php";
-    ?>
+<?php
+session_start();
+include "koneksi.php"; 
+?>
 
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login - CandyVet</title>
-        <script src="https://cdn.tailwindcss.com"></script> 
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    </head>
-    <body class="bg-[#FEF3E2] min-h-screen flex items-center justify-center p-4" style="font-family: 'Poppins', sans-serif;">
-        <?php 
-        if(isset($_POST['username'])){
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CandyVet</title>
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-[#FEF3E2] min-h-screen flex items-center justify-center p-4" style="font-family: 'Poppins', sans-serif;">
+    <?php 
+        if(isset($_POST['masuk'])){
             $username = $_POST['username'];
-            $password = md5($_POST['password']);
+            $password_input = $_POST['password']; 
+            
 
-        $stmt = mysqli_prepare($conn, "SELECT * FROM login_admin WHERE username=? AND password=?");
-        mysqli_stmt_bind_param($stmt, "ss", $username, $password);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+        
+            $stmt = mysqli_prepare($conn, "SELECT * FROM login_admin WHERE username=?");
+            mysqli_stmt_bind_param($stmt, "s", $username);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            
             
             if(mysqli_num_rows($result) > 0){
                 $data = mysqli_fetch_array($result);
-                $_SESSION['user'] = $data;
-                echo '<script>
-                    Swal.fire({
-                        icon: "success",
-                        title: "Selamat Datang!",
-                        text: "Halo, '.$data['nama'].'",
-                        showConfirmButton: false,
-                        timer: 1500
-                        }).then(() => {
-                        location.href = "admin.php";
+                $hashed_password = password_hash($password_input, PASSWORD_DEFAULT); 
+
+            
+                if(password_verify($password_input, $hashed_password)){
+                    
+                    $_SESSION['user'] = $data;
+
+                    echo '<script>
+                        Swal.fire({
+                            icon: "success",
+                            title: "Selamat Datang!",
+                            text: "Halo, '.$data['nama'].'",
+                            showConfirmButton: false,
+                            timer: 1500
+                            }).then(() => {
+                            location.href = "admin.php";
+                            });
+                        </script>';
+                } else {
+                    
+                    echo '<script>
+                        Swal.fire({
+                            icon: "error",
+                            title: "Login Gagal",
+                            text: "Username atau password tidak sesuai",
+                            confirmButtonColor: "#F4631E"
                         });
-                       </script>';
-            }else{
-            echo '<script>
-                Swal.fire({
-                    icon: "error",
-                    title: "Login Gagal",
-                    text: "Username atau password tidak sesuai",
-                    confirmButtonColor: "#F4631E"
-                });
-            </script>';
-            }
-        }
+                    </script>';
+                }
         
-        ?>
+            }
+            
+            mysqli_stmt_close($stmt); 
+        }
+    
+    
+    ?>
 
     <div class="bg-transparent rounded-3xl overflow-hidden max-w-4xl w-full md:flex">
-        
+    
         <div class="hidden md:flex flex-col items-center justify-center md:w-1/2 ">
             <a class="flex flex-col items-center space-y-2 relative top-10">
                 <img src="assets/logo.png" alt="CandyVet Logo" class="h-[180px] w-auto">
@@ -97,6 +112,8 @@
             </form>
         </div>
     </div>
+
+
 
     <script src="login.js"></script>
     </body>
