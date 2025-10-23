@@ -81,11 +81,14 @@ if(isset($_POST['submit'])) {
         $whatsappURL = "https://api.whatsapp.com/send?phone=" . $nomorAdminWA . "&text=" . $pesanWAEncoded;
 
         // Beri notifikasi ke user lalu redirect
-            echo "Data berhasil dikirim";
+        echo "<script>
+                alert('Booking Terkirim! Anda akan dialihkan ke WhatsApp. Bukti booking juga telah dikirim ke email Anda.');
+                window.location.href = '$whatsappURL';
+              </script>";
 
-        } else {
-            echo "Data gagal dikirim, silahkan ulangi pengisian form";
-        }
+    } else {
+        echo '<script>alert("Data Gagal Disimpan, silakan coba lagi.");</script>';
+    }
     
     $stmt->close();
 }
