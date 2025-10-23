@@ -1,8 +1,4 @@
 <?php
-session_start();
-if(!isset($_SESSION['user'])){
-    header('location:login.php');
-}
 include 'koneksi.php'; 
 
 if (!isset($conn)) {
@@ -68,7 +64,8 @@ if (!$result) {
     <title>Dashboard Admin - CandyVet</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.tailwindcss.com"></script>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -126,9 +123,27 @@ if (!$result) {
                 </a>
             </li>
             <li class="absolute bottom-8 left-8 right-8">
-                <a href="logout.php" class="flex items-center gap-3 py-3 px-5 text-orenGelap hover:bg-white hover:shadow-soft font-semibold rounded-xl transition-all">
+                <a href="#" onclick="confirmlogout()" class="flex items-center gap-3 py-3 px-5 text-orenGelap hover:bg-white hover:shadow-soft font-semibold rounded-xl transition-all">
                     <i class='bx bx-log-out text-2xl'></i> Keluar
                 </a>
+                <script>
+                function confirmlogout() {
+                    Swal.fire({
+                        title: 'Yakin ingin keluar?',
+                        text: "Anda akan logout dari sistem",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#F4631E',
+                        cancelButtonColor: '#FAB12F',
+                        confirmButtonText: 'Ya, Logout',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = 'logout.php';
+                        }
+                    });
+                }
+                </script>
             </li>
         </ul>
     </aside>

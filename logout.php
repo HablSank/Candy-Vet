@@ -1,11 +1,6 @@
 <?php
 session_start();
 session_destroy();
-
+header("Location: login.php");
+exit;
 ?>
-
-
-<script type="text/javascript">
-    alert('Berhasil keluar');
-    location.href = "login.php";
-</script>
