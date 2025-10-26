@@ -18,58 +18,57 @@ include "koneksi.php";
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-[#FEF3E2] min-h-screen flex items-center justify-center p-4" style="font-family: 'Poppins', sans-serif;">
-    <?php 
-        if(isset($_POST['masuk'])){
-            $username = $_POST['username'];
-            $password_input = $_POST['password']; 
-            
-
-        
-            $stmt = mysqli_prepare($conn, "SELECT * FROM login_admin WHERE username=?");
-            mysqli_stmt_bind_param($stmt, "s", $username);
-            mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
-            
-            
-            if(mysqli_num_rows($result) > 0){
-                $data = mysqli_fetch_array($result);
-                $hashed_password = password_hash($password_input, PASSWORD_DEFAULT); 
-
-            
-                if(password_verify($password_input, $hashed_password)){
-                    
-                    $_SESSION['user'] = $data;
-
-                    echo '<script>
-                        Swal.fire({
-                            icon: "success",
-                            title: "Selamat Datang!",
-                            text: "Halo, '.$data['nama'].'",
-                            showConfirmButton: false,
-                            timer: 1500
-                            }).then(() => {
-                            location.href = "admin.php";
-                            });
-                        </script>';
-                } else {
-                    
-                    echo '<script>
-                        Swal.fire({
-                            icon: "error",
-                            title: "Login Gagal",
-                            text: "Username atau password tidak sesuai",
-                            confirmButtonColor: "#F4631E"
-                        });
-                    </script>';
-                }
-        
-            }
-            
-            mysqli_stmt_close($stmt); 
-        }
+<?php 
+if(isset($_POST['masuk'])){
+    $username = $_POST['username'];
+    $password_input = $_POST['password']; 
     
+    $stmt = mysqli_prepare($conn, "SELECT * FROM login_admin WHERE username=?");
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     
-    ?>
+    // Penanda Login
+    $login_sukses = false;
+
+    if(mysqli_num_rows($result) > 0){
+        $data = mysqli_fetch_array($result);
+        $stored_hashed_password = $data['password']; 
+        if(password_verify($password_input, $stored_hashed_password)){
+            
+            $login_sukses = true;
+            $_SESSION['user'] = $data;
+
+            echo '<script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Selamat Datang!",
+                    text: "Halo, '.$data['nama'].'",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    location.href = "admin.php";
+                });
+            </script>';
+
+        } 
+
+    } 
+
+    if($login_sukses == false) {
+         echo '<script>
+            Swal.fire({
+                icon: "error",
+                title: "Login Gagal",
+                text: "Username atau password tidak sesuai",
+                confirmButtonColor: "#F4631E"
+            });
+        </script>';
+    }
+    
+    mysqli_stmt_close($stmt); 
+}
+?>
 
     <div class="bg-transparent rounded-3xl overflow-hidden max-w-4xl w-full md:flex">
     
