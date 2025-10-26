@@ -296,15 +296,22 @@ if (!$result) {
                                 
                                 // Terapkan p-4 (padding) dan border_class ke setiap cell
                                 echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>$no</td>";
-                                echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>".htmlspecialchars($row['nm_majikan'])."</td>";
-                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['nm_hewan'])."</td>";
-                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['jenis_hewan'])."</td>";
+                                echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>".htmlspecialchars($row['nm_majikan'] ?? "")."</td>";
+                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['nm_hewan'] ?? "")."</td>";
+                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['jenis_hewan'] ?? "")."</td>";
                                 
                                 // Kolom Tanggal Booking
-                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['tanggal_booking'])."</td>"; 
+                                $raw_date = $row['tanggal_booking'] ?? "";
+                                if (!empty($raw_date) && $raw_date != '0000-00-00') {
+                                    $formatted_date = date('d F Y', strtotime($raw_date)); 
+                                } else {
+                                    $formatted_date = "-";
+                                }
+
+                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($formatted_date)."</td>";
 
                                 // Status cell
-                                echo "<td class='p-4 $border_class'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'])."</span></td>";
+                                echo "<td class='p-4 $border_class'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span></td>";
                                 
                                 // Cell Aksi (Posisi tombol Detail dan Edit dibalik)
                                 echo "<td class='p-4 $border_class'>
