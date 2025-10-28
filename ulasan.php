@@ -16,17 +16,17 @@
     
         <nav class="fixed top-0 left-0 right-0 z-50 bg-[#FEF3E2]/80 backdrop-blur-md border- md:border-gray-200/50">
         <div class="container mx-auto flex items-center justify-between h-20 px-4">
-            <a href="index.html" class="flex items-center space-x-2">
+            <a href="index" class="flex items-center space-x-2">
                 <img src="assets/logo.png" alt="CandyVet Logo" class="h-14 w-auto xl:h-24 xl:w-24">
                 <span class="font-bold text-xl lg:text-2xl text-gray-800"><span class="text-[#FAB12F]">Candy</span><span class="text-[#F4631E]">Vet</span></span>
             </a>
 
             <ul class="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8">
-                <li><a href="index.html#beranda" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
-                <li><a href="index.html#tentang" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
-                <li><a href="index.html#layanan" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
-                <li><a href="index.html#fasilitas" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
-                <li><a href="index.html#footer" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
+                <li><a href="index#beranda" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
+                <li><a href="index#tentang" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
+                <li><a href="index#layanan" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
+                <li><a href="index#fasilitas" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
+                <li><a href="index#footer" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
             </ul>
 
             <div class="md:hidden">
@@ -43,11 +43,11 @@
 
         <div id="mobile-menu" class="md:hidden absolute top-20 w-full bg-[#FEF3E2]/90 backdrop-blur-lg overflow-hidden transition-all duration-300 ease-in-out max-h-0">
             <ul class="flex flex-col items-center space-y-4 pt-8 pb-8">
-                <li><a href="index.html#beranda" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
-                <li><a href="index.html#tentang" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
-                <li><a href="index.html#layanan" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
-                <li><a href="index.html#fasilitas" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
-                <li><a href="index.html#footer" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
+                <li><a href="index#beranda" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Beranda</a></li>
+                <li><a href="index#tentang" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Tentang</a></li>
+                <li><a href="index#layanan" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Layanan</a></li>
+                <li><a href="index#fasilitas" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Fasilitas</a></li>
+                <li><a href="index#footer" class="font-semibold text-gray-600 hover:text-[#9E00BA]">Lokasi</a></li>
             </ul>
         </div>
     </nav>
@@ -60,7 +60,7 @@
 
         <hr class="w-1/2 mx-auto border-t-2 border-[#FA812F] mb-10">
 
-        <form action="ulasan.php" method="POST" class="space-y-6">
+        <form action="ulasan" method="POST" class="space-y-6">
 
             <div>
                 <label for="nm_majikan" class="block text-lg font-semibold text-gray-700 mb-2">Nama Majikan</label>

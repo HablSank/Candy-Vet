@@ -1,7 +1,7 @@
 <?php
 session_start();
 if(!isset($_SESSION['user'])){
-    header('location:login.php');
+    header('location:login');
 }
 // Panggil library PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
@@ -120,7 +120,7 @@ if(isset($_POST['submit'])) {
                 <span class="font-bold text-xl lg:text-2xl text-gray-800"><span class="text-[#FAB12F]">Candy</span><span class="text-[#F4631E]">Vet</span></span>
             </div>
 
-            <a href="./admin.php" class="flex items-center gap-2 bg-[#FEF3E2] border-[#9E00BA] border-2 rounded-lg py-2 px-4">
+            <a href="./admin" class="flex items-center gap-2 bg-[#FEF3E2] border-[#9E00BA] border-2 rounded-lg py-2 px-4">
                 <span class="hidden sm:inline text-[#9E00BA] text-xl font-bold">Kembali</span>
                 <img src="./assets/kembali.png" alt="logo kembali" class="w-auto h-8">
             </a>
@@ -135,7 +135,7 @@ if(isset($_POST['submit'])) {
 
         <hr class="w-1/2 mx-auto border-t-2 border-[#FA812F] mb-10">
 
-        <form action="booking.php" method="POST" class="space-y-6">
+        <form action="booking" method="POST" class="space-y-6">
 
             <div>
                 <label for="nm_majikan" class="block text-lg font-semibold text-gray-700 mb-2">Nama Majikan</label>

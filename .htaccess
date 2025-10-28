@@ -1,0 +1,32 @@
+# Aktifkan Mesin Rewrite URL Apache
+RewriteEngine On
+
+# [SANGAT PENTING] Beri tahu Apache folder utama proyek Anda.
+# Ganti /Candy-Vet/ jika nama folder Anda berbeda.
+RewriteBase /Candy-Vet/
+
+# --- Aturan Tambahan: Mencegah orang melihat daftar file di folder ---
+Options -Indexes
+
+# --- Aturan Khusus untuk Homepage ---
+# Jika pengguna mengakses alamat utama (misal: localhost/Candy-Vet/),
+# atau (localhost/Candy-Vet/index), arahkan secara diam-diam ke file index.html.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(index)?/?$ index.html [L]
+
+# --- Aturan Umum untuk Semua Halaman Lain ---
+# Kondisi ini berlaku untuk semua aturan di bawahnya:
+# Permintaan BUKAN file (seperti style.css, logo.png) dan BUKAN folder yang ada.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Aturan 1: Cek dulu apakah ada file .php yang cocok (misal: booking -> booking.php).
+# Jika ada, jalankan dan berhenti (flag [L]).
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ $1.php [L]
+
+# Aturan 2: Jika .php tidak ada, cek apakah ada file .html yang cocok (misal: layanan -> layanan.html).
+# Jika ada, jalankan dan berhenti (flag [L]).
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ $1.html [L]

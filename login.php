@@ -47,7 +47,7 @@ if(isset($_POST['masuk'])){
                     showConfirmButton: false,
                     timer: 1500
                 }).then(() => {
-                    location.href = "admin.php";
+                    location.href = "admin";
                 });
             </script>';
 
@@ -85,7 +85,7 @@ if(isset($_POST['masuk'])){
         <div class="w-full md:w-1/2 p-8 sm:p-12 bg-gradient-to-br from-[#FAB12F] to-[#F5A623] flex flex-col justify-center rounded-3xl shadow-2xl my-24">
             <h2 class="text-4xl font-extrabold text-gray-900 mb-12 text-center">Masuk</h2>
             
-            <form action="login.php" method="post" class="space-y-6">
+            <form action="login" method="post" class="space-y-6">
                 <div>
                     <label for="username" class="block text-base font-bold text-gray-900 mb-3">Username</label>
                     <div class="relative">

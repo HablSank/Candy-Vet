@@ -17,7 +17,7 @@ if(isset($_GET['batalkan'])){
     $query = "UPDATE tb_form SET status = 'Dibatalkan' WHERE id = " . mysqli_real_escape_string($conn, $id);
     
     if(mysqli_query($conn, $query)){
-        header("Location: admin.php?pesan=dibatalkan");
+        header("Location: admin?pesan=dibatalkan");
         exit;
     } else {
         echo "Error batalkan: " . mysqli_error($conn);
@@ -29,7 +29,7 @@ if(isset($_GET['selesai'])){
     $query = "UPDATE tb_form SET status = 'Selesai' WHERE id = " . mysqli_real_escape_string($conn, $id);
     
     if(mysqli_query($conn, $query)){
-        header("Location: admin.php?pesan=selesai");
+        header("Location: admin?pesan=selesai");
         exit;
     } else {
         echo "Error selesai: " . mysqli_error($conn);
@@ -41,7 +41,7 @@ if(isset($_GET['aktifkan'])){
     $query = "UPDATE tb_form SET status = 'Aktif' WHERE id = " . mysqli_real_escape_string($conn, $id);
     
     if(mysqli_query($conn, $query)){
-        header("Location: admin.php?pesan=aktifkan");
+        header("Location: admin?pesan=aktifkan");
         exit;
     } else {
         echo "Error aktifkan: " . mysqli_error($conn);
@@ -154,7 +154,7 @@ if (!$result) {
             <ul class="space-y-3">
                 <!-- Teks Hitam, Background Aktif (Oren Tua) - Ditambah HOVER UNGU -->
                 <li>
-                    <a href="admin.php" class="flex items-center gap-3 py-3 px-5 bg-OrenTua text-white font-semibold rounded-xl shadow-soft transition-all hover:bg-UnguAksen hover:shadow-lg">
+                    <a href="admin" class="flex items-center gap-3 py-3 px-5 bg-OrenTua text-white font-semibold rounded-xl shadow-soft transition-all hover:bg-UnguAksen hover:shadow-lg">
                         <i class='bx bxs-dashboard text-2xl'></i> 
                         Riwayat Booking
                     </a>
@@ -193,7 +193,7 @@ if (!$result) {
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = 'logout.php';
+                        window.location.href = 'logout';
                     }
                 });
             }
@@ -253,7 +253,7 @@ if (!$result) {
                     // Menggunakan OrenTua 
                     $active = ($status_filter == $key) ? 'bg-OrenTua text-white' : 'bg-gray-100 text-HitamTeks';
                     // Hover menggunakan OrenTua 
-                    echo "<a href='admin.php?status=$key' class='px-5 py-2 font-semibold rounded-xl transition hover:scale-[1.02] hover:bg-OrenTua hover:text-white $active'>$label</a>";
+                    echo "<a href='admin?status=$key' class='px-5 py-2 font-semibold rounded-xl transition hover:scale-[1.02] hover:bg-OrenTua hover:text-white $active'>$label</a>";
                 }
                 ?>
             </div>
@@ -318,10 +318,10 @@ if (!$result) {
                                         <div class='flex gap-2 items-center'>
                                             
                                             <!-- Tombol Detail (File) - Sekarang di depan -->
-                                            <a href='detail-booking.php?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></a>
+                                            <a href='detail-booking?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></a>
 
                                             <!-- Tombol Edit (Pencil) - Sekarang di belakang -->
-                                            <a href='booking-admin.php?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition' title='Edit Booking'><i class=\"bx bx-pencil text-md\"></i></a>
+                                            <a href='booking-admin?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition' title='Edit Booking'><i class=\"bx bx-pencil text-md\"></i></a>
                                             ";
                                             
                                 if($row['status']=='Aktif'){
@@ -349,7 +349,7 @@ if (!$result) {
         </div>
 
         <!-- Tombol Tambah Booking Baru (Aksen Ungu tetap dipertahankan untuk kontras CTA) -->
-        <a href="booking-admin.php" class="fixed bottom-10 right-10">
+        <a href="booking-admin" class="fixed bottom-10 right-10">
             <button class="flex items-center gap-2 bg-UnguAksen text-white px-6 py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
                 <i class='bx bx-plus text-2xl'></i> Tambah Booking Baru
             </button>
@@ -374,7 +374,7 @@ if (!$result) {
             }).then((result) => {
                 if (result.isConfirmed) {
                     // KOREKSI SINTAKSIS JAVASCRIPT: Menggunakan backtick (`) untuk string literal
-                    window.location.href = `admin.php?selesai=${id}`;
+                    window.location.href = `admin?selesai=${id}`;
                 }
             });
         }
@@ -395,7 +395,7 @@ if (!$result) {
             }).then((result) => {
                 if (result.isConfirmed) {
                     // KOREKSI SINTAKSIS JAVASCRIPT: Menggunakan backtick (`) untuk string literal
-                    window.location.href = `admin.php?batalkan=${id}`;
+                    window.location.href = `admin?batalkan=${id}`;
                 }
             });
         }
@@ -416,7 +416,7 @@ if (!$result) {
             }).then((result) => {
                 if (result.isConfirmed) {
                     // KOREKSI SINTAKSIS JAVASCRIPT: Menggunakan backtick (`) untuk string literal
-                    window.location.href = `admin.php?aktifkan=${id}`;
+                    window.location.href = `admin?aktifkan=${id}`;
                 }
             });
         }
