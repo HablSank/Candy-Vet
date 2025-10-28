@@ -1,23 +1,32 @@
 <?php
 session_start();
 if(!isset($_SESSION['user'])){
-    header('location:login.php');
+    header('location:login');
+    exit;
 }
 include 'koneksi.php'; 
 
-// Cek apakah variabel koneksi $conn sudah tersedia dari file 'koneksi.php'
 if (!isset($conn)) {
     die("Koneksi database gagal dimuat. Pastikan 'koneksi.php' mendefinisikan \$conn.");
 }
 
-// Logic untuk Batalkan, Selesai, Aktifkan
+// --- Kumpulkan Parameter URL untuk Redirect ---
+// Ini penting agar filter & halaman tidak reset setelah aksi
+$redirect_params = '';
+// Jika ada filter status, simpan
+if(isset($_GET['status'])) $redirect_params .= '&status=' . urlencode($_GET['status']); 
+// Jika ada info halaman, simpan
+if(isset($_GET['page'])) $redirect_params .= '&page=' . (int)$_GET['page'];
+
+
+// --- Logic untuk Batalkan, Selesai, Aktifkan ---
+
 if(isset($_GET['batalkan'])){
     $id = $_GET['batalkan'];
-    // Gunakan mysqli_real_escape_string untuk sanitasi input sebelum query
-    $query = "UPDATE tb_form SET status = 'Dibatalkan' WHERE id = " . mysqli_real_escape_string($conn, $id);
-    
-    if(mysqli_query($conn, $query)){
-        header("Location: admin?pesan=dibatalkan");
+    $stmt = mysqli_prepare($conn, "UPDATE tb_form SET status = 'Dibatalkan' WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    if(mysqli_stmt_execute($stmt)){
+        header("Location: admin?pesan=dibatalkan" . $redirect_params);
         exit;
     } else {
         echo "Error batalkan: " . mysqli_error($conn);
@@ -26,10 +35,10 @@ if(isset($_GET['batalkan'])){
 
 if(isset($_GET['selesai'])){
     $id = $_GET['selesai'];
-    $query = "UPDATE tb_form SET status = 'Selesai' WHERE id = " . mysqli_real_escape_string($conn, $id);
-    
-    if(mysqli_query($conn, $query)){
-        header("Location: admin?pesan=selesai");
+    $stmt = mysqli_prepare($conn, "UPDATE tb_form SET status = 'Selesai' WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    if(mysqli_stmt_execute($stmt)){
+        header("Location: admin?pesan=selesai" . $redirect_params);
         exit;
     } else {
         echo "Error selesai: " . mysqli_error($conn);
@@ -38,30 +47,59 @@ if(isset($_GET['selesai'])){
 
 if(isset($_GET['aktifkan'])){
     $id = $_GET['aktifkan'];
-    $query = "UPDATE tb_form SET status = 'Aktif' WHERE id = " . mysqli_real_escape_string($conn, $id);
-    
-    if(mysqli_query($conn, $query)){
-        header("Location: admin?pesan=aktifkan");
+    $stmt = mysqli_prepare($conn, "UPDATE tb_form SET status = 'Aktif' WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    if(mysqli_stmt_execute($stmt)){
+        header("Location: admin?pesan=aktifkan" . $redirect_params);
         exit;
     } else {
         echo "Error aktifkan: " . mysqli_error($conn);
     }
 }
 
-// Logic Filter Status
-$status_filter = isset($_GET['status']) ? $_GET['status'] : 'semua';
+// --- LOGIKA PAGINATION (HALAMAN) BARU---
+$data_per_halaman = 5; // Tentukan 5 data per halaman
+// Cek URL, user ada di halaman berapa? Default-nya halaman 1
+$halaman_sekarang = isset($_GET['page']) ? (int)$_GET['page'] : 1; 
+if ($halaman_sekarang < 1) $halaman_sekarang = 1;
+// Hitung data yang harus di-skip di SQL
+$offset = ($halaman_sekarang - 1) * $data_per_halaman; 
 
-if($status_filter == 'semua'){
-    $query = "SELECT * FROM tb_form ORDER BY id ASC";
-} else {
+// --- LOGIKA FILTER STATUS (Dimodifikasi untuk Pagination) ---
+$status_filter = isset($_GET['status']) ? $_GET['status'] : 'semua';
+$status_param_url = ''; // Ini untuk disimpan di link tombol pagination nanti
+$where_clause = ''; // Ini adalah klausa 'WHERE' untuk query SQL
+
+if($status_filter != 'semua'){
     $status_filter_safe = mysqli_real_escape_string($conn, $status_filter);
-    $query = "SELECT * FROM tb_form WHERE status = '$status_filter_safe' ORDER BY id ASC";
+    $where_clause = "WHERE status = '$status_filter_safe'";
+    $status_param_url = "&status=" . urlencode($status_filter); // Simpan status untuk link
 }
-$result = mysqli_query($conn, $query);
+
+// --- DUA QUERY BARU (PENTING UNTUK PAGINATION) ---
+
+// 1. Query untuk MENGHITUNG TOTAL DATA (sesuai filter)
+// Kita perlu tahu total data untuk menghitung total halaman
+$query_total = "SELECT COUNT(*) as total FROM tb_form $where_clause";
+$result_total = mysqli_query($conn, $query_total);
+$data_total = mysqli_fetch_assoc($result_total);
+$total_data = (int)$data_total['total'];
+
+// Hitung total halaman yang akan ada
+$total_halaman = ceil($total_data / $data_per_halaman); // ceil() = bulatkan ke atas
+
+// 2. Query untuk MENGAMBIL DATA (sesuai filter DAN halaman)
+// Kita tambahkan LIMIT (5 data) dan OFFSET (skip berapa data)
+$query_data = "SELECT * FROM tb_form $where_clause ORDER BY id ASC LIMIT $data_per_halaman OFFSET $offset";
+$result = mysqli_query($conn, $query_data);
 
 if (!$result) {
     die("Query gagal: " . mysqli_error($conn));
 }
+
+// Variabel untuk parameter JS (ini untuk langkah 3 & 4 nanti)
+// Ini akan menghasilkan string seperti "status=Aktif&page=2"
+$js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
 ?>
 
 <!DOCTYPE html>
@@ -216,7 +254,7 @@ if (!$result) {
             </div>
         </header>
 
-        <!-- Pesan Alert -->
+        <!-- Pesan Alert
         <?php
         if(isset($_GET['pesan'])){
             $alert_text = '';
@@ -229,7 +267,7 @@ if (!$result) {
             }
         }
         ?>
-
+        -->
         <!-- Card Konten Utama: Background Putih -->
         <div class="bg-PutihCard p-8 rounded-3xl shadow-soft">
 
@@ -278,7 +316,7 @@ if (!$result) {
                     <tbody>
                         <?php
                         if(mysqli_num_rows($result) > 0){
-                            $no = 1;
+                            $no = $offset + 1;
                             $total_rows = mysqli_num_rows($result); // Ambil total baris untuk logika border
                             mysqli_data_seek($result, 0); // Pastikan pointer hasil kembali ke awal
                             
@@ -326,12 +364,12 @@ if (!$result) {
                                             
                                 if($row['status']=='Aktif'){
                                     echo "
-                                            <a href='#' onclick=\"confirmSelesai({$row['id']})\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Tandai Selesai'><i class=\"bx bx-check-circle text-md\"></i></a>
-                                            <a href='#' onclick=\"confirmBatalkan({$row['id']})\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Batalkan Booking'><i class=\"bx bx-x-circle text-md\"></i></a>
+                                            <a href='#' onclick=\"confirmSelesai({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Tandai Selesai'><i class=\"bx bx-check-circle text-md\"></i></a>
+                                            <a href='#' onclick=\"confirmBatalkan({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Batalkan Booking'><i class=\"bx bx-x-circle text-md\"></i></a>
                                             ";
                                 } elseif ($row['status'] == 'Selesai' || $row['status'] == 'Dibatalkan') {
                                     echo "
-                                            <a href='#' onclick=\"confirmAktifkan({$row['id']})\" class='w-8 h-8 flex items-center justify-center bg-gray-200 text-HitamTeks rounded-full hover:bg-OrenTua hover:text-white transition' title='Aktifkan Kembali'><i class=\"bx bx-undo text-md\"></i></a>
+                                            <a href='#' onclick=\"confirmAktifkan({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-gray-200 text-HitamTeks rounded-full hover:bg-OrenTua hover:text-white transition' title='Aktifkan Kembali'><i class=\"bx bx-undo text-md\"></i></a>
                                             ";
                                 }
 
@@ -345,21 +383,59 @@ if (!$result) {
                         ?>
                     </tbody>
                 </table>
+            <?php if ($total_halaman > 1): ?>
+            <nav class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-8 pt-6 border-t border-OrenMuda">
+                
+                <div class="text-sm text-gray-500">
+                    Halaman <span class="font-bold text-HitamTeks"><?php echo $halaman_sekarang; ?></span> dari <span class="font-bold text-HitamTeks"><?php echo $total_halaman; ?></span>
+                    (Total <?php echo $total_data; ?> booking)
+                </div>
+
+                <div class="flex gap-2 flex-wrap mx-auto">
+                    <?php if($halaman_sekarang > 1): ?>
+                        <a href="admin?page=<?php echo $halaman_sekarang - 1; ?><?php echo $status_param_url; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
+                            &laquo;
+                        </a>
+                    <?php else: ?>
+                        <span class="px-4 py-2 text-sm font-semibold bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed">&laquo;</span>
+                    <?php endif; ?>
+
+                    <?php for($i = 1; $i <= $total_halaman; $i++): ?>
+                        <?php
+                            $is_active = ($i == $halaman_sekarang);
+                            $active_class = $is_active ? 'bg-OrenTua text-white' : 'bg-gray-100 text-HitamTeks hover:bg-OrenMuda';
+                        ?>
+                        <a href="admin?page=<?php echo $i; ?><?php echo $status_param_url; ?>" class="px-4 py-2 text-sm font-semibold rounded-lg transition <?php echo $active_class; ?> <?php if(!$is_active) echo 'hidden sm:block'; ?>">
+                            <?php echo $i; ?>
+                        </a>
+                    <?php endfor; ?>
+
+                    <?php if($halaman_sekarang < $total_halaman): ?>
+                        <a href="admin?page=<?php echo $halaman_sekarang + 1; ?><?php echo $status_param_url; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
+                            &raquo;
+                        </a>
+                    <?php else: ?>
+                        <span class="px-4 py-2 text-sm font-semibold bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed">&raquo;</span>
+                    <?php endif; ?>
+                </div>
+                    <a href="booking-admin">
+                        <button class="flex items-center gap-2 bg-UnguAksen text-white px-6 py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
+                            <i class='bx bx-plus text-2xl'></i> Tambah Booking Baru
+                        </button>
+                    </a>
+            </nav>
+            <?php endif; ?>
             </div>
         </div>
 
         <!-- Tombol Tambah Booking Baru (Aksen Ungu tetap dipertahankan untuk kontras CTA) -->
-        <a href="booking-admin" class="fixed bottom-10 right-10">
-            <button class="flex items-center gap-2 bg-UnguAksen text-white px-6 py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
-                <i class='bx bx-plus text-2xl'></i> Tambah Booking Baru
-            </button>
-        </a>
+
 
     </main>
 
     <script>
         // Fungsi-fungsi konfirmasi untuk aksi tabel
-        function confirmSelesai(id) {
+        function confirmSelesai(id, params) {
             Swal.fire({
                 title: 'Tandai Selesai?',
                 text: "Booking ini akan ditandai sebagai selesai. Lanjutkan?",
@@ -374,12 +450,12 @@ if (!$result) {
             }).then((result) => {
                 if (result.isConfirmed) {
                     // KOREKSI SINTAKSIS JAVASCRIPT: Menggunakan backtick (`) untuk string literal
-                    window.location.href = `admin?selesai=${id}`;
+                    window.location.href = `admin?selesai=${id}${params}`;
                 }
             });
         }
 
-        function confirmBatalkan(id) {
+        function confirmBatalkan(id, params) {
             Swal.fire({
                 title: 'Batalkan Booking?',
                 text: "Anda yakin ingin membatalkan booking ini? Status dapat diaktifkan kembali.",
@@ -395,12 +471,13 @@ if (!$result) {
             }).then((result) => {
                 if (result.isConfirmed) {
                     // KOREKSI SINTAKSIS JAVASCRIPT: Menggunakan backtick (`) untuk string literal
-                    window.location.href = `admin?batalkan=${id}`;
+
+                    window.location.href = `admin?batalkan=${id}${params}`;
                 }
             });
         }
 
-        function confirmAktifkan(id) {
+        function confirmAktifkan(id, params) {
             Swal.fire({
                 title: 'Aktifkan Kembali?',
                 text: "Status booking akan diubah kembali menjadi Aktif.",
@@ -416,7 +493,8 @@ if (!$result) {
             }).then((result) => {
                 if (result.isConfirmed) {
                     // KOREKSI SINTAKSIS JAVASCRIPT: Menggunakan backtick (`) untuk string literal
-                    window.location.href = `admin?aktifkan=${id}`;
+
+                    window.location.href = `admin?aktifkan=${id}${params}`;
                 }
             });
         }
