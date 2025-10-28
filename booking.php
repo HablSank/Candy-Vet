@@ -177,10 +177,50 @@ if(isset($_POST['submit'])) {
                 <input type="text" name="nm_hewan" id="nm_hewan" placeholder="Masukkan Nama Hewan" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
             </div>
 
-            <div>
-                <label for="jenis_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Jenis Hewan</label>
-                <input type="text" name="jenis_hewan" id="jenis_hewan" placeholder="Contoh: Kucing, Anjing, Kelinci" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
-            </div>
+            <div class="relative">
+    <label for="jenis_hewan" class="block text-lg font-semibold text-gray-700 mb-2">
+        Jenis Hewan
+    </label>
+
+    <select id="jenis_hewan" name="jenis_hewan"
+        onchange="toggleInput(this)"
+        class="w-full appearance-none px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition pr-10">
+        <option value="" disabled selected>Pilih jenis hewan</option>
+        <option value="Kucing">Kucing</option>
+        <option value="Anjing">Anjing</option>
+        <option value="Kelinci">Kelinci</option>
+        <option value="Burung">Burung</option>
+        <option value="Lainnya">Lainnya</option>
+    </select>
+
+    <!-- SVG panah -->
+    <svg class="absolute right-4 top-[54px] w-5 h-5 text-gray-500 pointer-events-none"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 30 24">
+        <path d="M29.0561 3.14713e-05L29.0561 9.21603L14.5281 23.936L7.24792e-05 9.21603V3.14713e-05L14.5281 14.784L29.0561 3.14713e-05Z" fill="#DD0303"/>
+    </svg>
+
+    <!-- Input muncul jika pilih 'Lainnya' -->
+    <input type="text" id="hewan_lainnya" name="hewan_lainnya"
+        placeholder="Tulis jenis hewan"
+        class="hidden mt-3 w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
+</div>
+
+<script>
+function toggleInput(select) {
+    const input = document.getElementById('hewan_lainnya');
+    if (select.value === 'Lainnya') {
+        input.classList.remove('hidden');
+        input.required = true;
+    } else {
+        input.classList.add('hidden');
+        input.required = false;
+        input.value = '';
+    }
+}
+</script>
+
 
             <div>
                 <label for="usia_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Usia Hewan (Tahun)</label>
