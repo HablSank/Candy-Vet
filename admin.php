@@ -371,10 +371,10 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                 <div class="flex gap-2 flex-wrap mx-auto">
                     <?php if($halaman_sekarang > 1): ?>
                         <a href="admin?page=<?php echo $halaman_sekarang - 1; ?><?php echo $status_param_url; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
-                            &laquo;
+                            <span class="relative bottom-0.5">&laquo;</span>
                         </a>
                     <?php else: ?>
-                        <span class="px-4 py-2 text-sm font-semibold bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed">&laquo;</span>
+                        <span class="px-4 py-2 text-sm font-semibold bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed relative bottom-0.5">&laquo;</span>
                     <?php endif; ?>
 
                     <?php for($i = 1; $i <= $total_halaman; $i++): ?>
@@ -389,10 +389,10 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
 
                     <?php if($halaman_sekarang < $total_halaman): ?>
                         <a href="admin?page=<?php echo $halaman_sekarang + 1; ?><?php echo $status_param_url; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
-                            &raquo;
+                            <span class="relative bottom-0.5">&raquo;</span>
                         </a>
                     <?php else: ?>
-                        <span class="px-4 py-2 text-sm font-semibold bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed">&raquo;</span>
+                        <span class="px-4 py-2 text-sm font-semibold bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed relative bottom-0.5">&raquo;</span>
                     <?php endif; ?>
                 </div>
                     <a href="booking-admin">
