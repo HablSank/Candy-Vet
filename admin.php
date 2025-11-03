@@ -172,7 +172,38 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
         }
         /* Tambahkan style untuk konfirmasi Batalkan yang menggunakan warna merah */
         .swal2-styled.swal2-confirm-red {
-            background-color: #dc3545 !important;
+            background-color: rgba(220, 53, 69, 1) !important;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #detailModal, #detailModal * {
+                visibility: visible;
+            }
+
+            #detailModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                box-shadow: none;
+                border: none;
+                overflow: visible;
+            }
+            
+            #modalOverlay, .print-hide {
+                display: none !important;
+            }
+
+            .rounded-lg.bg-gray-100 {
+                background-color: #f3f4f6 !important;
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
         }
     </style>
 </head>
@@ -416,8 +447,8 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
     <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden hidden">
         <div class="relative z-20 w-full max-w-2xl transform overflow-hidden rounded-xl bg-[#FFFFFF] text-[#1F2937] shadow-2xl transition-all">
             <div class="p-8">
-                <button onclick="hideDetailModal()" class="absolute top-4 right-4 text-[#1F2937] hover:opacity-75">
-                    <span class="material-symbols-outlined font-bold">X</span>
+                <button onclick="hideDetailModal()" class="absolute top-4 right-6 text-[#1F2937] hover:opacity-75 print-hide">
+                    <span class="material-symbols-outlined text-2xl font-bold">X</span>
                 </button>
 
                 <div class="flex flex-col mb-6">
@@ -482,14 +513,12 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                     </div>
                 </div>
 
-                <div class="mt-8 flex flex-col sm:flex-row-reverse gap-3">
+                <div class="mt-8 flex flex-col sm:flex-row-reverse gap-3 print-hide">
                     <a id="modalEditButton" href="#" class="flex w-full items-center justify-center gap-2 rounded-lg bg-[#FA812F] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-opacity-90">
-                        <span class="material-symbols-outlined text-base"></span>
                         Edit
                     </a>
-                    <button onclick="hideDetailModal()" class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-[#1F2937] shadow-sm transition-colors hover:bg-gray-100">
-                        <span class="material-symbols-outlined text-base"></span>
-                        Tutup
+                    <button onclick="printDetail()" class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-[#1F2937] shadow-sm transition-colors hover:bg-gray-100">
+                        Cetak
                     </button>
                 </div>
             </div>

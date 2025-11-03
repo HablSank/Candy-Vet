@@ -102,6 +102,10 @@
         });
 
 
+function printDetail() {
+    window.print();
+}
+
         //LOGIKA POPUP DETAIL BOOKING
 function hideDetailModal() {
     document.getElementById('modalOverlay').classList.add('hidden');
