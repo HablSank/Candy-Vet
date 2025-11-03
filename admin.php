@@ -333,7 +333,7 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                                         <div class='flex gap-2 items-center'>
                                             
                                             <!-- Tombol Detail (File) - Sekarang di depan -->
-                                            <a href='detail-booking?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></a>
+                                            <button type='button' onclick='showDetailModal({$row['id']})' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></button>
 
                                             <!-- Tombol Edit (Pencil) - Sekarang di belakang -->
                                             <a href='booking-admin?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition' title='Edit Booking'><i class=\"bx bx-pencil text-md\"></i></a>
@@ -410,6 +410,91 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
 
     </main>
 
+
+<div id="modalOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden" onclick="hideDetailModal()"></div>
+
+    <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden hidden">
+        <div class="relative z-20 w-full max-w-2xl transform overflow-hidden rounded-xl bg-[#FFFFFF] text-[#1F2937] shadow-2xl transition-all">
+            <div class="p-8">
+                <button onclick="hideDetailModal()" class="absolute top-4 right-4 text-[#1F2937] hover:opacity-75">
+                    <span class="material-symbols-outlined">X</span>
+                </button>
+
+                <div class="flex flex-col mb-6">
+                    <p class="text-3xl font-black leading-tight tracking-tighter text-[#FA812F]">Detail Booking</p>
+                    <p id="modalBookingId" class="text-sm font-normal text-[#1F2937]/70">Booking ID: ...</p>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold leading-tight tracking-tight text-[#FA812F] mb-3">Informasi Majikan</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                            <div class="flex flex-col">
+                                <p class="text-sm font-medium text-[#1F2937]/80">Nama Majikan</p>
+                                <p id="modalNamaMajikan" class="text-base font-semibold">-</p>
+                            </div>
+                            <div class="flex flex-col">
+                                <p class="text-sm font-medium text-[#1F2937]/80">Email</p>
+                                <p id="modalEmail" class="text-base font-semibold">-</p>
+                            </div>
+                            <div class="flex flex-col">
+                                <p class="text-sm font-medium text-[#1F2937]/80">No. Telepon</p>
+                                <p id="modalTelepon" class="text-base font-semibold">-</p>
+                            </div>
+                            <div class="flex flex-col">
+                                <p class="text-sm font-medium text-[#1F2937]/80">Tanggal Booking</p>
+                                <p id="modalTanggalBooking" class="text-base font-semibold">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-200"></div>
+
+                    <div>
+                        <h3 class="text-lg font-bold leading-tight tracking-tight text-[#FA812F] mb-3">Informasi Hewan</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                            <div class="flex flex-col">
+                                <p class="text-sm font-medium text-[#1F2937]/80">Nama Hewan</p>
+                                <p id="modalNamaHewan" class="text-base font-semibold">-</p>
+                            </div>
+                            <div class="flex flex-col">
+                                <p class="text-sm font-medium text-[#1F2937]/80">Jenis Hewan</p>
+                                <p id="modalJenisHewan" class="text-base font-semibold">-</p>
+                            </div>
+                            <div class="flex flex-col">
+                                <p class="text-sm font-medium text-[#1F2937]/80">Usia</p>
+                                <p id="modalUsiaHewan" class="text-base font-semibold">-</p>
+                            </div>
+                            <div class="flex flex-col">
+                                <p class="text-sm font-medium text-[#1F2937]/80">Jenis Kelamin</p>
+                                <p id="modalJenisKelamin" class="text-base font-semibold">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-200"></div>
+
+                    <div>
+                        <h3 class="text-lg font-bold leading-tight tracking-tight text-[#FA812F] mb-2">Keluhan</h3>
+                        <div class="rounded-lg bg-gray-100 p-4">
+                            <p id="modalKeluhan" class="text-sm font-normal leading-relaxed">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex flex-col sm:flex-row-reverse gap-3">
+                    <a id="modalEditButton" href="#" class="flex w-full items-center justify-center gap-2 rounded-lg bg-[#FA812F] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-opacity-90">
+                        <span class="material-symbols-outlined text-base"></span>
+                        Edit
+                    </a>
+                    <button onclick="hideDetailModal()" class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-[#1F2937] shadow-sm transition-colors hover:bg-gray-100">
+                        <span class="material-symbols-outlined text-base"></span>
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="admin.js"></script>
 </body>
 </html>
