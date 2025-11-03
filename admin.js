@@ -22,7 +22,6 @@
         }    
         
         
-        // Fungsi-fungsi konfirmasi untuk aksi tabel
         function confirmSelesai(id, params) {
             Swal.fire({
                 title: 'Tandai Selesai?',
@@ -37,7 +36,6 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // KOREKSI SINTAKSIS JAVASCRIPT: Menggunakan backtick (`) untuk string literal
                     window.location.href = `admin?selesai=${id}${params}`;
                 }
             });
@@ -49,16 +47,15 @@
                 text: "Anda yakin ingin membatalkan booking ini? Status dapat diaktifkan kembali.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#dc3545', // Merah untuk Batalkan
+                confirmButtonColor: '#dc3545',
                 confirmButtonText: 'Ya, Batalkan',
                 cancelButtonText: 'Batal',
                 customClass: {
-                    confirmButton: 'swal2-confirm-red', // Gunakan kelas custom untuk warna merah
+                    confirmButton: 'swal2-confirm-red',
                     cancelButton: 'swal2-cancel'
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // KOREKSI SINTAKSIS JAVASCRIPT: Menggunakan backtick (`) untuk string literal
 
                     window.location.href = `admin?batalkan=${id}${params}`;
                 }
@@ -71,7 +68,7 @@
                 text: "Status booking akan diubah kembali menjadi Aktif.",
                 icon: 'info',
                 showCancelButton: true,
-                confirmButtonColor: '#9E00BA', // Menggunakan Ungu Aksen
+                confirmButtonColor: '#9E00BA',
                 confirmButtonText: 'Ya, Aktifkan',
                 cancelButtonText: 'Batal',
                 customClass: {
@@ -80,14 +77,12 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // KOREKSI SINTAKSIS JAVASCRIPT: Menggunakan backtick (`) untuk string literal
 
                     window.location.href = `admin?aktifkan=${id}${params}`;
                 }
             });
         }
-        
-        // Fungsi Pencarian (memfilter baris tabel berdasarkan input)
+
         document.getElementById('searchInput').addEventListener('keyup', function() {
             const searchText = this.value.toLowerCase();
             const rows = document.querySelectorAll('tbody tr');
@@ -102,5 +97,4 @@
                     row.style.display = 'none';
                 }
             });
-            // Opsional: Tambahkan logika untuk menampilkan pesan "Tidak ada hasil"
         });

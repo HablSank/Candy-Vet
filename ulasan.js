@@ -13,15 +13,13 @@ function toggleMenu() {
 }
 
 hamburgerBtn.addEventListener('click', (event) => {
-    // DIUBAH: Hentikan event agar tidak 'bocor' ke document. Ini solusinya.
     event.stopPropagation(); 
     toggleMenu();
 });
 
-// Saat salah satu link di menu diklik, panggil fungsi toggleMenu HANYA JIKA menu sedang terbuka
+
 mobileMenuLinks.forEach(link => {
     link.addEventListener('click', () => {
-        // Cek dulu apakah menu sedang terbuka, baru ditutup
         if (!mobileMenu.classList.contains('max-h-0')) {
             toggleMenu();
         }
@@ -29,14 +27,11 @@ mobileMenuLinks.forEach(link => {
 });
 
 document.addEventListener('click', (event) => {
-    // Cek apakah menu sedang terbuka
     const isMenuOpen = !mobileMenu.classList.contains('max-h-0');
-    // Cek apakah target klik BUKAN bagian dari menu itu sendiri
     const isClickInsideMenu = mobileMenu.contains(event.target);
 
-    // Jika menu sedang terbuka DAN klik terjadi di luar area menu
     if (isMenuOpen && !isClickInsideMenu) {
-        toggleMenu(); // Panggil fungsi toggle untuk menutup menu
+        toggleMenu();
     }
 });
 
