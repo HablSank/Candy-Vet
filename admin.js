@@ -133,13 +133,13 @@ async function showDetailModal(id) {
 
         const data = await response.json();
         document.getElementById('modalNamaMajikan').textContent = data.nm_majikan || '-';
-        document.getElementById('modalEmail').textContent = data.email || '-';
-        document.getElementById('modalTelepon').textContent = data.no_telp || '-';
+        document.getElementById('modalEmail').textContent = data.email_majikan || '-';
+        document.getElementById('modalTelepon').textContent = data.no_tlp_majikan || '-';
         document.getElementById('modalTanggalBooking').textContent = data.tanggal_booking_formatted || '-';
         document.getElementById('modalNamaHewan').textContent = data.nm_hewan || '-';
         document.getElementById('modalJenisHewan').textContent = data.jenis_hewan || '-';
         document.getElementById('modalUsiaHewan').textContent = data.usia_hewan || '-';
-        document.getElementById('modalJenisKelamin').textContent = data.jenis_kelamin || '-'; 
+        document.getElementById('modalJenisKelamin').textContent = data.jenis_kelamin_hewan || '-'; 
         document.getElementById('modalKeluhan').textContent = data.keluhan || '-';
         
         document.getElementById('modalEditButton').href = `booking-admin?id=${data.id}`;

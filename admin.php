@@ -417,11 +417,11 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
         <div class="relative z-20 w-full max-w-2xl transform overflow-hidden rounded-xl bg-[#FFFFFF] text-[#1F2937] shadow-2xl transition-all">
             <div class="p-8">
                 <button onclick="hideDetailModal()" class="absolute top-4 right-4 text-[#1F2937] hover:opacity-75">
-                    <span class="material-symbols-outlined">X</span>
+                    <span class="material-symbols-outlined font-bold">X</span>
                 </button>
 
                 <div class="flex flex-col mb-6">
-                    <p class="text-3xl font-black leading-tight tracking-tighter text-[#FA812F]">Detail Booking</p>
+                    <p class="text-3xl font-black text-[#FA812F]">Detail Booking</p>
                     <p id="modalBookingId" class="text-sm font-normal text-[#1F2937]/70">Booking ID: ...</p>
                 </div>
 
