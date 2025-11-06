@@ -133,7 +133,6 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
     </script>
 
     <style>
-        /* Gaya umum */
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -204,6 +203,9 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
+        }
+        body.modal-open {
+        overflow: hidden;
         }
     </style>
 </head>
@@ -444,8 +446,8 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
 
 <div id="modalOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden" onclick="hideDetailModal()"></div>
 
-    <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden hidden">
-        <div class="relative z-20 w-full max-w-2xl transform overflow-hidden rounded-xl bg-[#FFFFFF] text-[#1F2937] shadow-2xl transition-all">
+    <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto hidden">
+        <div class="relative z-20 w-full max-w-xl transform overflow-hidden rounded-xl bg-[#FFFFFF] text-[#1F2937] shadow-2xl transition-all">
             <div class="p-8">
                 <button onclick="hideDetailModal()" class="absolute top-4 right-6 text-[#1F2937] hover:opacity-75 print-hide">
                     <span class="material-symbols-outlined text-2xl font-bold">X</span>

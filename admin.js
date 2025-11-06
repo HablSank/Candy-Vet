@@ -108,11 +108,13 @@ function printDetail() {
 
         //LOGIKA POPUP DETAIL BOOKING
 function hideDetailModal() {
+    document.body.classList.remove('modal-open');
     document.getElementById('modalOverlay').classList.add('hidden');
     document.getElementById('detailModal').classList.add('hidden');
 }
 
 async function showDetailModal(id) {
+    document.body.classList.add('modal-open');
     document.getElementById('modalOverlay').classList.remove('hidden');
     document.getElementById('detailModal').classList.remove('hidden');
 
