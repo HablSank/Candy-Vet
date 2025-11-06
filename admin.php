@@ -437,10 +437,6 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
             <?php endif; ?>
             </div>
         </div>
-
-        <!-- Tombol Tambah Booking Baru (Aksen Ungu tetap dipertahankan untuk kontras CTA) -->
-
-
     </main>
 
 
@@ -516,7 +512,7 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                 </div>
 
                 <div class="mt-8 flex flex-col sm:flex-row-reverse gap-3 print-hide">
-                    <a id="modalEditButton" href="#" class="flex w-full items-center justify-center gap-2 rounded-lg bg-[#FA812F] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-opacity-90">
+                    <a id="modalEditButton" href="booking-admin" class="flex w-full items-center justify-center gap-2 rounded-lg bg-[#FA812F] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-opacity-90">
                         Edit
                     </a>
                     <button onclick="printDetail()" class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-[#1F2937] shadow-sm transition-colors hover:bg-gray-100">

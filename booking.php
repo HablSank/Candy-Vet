@@ -13,12 +13,17 @@ if(isset($_POST['submit'])) {
     // --- Bagian 1: Simpan data ke database (kode temanmu, tidak diubah) ---
     $stmt = $conn->prepare("INSERT INTO tb_form (nm_majikan, email_majikan, no_tlp_majikan, nm_hewan, jenis_hewan, usia_hewan, jenis_kelamin_hewan, keluhan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     
+    $jenis_hewan_final = $_POST['jenis_hewan'];
+    if ($jenis_hewan_final == 'Lainnya' && !empty($_POST['hewan_lainnya'])) {
+        $jenis_hewan_final = $_POST['hewan_lainnya'];
+    }
+
     $stmt->bind_param("ssssssss", 
         $_POST['nm_majikan'],
         $_POST['email_majikan'],
         $_POST['no_tlp_majikan'],
         $_POST['nm_hewan'],
-        $_POST['jenis_hewan'],
+        $jenis_hewan_final,
         $_POST['usia_hewan'],
         $_POST['jenis_kelamin_hewan'],
         $_POST['keluhan']

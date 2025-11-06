@@ -2,107 +2,122 @@
 session_start();
 if(!isset($_SESSION['user'])){
     header('location:login');
+    exit;
 }
-// Panggil library PHPMailer
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-// Sesuaikan path ini jika kamu tidak menggunakan Composer
-require 'vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__); 
-$dotenv->load();
 include 'koneksi.php';
 
+// --- LOGIKA 1: TANGANI SUBMIT FORM (POST) ---
+// Ini dieksekusi duluan saat tombol "Simpan" atau "Kirim" diklik
 if(isset($_POST['submit'])) {
-    // --- Bagian 1: Simpan data ke database (kode temanmu, tidak diubah) ---
-    $stmt = $conn->prepare("INSERT INTO tb_form (nm_majikan, email_majikan, no_tlp_majikan, nm_hewan, jenis_hewan, usia_hewan, jenis_kelamin_hewan, keluhan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     
-    $stmt->bind_param("ssssssss", 
-        $_POST['nm_majikan'],
-        $_POST['email_majikan'],
-        $_POST['no_tlp_majikan'],
-        $_POST['nm_hewan'],
-        $_POST['jenis_hewan'],
-        $_POST['usia_hewan'],
-        $_POST['jenis_kelamin_hewan'],
-        $_POST['keluhan']
-    );
-    
-    if($stmt->execute()){
-        // --- Bagian 2: Kirim email konfirmasi ke user ---
-        $mail = new PHPMailer(true);
+    // Logika baru untuk 'Jenis Hewan':
+    // Jika user memilih "Lainnya" dan MENGISI input teks, kita simpan nilai input teks itu.
+    $jenis_hewan_final = $_POST['jenis_hewan'];
+    if ($jenis_hewan_final == 'Lainnya' && !empty($_POST['hewan_lainnya'])) {
+        $jenis_hewan_final = $_POST['hewan_lainnya']; // Ambil nilai dari input teks "Lainnya"
+    }
 
-        try {
-            // --- PENGATURAN YANG PERLU KAMU UBAH ---
-            $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';                     // Server SMTP Gmail
-            $mail->SMTPAuth   = true;
-            $mail->Username   = $_ENV['GMAIL_USERNAME'];                // GANTI DENGAN EMAIL GMAIL-MU
-            $mail->Password   = $_ENV['GMAIL_APP_PASSWORD'];                   // GANTI DENGAN 16 KARAKTER APP PASSWORD-MU
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = 465;
-            // -----------------------------------------
-
-            // Pengirim & Penerima
-            $mail->setFrom('no-reply@candyvet.com', 'Admin CandyVet'); // Email "Dari" (bisa fiktif) dan Nama Pengirim
-            $mail->addAddress($_POST['email_majikan'], $_POST['nm_majikan']); // Kirim ke email yang diisi di form
-
-            // Konten Email
-            $mail->isHTML(true);
-            $mail->Subject = 'Bukti Booking Anda di CandyVet';
-            $mail->Body    = "
-                <h2>Terima Kasih, " . htmlspecialchars($_POST['nm_majikan']) . "!</h2>
-                <p>Booking Anda telah kami terima. Berikut adalah detailnya:</p>
-                <table border='1' cellpadding='10' style='border-collapse: collapse; width: 100%;'>
-                    <tr><td style='background-color: #f2f2f2; width: 30%;'><strong>Nama Hewan</strong></td><td>" . htmlspecialchars($_POST['nm_hewan']) . "</td></tr>
-                    <tr><td style='background-color: #f2f2f2;'><strong>Jenis Hewan</strong></td><td>" . htmlspecialchars($_POST['jenis_hewan']) . "</td></tr>
-                    <tr><td style='background-color: #f2f2f2;'><strong>Keluhan</strong></td><td>" . htmlspecialchars($_POST['keluhan']) . "</td></tr>
-                </table>
-                <p>Mohon tunggu konfirmasi jadwal dari admin kami via WhatsApp. Jangan balas email ini.</p>
-            ";
-
-            $mail->send(); // Kirim email
-
-        } catch (Exception $e) {
-            // Jika email gagal, proses tetap lanjut, tidak perlu hentikan user
+    // Cek apakah ini mode EDIT (ada 'id' yang dikirim) atau mode TAMBAH BARU
+    if(isset($_POST['id']) && !empty($_POST['id'])) {
+        // --- Ini Mode UPDATE (Edit) ---
+        $id_to_update = (int)$_POST['id'];
+        $stmt_update = $conn->prepare("UPDATE tb_form SET 
+            nm_majikan = ?, email_majikan = ?, no_tlp_majikan = ?, 
+            nm_hewan = ?, jenis_hewan = ?, usia_hewan = ?, 
+            jenis_kelamin_hewan = ?, keluhan = ? 
+            WHERE id = ?");
+        
+        // Bind 9 parameter (8 data + 1 ID)
+        $stmt_update->bind_param("ssssssssi",
+            $_POST['nm_majikan'], $_POST['email_majikan'], $_POST['no_tlp_majikan'],
+            $_POST['nm_hewan'], $jenis_hewan_final, $_POST['usia_hewan'],
+            $_POST['jenis_kelamin_hewan'], $_POST['keluhan'], $id_to_update
+        );
+        
+        if($stmt_update->execute()) {
+            echo "<script>alert('Data booking berhasil diupdate!'); window.location.href='admin';</script>";
+        } else {
+            // Tampilkan error jika gagal
+            echo "<script>alert('Data GAGAL diupdate: " . $conn->error . "');</script>";
         }
-
-        // --- Bagian 3: Siapkan & Redirect ke WhatsApp ---
-        
-        // --- PENGATURAN YANG PERLU KAMU UBAH ---
-        $nomorAdminWA = $_ENV['ADMIN_WHATSAPP'];
-        // -----------------------------------------
-
-        $pesanWA = "Halo Admin CandyVet, saya ingin booking jadwal atas nama:\n\n" .
-                   "Nama Majikan: " . $_POST['nm_majikan'] . "\n" .
-                   "No. Telp: " . $_POST['no_tlp_majikan'] . "\n" .
-                   "Nama Hewan: " . $_POST['nm_hewan'] . "\n" .
-                   "Jenis Hewan: " . $_POST['jenis_hewan'] . "\n" .
-                   "Keluhan: " . $_POST['keluhan'] . "\n\n" .
-                   "Mohon konfirmasi jadwalnya. Terima kasih.";
-        
-        $pesanWAEncoded = urlencode($pesanWA);
-        $whatsappURL = "https://api.whatsapp.com/send?phone=" . $nomorAdminWA . "&text=" . $pesanWAEncoded;
-
-        // Beri notifikasi ke user lalu redirect
-        echo "<script>
-                alert('Booking Terkirim! Anda akan dialihkan ke WhatsApp. Bukti booking juga telah dikirim ke email Anda.');
-                window.location.href = '$whatsappURL';
-              </script>";
+        $stmt_update->close();
 
     } else {
-        echo '<script>alert("Data Gagal Disimpan, silakan coba lagi.");</script>';
+        // --- Ini Mode INSERT (Tambah Baru) ---
+        // Kita set statusnya 'Aktif' secara default
+        $stmt_insert = $conn->prepare("INSERT INTO tb_form (
+            nm_majikan, email_majikan, no_tlp_majikan, 
+            nm_hewan, jenis_hewan, usia_hewan, 
+            jenis_kelamin_hewan, keluhan, status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Aktif')"); 
+        
+        // Bind 8 parameter
+        $stmt_insert->bind_param("ssssssss",
+            $_POST['nm_majikan'], $_POST['email_majikan'], $_POST['no_tlp_majikan'],
+            $_POST['nm_hewan'], $jenis_hewan_final, $_POST['usia_hewan'],
+            $_POST['jenis_kelamin_hewan'], $_POST['keluhan']
+        );
+
+        if($stmt_insert->execute()) {
+             echo "<script>alert('Booking baru berhasil ditambahkan!'); window.location.href='admin';</script>";
+        } else {
+            echo "<script>alert('Data GAGAL disimpan: " . $conn->error . "');</script>";
+        }
+        $stmt_insert->close();
     }
-    
-    $stmt->close();
+    exit; // Wajib exit setelah proses POST selesai
 }
+
+// --- LOGIKA 2: PERSIAPAN HALAMAN (GET) ---
+// Ini dieksekusi saat halaman dimuat (baik mode edit atau tambah)
+
+$booking_data = []; // Data booking, kosong jika mode 'Tambah'
+$is_edit_mode = false; 
+$page_title = "Tambah Booking Baru"; 
+
+// Cek apakah ada ID di URL (mode edit)
+if(isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $is_edit_mode = true;
+    $page_title = "Edit Booking";
+    $id = (int)$_GET['id'];
+    
+    // Ambil data dari database untuk ID ini
+    $stmt_get = $conn->prepare("SELECT * FROM tb_form WHERE id = ?");
+    $stmt_get->bind_param("i", $id);
+    $stmt_get->execute();
+    $result = $stmt_get->get_result();
+    $booking_data = $result->fetch_assoc(); // Simpan datanya ke variabel
+    $stmt_get->close();
+
+    // Jika ID tidak ditemukan, lempar kembali ke admin
+    if(!$booking_data) {
+        echo "<script>alert('Error: Booking ID tidak ditemukan.'); window.location.href='admin';</script>";
+        exit;
+    }
+}
+
+// Fungsi helper kecil untuk pre-fill form
+function getData($field) {
+    global $booking_data;
+    if ($booking_data && isset($booking_data[$field])) {
+        // Tampilkan data yang ada di database
+        return htmlspecialchars($booking_data[$field], ENT_QUOTES);
+    }
+    return ''; // Kosongkan jika mode 'Tambah'
+}
+
+// Persiapan untuk logic "Jenis Hewan Lainnya"
+$opsi_standar = ['Kucing', 'Anjing', 'Kelinci', 'Burung', 'Lainnya'];
+$jenis_hewan_db = getData('jenis_hewan');
+// Cek apakah data di DB BUKAN salah satu opsi standar (cth: "Ular")
+$is_jenis_lainnya = !in_array($jenis_hewan_db, $opsi_standar) && !empty($jenis_hewan_db);
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulir Booking - CandyVet</title>
+    <title><?php echo $page_title; ?> - CandyVet</title>
     <link href="/dist/output.css" rel="stylesheet"> 
     <script src="https://cdn.tailwindcss.com"></script> 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -113,109 +128,84 @@ if(isset($_POST['submit'])) {
 </head>
 <body class="bg-[#FEF3E2]" style="font-family: 'Poppins', sans-serif;">
 
-        <header class="bg-[#FEF3E2]">
+    <header class="bg-[#FEF3E2]">
         <div class="container mx-auto flex items-center justify-between h-20 px-4">
             <div class="flex items-center space-x-2">
                 <img src="./assets/logo.png" alt="CandyVet Logo" class="h-14 w-auto">
                 <span class="font-bold text-xl lg:text-2xl text-gray-800"><span class="text-[#FAB12F]">Candy</span><span class="text-[#F4631E]">Vet</span></span>
             </div>
-
-            <a href="./admin" class="flex items-center gap-2 bg-[#FEF3E2] border-[#9E00BA] border-2 rounded-lg py-2 px-4">
+            <a href="admin" class="flex items-center gap-2 bg-[#FEF3E2] border-[#9E00BA] border-2 rounded-lg py-2 px-4">
                 <span class="hidden sm:inline text-[#9E00BA] text-xl font-bold">Kembali</span>
                 <img src="./assets/kembali.png" alt="logo kembali" class="w-auto h-8">
             </a>
         </div>
-        </header>
-
+    </header>
 
     <section class="max-w-xl mx-auto pt-24 my-12 px-4">
         <h2 class="text-center text-2xl sm:text-3xl font-bold text-gray-800 mb-10">
-            Formulir Booking CandyVet
+            <?php echo $page_title; ?>
         </h2>
 
         <hr class="w-1/2 mx-auto border-t-2 border-[#FA812F] mb-10">
 
-        <form action="booking" method="POST" class="space-y-6">
+        <form action="booking-admin<?php if($is_edit_mode) echo '?id=' . (int)$booking_data['id']; ?>" method="POST" class="space-y-6">
+            
+            <?php if($is_edit_mode): ?>
+                <input type="hidden" name="id" value="<?php echo (int)$booking_data['id']; ?>">
+            <?php endif; ?>
 
             <div>
                 <label for="nm_majikan" class="block text-lg font-semibold text-gray-700 mb-2">Nama Majikan</label>
-                <input type="text" name="nm_majikan" id="nm_majikan" placeholder="Masukkan Nama Lengkap Anda" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
+                <input type="text" name="nm_majikan" id="nm_majikan" value="<?php echo getData('nm_majikan'); ?>" placeholder="Masukkan Nama Lengkap Anda" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
             </div>
 
             <div>
                 <label for="email_majikan" class="block text-lg font-semibold text-gray-700 mb-2">Email Majikan</label>
-                <input type="email" name="email_majikan" id="email_majikan" placeholder="Masukkan Email Anda" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
+                <input type="email" name="email_majikan" id="email_majikan" value="<?php echo getData('email_majikan'); ?>" placeholder="Masukkan Email Anda" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
             </div>
 
             <div>
                 <label for="no_tlp_majikan" class="block text-lg font-semibold text-gray-700 mb-2">No. Telepon</label>
-                <input type="text" name="no_tlp_majikan" id="no_tlp_majikan" placeholder="Masukkan No. Telepon Anda" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
+                <input type="text" name="no_tlp_majikan" id="no_tlp_majikan" value="<?php echo getData('no_tlp_majikan'); ?>" placeholder="Masukkan No. Telepon Anda" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
             </div>
 
             <div>
                 <label for="nm_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Nama Hewan</label>
-                <input type="text" name="nm_hewan" id="nm_hewan" placeholder="Masukkan Nama Hewan" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
+                <input type="text" name="nm_hewan" id="nm_hewan" value="<?php echo getData('nm_hewan'); ?>" placeholder="Masukkan Nama Hewan" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
             </div>
 
             <div class="relative">
-    <label for="jenis_hewan" class="block text-lg font-semibold text-gray-700 mb-2">
-        Jenis Hewan
-    </label>
+                <label for="jenis_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Jenis Hewan</label>
+                <select id="jenis_hewan" name="jenis_hewan" onchange="toggleInput(this)" class="w-full appearance-none px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition pr-10">
+                    <option value="" <?php if(empty($jenis_hewan_db)) echo 'selected'; ?> disabled>Pilih jenis hewan</option>
+                    <option value="Kucing" <?php if($jenis_hewan_db == 'Kucing') echo 'selected'; ?>>Kucing</option>
+                    <option value="Anjing" <?php if($jenis_hewan_db == 'Anjing') echo 'selected'; ?>>Anjing</option>
+                    <option value="Kelinci" <?php if($jenis_hewan_db == 'Kelinci') echo 'selected'; ?>>Kelinci</option>
+                    <option value="Burung" <?php if($jenis_hewan_db == 'Burung') echo 'selected'; ?>>Burung</option>
+                    <option value="Lainnya" <?php if($jenis_hewan_db == 'Lainnya' || $is_jenis_lainnya) echo 'selected'; ?>>Lainnya</option>
+                </select>
+                <svg class="absolute right-4 top-[54px] w-5 h-5 text-gray-500 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 24"><path d="M29.0561 3.14713e-05L29.0561 9.21603L14.5281 23.936L7.24792e-05 9.21603V3.14713e-05L14.5281 14.784L29.0561 3.14713e-05Z" fill="#DD0303"/></svg>
 
-    <select id="jenis_hewan" name="jenis_hewan"
-        onchange="toggleInput(this)"
-        class="w-full appearance-none px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition pr-10">
-        <option value="" disabled selected>Pilih jenis hewan</option>
-        <option value="Kucing">Kucing</option>
-        <option value="Anjing">Anjing</option>
-        <option value="Kelinci">Kelinci</option>
-        <option value="Burung">Burung</option>
-        <option value="Lainnya">Lainnya</option>
-    </select>
-
-    <!-- SVG panah -->
-    <svg class="absolute right-4 top-[54px] w-5 h-5 text-gray-500 pointer-events-none"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 30 24">
-        <path d="M29.0561 3.14713e-05L29.0561 9.21603L14.5281 23.936L7.24792e-05 9.21603V3.14713e-05L14.5281 14.784L29.0561 3.14713e-05Z" fill="#DD0303"/>
-    </svg>
-
-    <!-- Input muncul jika pilih 'Lainnya' -->
-    <input type="text" id="hewan_lainnya" name="hewan_lainnya"
-        placeholder="Tulis jenis hewan"
-        class="hidden mt-3 w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
-</div>
-
-<script>
-function toggleInput(select) {
-    const input = document.getElementById('hewan_lainnya');
-    if (select.value === 'Lainnya') {
-        input.classList.remove('hidden');
-        input.required = true;
-    } else {
-        input.classList.add('hidden');
-        input.required = false;
-        input.value = '';
-    }
-}
-</script>
-
+                <input type="text" id="hewan_lainnya" name="hewan_lainnya"
+                       value="<?php if($is_jenis_lainnya) echo $jenis_hewan_db; // Isi dengan data non-standar, misal "Ular" ?>"
+                       placeholder="Tulis jenis hewan"
+                       class="<?php if(!$is_jenis_lainnya && $jenis_hewan_db != 'Lainnya') echo 'hidden'; // Tampilkan jika 'Lainnya' atau non-standar ?> mt-3 w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
+            </div>
 
             <div>
                 <label for="usia_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Usia Hewan (Tahun)</label>
-                <input type="number" name="usia_hewan" id="usia_hewan" placeholder="Masukkan Usia Hewan" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
+                <input type="number" name="usia_hewan" id="usia_hewan" value="<?php echo getData('usia_hewan'); ?>" placeholder="Masukkan Usia Hewan" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
             </div>
 
             <div>
                 <label class="block text-lg font-semibold text-gray-700 mb-2">Jenis Kelamin Hewan</label>
                 <div class="flex items-center space-x-6 p-4 border-2 border-[#FA812F] rounded-xl bg-white">
                     <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" name="jenis_kelamin_hewan" value="Jantan" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200">
+                        <input type="radio" name="jenis_kelamin_hewan" value="Jantan" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200" <?php if(getData('jenis_kelamin_hewan') == 'Jantan') echo 'checked'; ?>>
                         <span class="text-base text-gray-800">Jantan</span>
                     </label>
                     <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" name="jenis_kelamin_hewan" value="Betina" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200">
+                        <input type="radio" name="jenis_kelamin_hewan" value="Betina" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200" <?php if(getData('jenis_kelamin_hewan') == 'Betina') echo 'checked'; ?>>
                         <span class="text-base text-gray-800">Betina</span>
                     </label>
                 </div>
@@ -223,12 +213,12 @@ function toggleInput(select) {
 
             <div>
                 <label for="keluhan" class="block text-lg font-semibold text-gray-700 mb-2">Keluhan</label>
-                <textarea name="keluhan" id="keluhan" placeholder="Masukkan Keluhan Hewan Anda" rows="4" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition resize-y"></textarea>
+                <textarea name="keluhan" id="keluhan" placeholder="Masukkan Keluhan Hewan Anda" rows="4" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition resize-y"><?php echo getData('keluhan'); ?></textarea>
             </div>
 
             <div class="pt-4 space-y-3">
                 <button type="submit" name="submit" class="w-full py-3 px-6 text-lg font-semibold text-white bg-[#FA812F] rounded-xl hover:bg-[#E37129] hover:-translate-y-0.5 transform transition shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                    Kirim Booking
+                    <?php echo $is_edit_mode ? 'Simpan Perubahan' : 'Kirim Booking'; ?>
                 </button>
                 <button type="button" onclick="confirmreset()" class="w-full py-3 px-6 text-lg font-semibold text-[#FA812F] bg-transparent border-2 border-[#FA812F] rounded-xl hover:-translate-y-0.5 transform transition shadow-lg hover:shadow-xl">
                     Reset Form
@@ -238,6 +228,6 @@ function toggleInput(select) {
         </form>
     </section>
 
-    <script src="booking.js"></script>
+    <script src="booking.js"></script> 
 </body>
 </html>

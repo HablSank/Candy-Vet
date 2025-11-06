@@ -46,6 +46,15 @@ function toggleInput(select) {
     }
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    const selectHewan = document.getElementById('jenis_hewan');
+    if (selectHewan) {
+            toggleInput(selectHewan);
+            }
+});
+    
+
+        
 function confirmreset() {
     Swal.fire({
         title: 'Reset Form?',
