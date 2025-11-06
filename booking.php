@@ -183,7 +183,7 @@ if(isset($_POST['submit'])) {
     </label>
 
     <select id="jenis_hewan" name="jenis_hewan"
-        onchange="toggleInput(this)"
+        onchange="toggleInput(this)" required
         class="w-full appearance-none px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition pr-10">
         <option value="" disabled selected>Pilih jenis hewan</option>
         <option value="Kucing">Kucing</option>
@@ -203,24 +203,9 @@ if(isset($_POST['submit'])) {
 
     <!-- Input muncul jika pilih 'Lainnya' -->
     <input type="text" id="hewan_lainnya" name="hewan_lainnya"
-        placeholder="Tulis jenis hewan"
+        placeholder="Tulis jenis hewan" required
         class="hidden mt-3 w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
 </div>
-
-<script>
-function toggleInput(select) {
-    const input = document.getElementById('hewan_lainnya');
-    if (select.value === 'Lainnya') {
-        input.classList.remove('hidden');
-        input.required = true;
-    } else {
-        input.classList.add('hidden');
-        input.required = false;
-        input.value = '';
-    }
-}
-</script>
-
 
             <div>
                 <label for="usia_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Usia Hewan (Tahun)</label>

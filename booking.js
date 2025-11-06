@@ -34,6 +34,17 @@ document.addEventListener('click', (event) => {
     }
 });
 
+function toggleInput(select) {
+    const input = document.getElementById('hewan_lainnya');
+    if (select.value === 'Lainnya') {
+        input.classList.remove('hidden');
+        input.required = true;
+    } else {
+        input.classList.add('hidden');
+        input.required = false;
+        input.value = '';
+    }
+}
 
 function confirmreset() {
     Swal.fire({
