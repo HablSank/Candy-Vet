@@ -324,74 +324,90 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                        if(mysqli_num_rows($result) > 0){
-                            $no = $offset + 1;
-                            $total_rows = mysqli_num_rows($result); // Ambil total baris untuk logika border
-                            mysqli_data_seek($result, 0); // Pastikan pointer hasil kembali ke awal
-                            
-                            while($row = mysqli_fetch_assoc($result)){
-                                $badge_class = 'bg-yellow-100 text-yellow-800';
-                                if($row['status'] == 'Aktif') $badge_class = 'bg-green-100 text-green-700'; // Aktif/Sedang Berjalan
-                                elseif($row['status'] == 'Selesai') $badge_class = 'bg-blue-100 text-blue-700';
-                                elseif($row['status'] == 'Dibatalkan') $badge_class = 'bg-red-100 text-red-700';
-                                
-                                // Terapkan border-b (horizontal line) Oren Tua kecuali pada baris terakhir
-                                $border_class = ($no < $total_rows) ? 'border-b border-OrenTua' : '';
-                                
-                                // Baris tabel menggunakan latar belakang Putih (bg-PutihCard) 
-                                echo "<tr class='bg-PutihCard hover:bg-orange-50 transition'>"; // Hover tetap menggunakan warna terang
-                                
-                                // Terapkan p-4 (padding) dan border_class ke setiap cell
-                                echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>$no</td>";
-                                echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>".htmlspecialchars($row['nm_majikan'] ?? "")."</td>";
-                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['nm_hewan'] ?? "")."</td>";
-                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['jenis_hewan'] ?? "")."</td>";
-                                
-                                // Kolom Tanggal Booking
-                                $raw_date = $row['tanggal_booking'] ?? "";
-                                if (!empty($raw_date) && $raw_date != '0000-00-00') {
-                                    $formatted_date = date('d F Y', strtotime($raw_date)); 
-                                } else {
-                                    $formatted_date = "-";
-                                }
+    <?php
+    if(mysqli_num_rows($result) > 0){
+        $no = $offset + 1;
+        $total_rows = mysqli_num_rows($result);
+        mysqli_data_seek($result, 0); 
+        
+        // ++ PETA DATA: Angka dari DB ke Teks (untuk Tampilan) ++
+        $map_hewan_display = [
+            0 => 'Kucing', 
+            1 => 'Anjing', 
+            2 => 'Kelinci', 
+            3 => 'Burung', 
+            4 => 'Lainnya' // Sesuai permintaan Anda, dashboard menampilkan "Lainnya"
+        ];
+        // ++ SELESAI TAMBAHAN
+        
+        while($row = mysqli_fetch_assoc($result)){
+            $badge_class = 'bg-yellow-100 text-yellow-800';
+            if($row['status'] == 'Aktif') $badge_class = 'bg-green-100 text-green-700';
+            elseif($row['status'] == 'Selesai') $badge_class = 'bg-blue-100 text-blue-700';
+            elseif($row['status'] == 'Dibatalkan') $badge_class = 'bg-red-100 text-red-700';
+            
+            $border_class = ($no < $total_rows) ? 'border-b border-OrenTua' : '';
+            
+            echo "<tr class='bg-PutihCard hover:bg-orange-50 transition'>"; 
+            
+            echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>$no</td>";
+            echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>".htmlspecialchars($row['nm_majikan'] ?? "")."</td>";
+            echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['nm_hewan'] ?? "")."</td>";
+            
+            // ================================================================
+            // ++ LOGIKA JENIS HEWAN DIPERBARUI (Membaca Angka)
+            // ================================================================
+            $jenis_hewan_int_db = (int)($row['jenis_hewan'] ?? -1); // Ambil angka (cth: 0 atau 4)
+            
+            // Terjemahkan angka ke teks menggunakan peta
+            $display_jenis_hewan = $map_hewan_display[$jenis_hewan_int_db] ?? 'Data Salah';
+            
+            echo "<td class='p-4 text-HitamTeks $border_class'>".$display_jenis_hewan."</td>";
+            // ================================================================
+            // ++ SELESAI PERUBAHAN
+            // ================================================================
 
-                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($formatted_date)."</td>";
+            // Kolom Tanggal Booking (Tidak diubah)
+            $raw_date = $row['tanggal_booking'] ?? "";
+            if (!empty($raw_date) && $raw_date != '0000-00-00') {
+                $formatted_date = date('d F Y', strtotime($raw_date)); 
+            } else {
+                $formatted_date = "-";
+            }
 
-                                // Status cell
-                                echo "<td class='p-4 $border_class'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span></td>";
-                                
-                                // Cell Aksi (Posisi tombol Detail dan Edit dibalik)
-                                echo "<td class='p-4 $border_class'>
-                                        <div class='flex gap-2 items-center'>
-                                            
-                                            <!-- Tombol Detail (File) - Sekarang di depan -->
-                                            <button type='button' onclick='showDetailModal({$row['id']})' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></button>
+            echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($formatted_date)."</td>";
 
-                                            <!-- Tombol Edit (Pencil) - Sekarang di belakang -->
-                                            <a href='booking-admin?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition' title='Edit Booking'><i class=\"bx bx-pencil text-md\"></i></a>
-                                            ";
-                                            
-                                if($row['status']=='Aktif'){
-                                    echo "
-                                            <a href='#' onclick=\"confirmSelesai({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Tandai Selesai'><i class=\"bx bx-check-circle text-md\"></i></a>
-                                            <a href='#' onclick=\"confirmBatalkan({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Batalkan Booking'><i class=\"bx bx-x-circle text-md\"></i></a>
-                                            ";
-                                } elseif ($row['status'] == 'Selesai' || $row['status'] == 'Dibatalkan') {
-                                    echo "
-                                            <a href='#' onclick=\"confirmAktifkan({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-gray-200 text-HitamTeks rounded-full hover:bg-OrenTua hover:text-white transition' title='Aktifkan Kembali'><i class=\"bx bx-undo text-md\"></i></a>
-                                            ";
-                                }
+            // Status cell (Tidak diubah)
+            echo "<td class='p-4 $border_class'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span></td>";
+            
+            // Cell Aksi (Tidak diubah)
+            echo "<td class='p-4 $border_class'>
+                    <div class='flex gap-2 items-center'>
+                        
+                        <button type='button' onclick='showDetailModal({$row['id']})' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></button>
 
-                                echo "</div></td></tr>";
-                                $no++;
-                            }
-                        } else {
-                            // Colspan diubah dari 6 menjadi 7 karena penambahan kolom 'Tanggal Booking'
-                            echo '<tr><td colspan="7" class="text-center p-12 text-gray-500"><i class="bx bx-folder-open text-3xl mb-2 block"></i>Tidak ada data booking</td></tr>';
-                        }
-                        ?>
-                    </tbody>
+                        <a href='booking-admin?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition' title='Edit Booking'><i class=\"bx bx-pencil text-md\"></i></a>
+                        ";
+                        
+            if($row['status']=='Aktif'){
+                echo "
+                        <a href='#' onclick=\"confirmSelesai({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Tandai Selesai'><i class=\"bx bx-check-circle text-md\"></i></a>
+                        <a href='#' onclick=\"confirmBatalkan({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Batalkan Booking'><i class=\"bx bx-x-circle text-md\"></i></a>
+                        ";
+            } elseif ($row['status'] == 'Selesai' || $row['status'] == 'Dibatalkan') {
+                echo "
+                        <a href='#' onclick=\"confirmAktifkan({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-gray-200 text-HitamTeks rounded-full hover:bg-OrenTua hover:text-white transition' title='Aktifkan Kembali'><i class=\"bx bx-undo text-md\"></i></a>
+                        ";
+            }
+
+            echo "</div></td></tr>";
+            $no++;
+        }
+    } else {
+        echo '<tr><td colspan="7" class="text-center p-12 text-gray-500"><i class="bx bx-folder-open text-3xl mb-2 block"></i>Tidak ada data booking</td></tr>';
+    }
+    ?>
+</tbody>
                 </table>
             <?php if ($total_halaman > 1): ?>
             <nav class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-8 pt-6 border-t border-OrenMuda">

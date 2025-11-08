@@ -6,56 +6,75 @@ if(!isset($_SESSION['user'])){
 }
 include 'koneksi.php';
 
+// --- PETA DATA: Teks ke Angka (sesuai database) ---
+$map_hewan = [
+    'Kucing' => 0,
+    'Anjing' => 1,
+    'Kelinci' => 2,
+    'Burung' => 3,
+    'Lainnya' => 4
+];
+$map_kelamin = [
+    'Jantan' => 0,
+    'Betina' => 1
+];
+// --------------------------------------------------
+
+
 // --- LOGIKA 1: TANGANI SUBMIT FORM (POST) ---
-// Ini dieksekusi duluan saat tombol "Simpan" atau "Kirim" diklik
 if(isset($_POST['submit'])) {
     
-    // Logika baru untuk 'Jenis Hewan':
-    // Jika user memilih "Lainnya" dan MENGISI input teks, kita simpan nilai input teks itu.
-    $jenis_hewan_final = $_POST['jenis_hewan'];
-    if ($jenis_hewan_final == 'Lainnya' && !empty($_POST['hewan_lainnya'])) {
-        $jenis_hewan_final = $_POST['hewan_lainnya']; // Ambil nilai dari input teks "Lainnya"
+    // --- Persiapan Data untuk Database ---
+    $jenis_hewan_teks = $_POST['jenis_hewan'];
+    $jenis_hewan_int = $map_hewan[$jenis_hewan_teks] ?? 4; 
+    
+    $jenis_hewan_custom = NULL;
+    if ($jenis_hewan_int == 4 && !empty($_POST['hewan_lainnya'])) {
+        $jenis_hewan_custom = $_POST['hewan_lainnya'];
     }
 
+    $jenis_kelamin_int = $map_kelamin[$_POST['jenis_kelamin_hewan']] ?? 0;
+    
     // Cek apakah ini mode EDIT (ada 'id' yang dikirim) atau mode TAMBAH BARU
     if(isset($_POST['id']) && !empty($_POST['id'])) {
         // --- Ini Mode UPDATE (Edit) ---
         $id_to_update = (int)$_POST['id'];
         $stmt_update = $conn->prepare("UPDATE tb_form SET 
             nm_majikan = ?, email_majikan = ?, no_tlp_majikan = ?, 
-            nm_hewan = ?, jenis_hewan = ?, usia_hewan = ?, 
-            jenis_kelamin_hewan = ?, keluhan = ? 
+            nm_hewan = ?, jenis_hewan = ?, jenis_hewan_custom = ?, 
+            usia_hewan = ?, jenis_kelamin_hewan = ?, keluhan = ? 
             WHERE id = ?");
         
-        // Bind 9 parameter (8 data + 1 ID)
-        $stmt_update->bind_param("ssssssssi",
+        // Bind 10 parameter (9 data + 1 ID), tipe: "ssssisisis"
+        // BENAR
+        // BENAR
+        $stmt_update->bind_param("ssssisiisi",
             $_POST['nm_majikan'], $_POST['email_majikan'], $_POST['no_tlp_majikan'],
-            $_POST['nm_hewan'], $jenis_hewan_final, $_POST['usia_hewan'],
-            $_POST['jenis_kelamin_hewan'], $_POST['keluhan'], $id_to_update
+            $_POST['nm_hewan'], $jenis_hewan_int, $jenis_hewan_custom,
+            $_POST['usia_hewan'], $jenis_kelamin_int, $_POST['keluhan'], 
+            $id_to_update
         );
         
         if($stmt_update->execute()) {
             echo "<script>alert('Data booking berhasil diupdate!'); window.location.href='admin';</script>";
         } else {
-            // Tampilkan error jika gagal
             echo "<script>alert('Data GAGAL diupdate: " . $conn->error . "');</script>";
         }
         $stmt_update->close();
 
     } else {
         // --- Ini Mode INSERT (Tambah Baru) ---
-        // Kita set statusnya 'Aktif' secara default
         $stmt_insert = $conn->prepare("INSERT INTO tb_form (
             nm_majikan, email_majikan, no_tlp_majikan, 
-            nm_hewan, jenis_hewan, usia_hewan, 
-            jenis_kelamin_hewan, keluhan, status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Aktif')"); 
+            nm_hewan, jenis_hewan, jenis_hewan_custom, 
+            usia_hewan, jenis_kelamin_hewan, keluhan, status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Aktif')"); 
         
-        // Bind 8 parameter
-        $stmt_insert->bind_param("ssssssss",
+        // Bind 9 parameter, tipe: "ssssisisi"
+        $stmt_insert->bind_param("ssssisisi",
             $_POST['nm_majikan'], $_POST['email_majikan'], $_POST['no_tlp_majikan'],
-            $_POST['nm_hewan'], $jenis_hewan_final, $_POST['usia_hewan'],
-            $_POST['jenis_kelamin_hewan'], $_POST['keluhan']
+            $_POST['nm_hewan'], $jenis_hewan_int, $jenis_hewan_custom,
+            $_POST['usia_hewan'], $jenis_kelamin_int, $_POST['keluhan']
         );
 
         if($stmt_insert->execute()) {
@@ -65,31 +84,26 @@ if(isset($_POST['submit'])) {
         }
         $stmt_insert->close();
     }
-    exit; // Wajib exit setelah proses POST selesai
+    exit; 
 }
 
 // --- LOGIKA 2: PERSIAPAN HALAMAN (GET) ---
-// Ini dieksekusi saat halaman dimuat (baik mode edit atau tambah)
-
-$booking_data = []; // Data booking, kosong jika mode 'Tambah'
+$booking_data = []; 
 $is_edit_mode = false; 
 $page_title = "Tambah Booking Baru"; 
 
-// Cek apakah ada ID di URL (mode edit)
 if(isset($_GET['id']) && is_numeric($_GET['id'])) {
     $is_edit_mode = true;
     $page_title = "Edit Booking";
     $id = (int)$_GET['id'];
     
-    // Ambil data dari database untuk ID ini
     $stmt_get = $conn->prepare("SELECT * FROM tb_form WHERE id = ?");
     $stmt_get->bind_param("i", $id);
     $stmt_get->execute();
     $result = $stmt_get->get_result();
-    $booking_data = $result->fetch_assoc(); // Simpan datanya ke variabel
+    $booking_data = $result->fetch_assoc();
     $stmt_get->close();
 
-    // Jika ID tidak ditemukan, lempar kembali ke admin
     if(!$booking_data) {
         echo "<script>alert('Error: Booking ID tidak ditemukan.'); window.location.href='admin';</script>";
         exit;
@@ -100,17 +114,22 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
 function getData($field) {
     global $booking_data;
     if ($booking_data && isset($booking_data[$field])) {
-        // Tampilkan data yang ada di database
+        // Tampilkan data apa adanya (bisa angka, bisa teks)
         return htmlspecialchars($booking_data[$field], ENT_QUOTES);
     }
-    return ''; // Kosongkan jika mode 'Tambah'
+    return ''; 
 }
 
-// Persiapan untuk logic "Jenis Hewan Lainnya"
-$opsi_standar = ['Kucing', 'Anjing', 'Kelinci', 'Burung', 'Lainnya'];
-$jenis_hewan_db = getData('jenis_hewan');
-// Cek apakah data di DB BUKAN salah satu opsi standar (cth: "Ular")
-$is_jenis_lainnya = !in_array($jenis_hewan_db, $opsi_standar) && !empty($jenis_hewan_db);
+// Persiapan untuk logic "Jenis Hewan Lainnya" (BERDASARKAN ANGKA)
+// Ambil angka dari DB (cth: 0, 1, atau 4)
+$jenis_hewan_db_int = (int)getData('jenis_hewan');
+// Ambil teks custom (cth: "Penyu" atau NULL)
+$jenis_hewan_custom_db = getData('jenis_hewan_custom');
+// Cek apakah data di DB adalah 'Lainnya'
+$is_jenis_lainnya = ($jenis_hewan_db_int == 4);
+
+// Persiapan untuk Jenis Kelamin (BERDASARKAN ANGKA)
+$jenis_kelamin_db_int = (int)getData('jenis_kelamin_hewan');
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -177,35 +196,30 @@ $is_jenis_lainnya = !in_array($jenis_hewan_db, $opsi_standar) && !empty($jenis_h
             <div class="relative">
                 <label for="jenis_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Jenis Hewan</label>
                 <select id="jenis_hewan" name="jenis_hewan" onchange="toggleInput(this)" class="w-full appearance-none px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition pr-10">
-                    <option value="" <?php if(empty($jenis_hewan_db)) echo 'selected'; ?> disabled>Pilih jenis hewan</option>
-                    <option value="Kucing" <?php if($jenis_hewan_db == 'Kucing') echo 'selected'; ?>>Kucing</option>
-                    <option value="Anjing" <?php if($jenis_hewan_db == 'Anjing') echo 'selected'; ?>>Anjing</option>
-                    <option value="Kelinci" <?php if($jenis_hewan_db == 'Kelinci') echo 'selected'; ?>>Kelinci</option>
-                    <option value="Burung" <?php if($jenis_hewan_db == 'Burung') echo 'selected'; ?>>Burung</option>
-                    <option value="Lainnya" <?php if($jenis_hewan_db == 'Lainnya' || $is_jenis_lainnya) echo 'selected'; ?>>Lainnya</option>
+                    <option value="" <?php if(empty($booking_data)) echo 'selected'; ?> disabled>Pilih jenis hewan</option>
+                    <option value="Kucing" <?php if($jenis_hewan_db_int == 0) echo 'selected'; ?>>Kucing</option>
+                    <option value="Anjing" <?php if($jenis_hewan_db_int == 1) echo 'selected'; ?>>Anjing</option>
+                    <option value="Kelinci" <?php if($jenis_hewan_db_int == 2) echo 'selected'; ?>>Kelinci</option>
+                    <option value="Burung" <?php if($jenis_hewan_db_int == 3) echo 'selected'; ?>>Burung</option>
+                    <option value="Lainnya" <?php if($is_jenis_lainnya) echo 'selected'; ?>>Lainnya</option>
                 </select>
                 <svg class="absolute right-4 top-[54px] w-5 h-5 text-gray-500 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 24"><path d="M29.0561 3.14713e-05L29.0561 9.21603L14.5281 23.936L7.24792e-05 9.21603V3.14713e-05L14.5281 14.784L29.0561 3.14713e-05Z" fill="#DD0303"/></svg>
 
                 <input type="text" id="hewan_lainnya" name="hewan_lainnya"
-                       value="<?php if($is_jenis_lainnya) echo $jenis_hewan_db; // Isi dengan data non-standar, misal "Ular" ?>"
+                       value="<?php if($is_jenis_lainnya) echo $jenis_hewan_custom_db; // Isi dengan data custom, misal "Penyu" ?>"
                        placeholder="Tulis jenis hewan"
-                       class="<?php if(!$is_jenis_lainnya && $jenis_hewan_db != 'Lainnya') echo 'hidden'; // Tampilkan jika 'Lainnya' atau non-standar ?> mt-3 w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
-            </div>
-
-            <div>
-                <label for="usia_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Usia Hewan (Tahun)</label>
-                <input type="number" name="usia_hewan" id="usia_hewan" value="<?php echo getData('usia_hewan'); ?>" placeholder="Masukkan Usia Hewan" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
+                       class="<?php if(!$is_jenis_lainnya) echo 'hidden'; // Tampilkan jika 'Lainnya' ?> mt-3 w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
             </div>
 
             <div>
                 <label class="block text-lg font-semibold text-gray-700 mb-2">Jenis Kelamin Hewan</label>
                 <div class="flex items-center space-x-6 p-4 border-2 border-[#FA812F] rounded-xl bg-white">
                     <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" name="jenis_kelamin_hewan" value="Jantan" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200" <?php if(getData('jenis_kelamin_hewan') == 'Jantan') echo 'checked'; ?>>
+                        <input type="radio" name="jenis_kelamin_hewan" value="Jantan" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200" <?php if($jenis_kelamin_db_int == 0) echo 'checked'; ?>>
                         <span class="text-base text-gray-800">Jantan</span>
                     </label>
                     <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" name="jenis_kelamin_hewan" value="Betina" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200" <?php if(getData('jenis_kelamin_hewan') == 'Betina') echo 'checked'; ?>>
+                        <input type="radio" name="jenis_kelamin_hewan" value="Betina" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200" <?php if($jenis_kelamin_db_int == 1) echo 'checked'; ?>>
                         <span class="text-base text-gray-800">Betina</span>
                     </label>
                 </div>

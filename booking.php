@@ -9,46 +9,87 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 include 'koneksi.php';
 
+// --- PETA DATA: Teks ke Angka (sesuai database) ---
+$map_hewan = [
+    'Kucing' => 0,
+    'Anjing' => 1,
+    'Kelinci' => 2,
+    'Burung' => 3,
+    'Lainnya' => 4
+];
+$map_kelamin = [
+    'Jantan' => 0,
+    'Betina' => 1
+];
+// --------------------------------------------------
+
 if(isset($_POST['submit'])) {
-    // --- Bagian 1: Simpan data ke database (kode temanmu, tidak diubah) ---
-    $stmt = $conn->prepare("INSERT INTO tb_form (nm_majikan, email_majikan, no_tlp_majikan, nm_hewan, jenis_hewan, usia_hewan, jenis_kelamin_hewan, keluhan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+    // --- Bagian 1: Persiapan Data untuk Database ---
     
-    $jenis_hewan_final = $_POST['jenis_hewan'];
-    if ($jenis_hewan_final == 'Lainnya' && !empty($_POST['hewan_lainnya'])) {
-        $jenis_hewan_final = $_POST['hewan_lainnya'];
+    // Ambil teks dari form (cth: "Kucing" atau "Lainnya")
+    $jenis_hewan_teks = $_POST['jenis_hewan']; 
+    
+    // Ubah teks menjadi angka (cth: 0 atau 4)
+    $jenis_hewan_int = $map_hewan[$jenis_hewan_teks] ?? 4; // Default ke '4' jika ada error
+    
+    // Siapkan kolom custom. Hanya diisi jika user memilih "Lainnya"
+    $jenis_hewan_custom = NULL;
+    if ($jenis_hewan_int == 4 && !empty($_POST['hewan_lainnya'])) {
+        $jenis_hewan_custom = $_POST['hewan_lainnya'];
     }
 
-    $stmt->bind_param("ssssssss", 
+    // Ubah teks jenis kelamin menjadi angka (cth: 0 atau 1)
+    $jenis_kelamin_int = $map_kelamin[$_POST['jenis_kelamin_hewan']] ?? 0;
+
+    // --- Bagian 2: Simpan data ke database (Query diubah) ---
+    // Query ini sekarang sesuai dengan tb_form (6).sql
+    $stmt = $conn->prepare("INSERT INTO tb_form (
+        nm_majikan, email_majikan, no_tlp_majikan, 
+        nm_hewan, jenis_hewan, jenis_hewan_custom, 
+        usia_hewan, jenis_kelamin_hewan, keluhan
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    
+    // Tipe data diubah menjadi "ssssisisi" (string, integer, string, integer, string)
+    // BENAR
+        $stmt->bind_param("ssssisiis",
         $_POST['nm_majikan'],
         $_POST['email_majikan'],
         $_POST['no_tlp_majikan'],
         $_POST['nm_hewan'],
-        $jenis_hewan_final,
-        $_POST['usia_hewan'],
-        $_POST['jenis_kelamin_hewan'],
+        $jenis_hewan_int,       // integer
+        $jenis_hewan_custom,    // string (atau NULL)
+        $_POST['usia_hewan'],    // integer (otomatis dikonversi PHP)
+        $jenis_kelamin_int,     // integer
         $_POST['keluhan']
     );
     
     if($stmt->execute()){
-        // --- Bagian 2: Kirim email konfirmasi ke user ---
+        // --- Bagian 3: Kirim email konfirmasi ke user ---
         $mail = new PHPMailer(true);
 
         try {
             // --- PENGATURAN YANG PERLU KAMU UBAH ---
             $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';                     // Server SMTP Gmail
+            $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = $_ENV['GMAIL_USERNAME'];                // GANTI DENGAN EMAIL GMAIL-MU
-            $mail->Password   = $_ENV['GMAIL_APP_PASSWORD'];                   // GANTI DENGAN 16 KARAKTER APP PASSWORD-MU
+            $mail->Username   = $_ENV['GMAIL_USERNAME'];
+            $mail->Password   = $_ENV['GMAIL_APP_PASSWORD'];
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
             // -----------------------------------------
 
             // Pengirim & Penerima
-            $mail->setFrom('no-reply@candyvet.com', 'Admin CandyVet'); // Email "Dari" (bisa fiktif) dan Nama Pengirim
-            $mail->addAddress($_POST['email_majikan'], $_POST['nm_majikan']); // Kirim ke email yang diisi di form
+            $mail->setFrom('no-reply@candyvet.com', 'Admin CandyVet');
+            $mail->addAddress($_POST['email_majikan'], $_POST['nm_majikan']);
 
             // Konten Email
+            // Logika ini sudah benar, menampilkan teks yg diisi user
+            $display_hewan_email = $_POST['jenis_hewan'];
+            if ($display_hewan_email == 'Lainnya' && !empty($_POST['hewan_lainnya'])) {
+                $display_hewan_email = $_POST['hewan_lainnya'];
+            }
+
             $mail->isHTML(true);
             $mail->Subject = 'Bukti Booking Anda di CandyVet';
             $mail->Body    = "
@@ -56,43 +97,48 @@ if(isset($_POST['submit'])) {
                 <p>Booking Anda telah kami terima. Berikut adalah detailnya:</p>
                 <table border='1' cellpadding='10' style='border-collapse: collapse; width: 100%;'>
                     <tr><td style='background-color: #f2f2f2; width: 30%;'><strong>Nama Hewan</strong></td><td>" . htmlspecialchars($_POST['nm_hewan']) . "</td></tr>
-                    <tr><td style='background-color: #f2f2f2;'><strong>Jenis Hewan</strong></td><td>" . htmlspecialchars($_POST['jenis_hewan']) . "</td></tr>
+                    <tr><td style='background-color: #f2f2f2;'><strong>Jenis Hewan</strong></td><td>" . htmlspecialchars($display_hewan_email) . "</td></tr>
                     <tr><td style='background-color: #f2f2f2;'><strong>Keluhan</strong></td><td>" . htmlspecialchars($_POST['keluhan']) . "</td></tr>
                 </table>
                 <p>Mohon tunggu konfirmasi jadwal dari admin kami via WhatsApp. Jangan balas email ini.</p>
             ";
 
-            $mail->send(); // Kirim email
+            $mail->send();
 
         } catch (Exception $e) {
-            // Jika email gagal, proses tetap lanjut, tidak perlu hentikan user
+            // Jika email gagal, proses tetap lanjut
         }
 
-        // --- Bagian 3: Siapkan & Redirect ke WhatsApp ---
+        // --- Bagian 4: Siapkan & Redirect ke WhatsApp ---
         
         // --- PENGATURAN YANG PERLU KAMU UBAH ---
         $nomorAdminWA = $_ENV['ADMIN_WHATSAPP'];
         // -----------------------------------------
+        
+        // Logika ini juga sudah benar, menggunakan teks
+        $display_hewan_wa = $_POST['jenis_hewan'];
+        if ($display_hewan_wa == 'Lainnya' && !empty($_POST['hewan_lainnya'])) {
+            $display_hewan_wa = $_POST['hewan_lainnya'];
+        }
 
         $pesanWA = "Halo Admin CandyVet, saya ingin booking jadwal atas nama:\n\n" .
                    "Nama Majikan: " . $_POST['nm_majikan'] . "\n" .
                    "No. Telp: " . $_POST['no_tlp_majikan'] . "\n" .
                    "Nama Hewan: " . $_POST['nm_hewan'] . "\n" .
-                   "Jenis Hewan: " . $_POST['jenis_hewan'] . "\n" .
+                   "Jenis Hewan: " . $display_hewan_wa . "\n" .
                    "Keluhan: " . $_POST['keluhan'] . "\n\n" .
                    "Mohon konfirmasi jadwalnya. Terima kasih.";
         
         $pesanWAEncoded = urlencode($pesanWA);
         $whatsappURL = "https://api.whatsapp.com/send?phone=" . $nomorAdminWA . "&text=" . $pesanWAEncoded;
 
-        // Beri notifikasi ke user lalu redirect
         echo "<script>
                 alert('Booking Terkirim! Anda akan dialihkan ke WhatsApp. Bukti booking juga telah dikirim ke email Anda.');
                 window.location.href = '$whatsappURL';
               </script>";
 
     } else {
-        echo '<script>alert("Data Gagal Disimpan, silakan coba lagi.");</script>';
+        echo '<script>alert("Data Gagal Disimpan, silakan coba lagi: ' . $conn->error . '");</script>';
     }
     
     $stmt->close();
