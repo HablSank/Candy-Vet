@@ -328,8 +328,14 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
     <?php
     if(mysqli_num_rows($result) > 0){
         $no = $offset + 1;
-        $total_rows = mysqli_num_rows($result);
-        mysqli_data_seek($result, 0); 
+        
+        // Mendapatkan semua baris data ke dalam array
+        $data_rows = [];
+        while($row = mysqli_fetch_assoc($result)) {
+            $data_rows[] = $row;
+        }
+        
+        $total_rows_on_page = count($data_rows); // Total baris di halaman ini
         
         // ++ PETA DATA: Angka dari DB ke Teks (untuk Tampilan) ++
         $map_hewan_display = [
@@ -337,17 +343,22 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
             1 => 'Anjing', 
             2 => 'Kelinci', 
             3 => 'Burung', 
-            4 => 'Lainnya' // Sesuai permintaan Anda, dashboard menampilkan "Lainnya"
+            4 => 'Lainnya' 
         ];
         // ++ SELESAI TAMBAHAN
         
-        while($row = mysqli_fetch_assoc($result)){
+        // Asumsikan $js_params sudah didefinisikan di bagian PHP atas (di luar <tbody>)
+        $js_params = $js_params ?? ''; // Fallback jika belum didefinisikan
+        
+        foreach($data_rows as $index => $row){
             $badge_class = 'bg-yellow-100 text-yellow-800';
             if($row['status'] == 'Aktif') $badge_class = 'bg-green-100 text-green-700';
             elseif($row['status'] == 'Selesai') $badge_class = 'bg-blue-100 text-blue-700';
             elseif($row['status'] == 'Dibatalkan') $badge_class = 'bg-red-100 text-red-700';
             
-            $border_class = ($no < $total_rows) ? 'border-b border-OrenTua' : '';
+            // LOGIKA UTAMA: Menggunakan border-b border-OrenTua kecuali untuk baris terakhir
+            // Pastikan 'OrenTua' didefinisikan di Tailwind config Anda (sudah ada di kode sebelumnya)
+            $border_class = ($index < $total_rows_on_page - 1) ? 'border-b border-OrenTua' : ''; 
             
             echo "<tr class='bg-PutihCard hover:bg-orange-50 transition'>"; 
             
@@ -355,20 +366,13 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
             echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>".htmlspecialchars($row['nm_majikan'] ?? "")."</td>";
             echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['nm_hewan'] ?? "")."</td>";
             
-            // ================================================================
-            // ++ LOGIKA JENIS HEWAN DIPERBARUI (Membaca Angka)
-            // ================================================================
-            $jenis_hewan_int_db = (int)($row['jenis_hewan'] ?? -1); // Ambil angka (cth: 0 atau 4)
-            
-            // Terjemahkan angka ke teks menggunakan peta
+            // LOGIKA JENIS HEWAN
+            $jenis_hewan_int_db = (int)($row['jenis_hewan'] ?? -1); 
             $display_jenis_hewan = $map_hewan_display[$jenis_hewan_int_db] ?? 'Data Salah';
             
             echo "<td class='p-4 text-HitamTeks $border_class'>".$display_jenis_hewan."</td>";
-            // ================================================================
-            // ++ SELESAI PERUBAHAN
-            // ================================================================
-
-            // Kolom Tanggal Booking (Tidak diubah)
+            
+            // Kolom Tanggal Booking
             $raw_date = $row['tanggal_booking'] ?? "";
             if (!empty($raw_date) && $raw_date != '0000-00-00') {
                 $formatted_date = date('d F Y', strtotime($raw_date)); 
@@ -378,27 +382,27 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
 
             echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($formatted_date)."</td>";
 
-            // Status cell (Tidak diubah)
+            // Status cell
             echo "<td class='p-4 $border_class'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span></td>";
             
-            // Cell Aksi (Tidak diubah)
+            // Cell Aksi
             echo "<td class='p-4 $border_class'>
-                    <div class='flex gap-2 items-center'>
-                        
-                        <button type='button' onclick='showDetailModal({$row['id']})' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></button>
+                        <div class='flex gap-2 items-center'>
+                            
+                            <button type='button' onclick='showDetailModal({$row['id']})' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></button>
 
-                        <a href='booking-admin?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition' title='Edit Booking'><i class=\"bx bx-pencil text-md\"></i></a>
-                        ";
-                        
+                            <a href='booking-admin?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition' title='Edit Booking'><i class=\"bx bx-pencil text-md\"></i></a>
+                            ";
+                            
             if($row['status']=='Aktif'){
                 echo "
-                        <a href='#' onclick=\"confirmSelesai({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Tandai Selesai'><i class=\"bx bx-check-circle text-md\"></i></a>
-                        <a href='#' onclick=\"confirmBatalkan({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Batalkan Booking'><i class=\"bx bx-x-circle text-md\"></i></a>
-                        ";
+                            <a href='#' onclick=\"confirmSelesai({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Tandai Selesai'><i class=\"bx bx-check-circle text-md\"></i></a>
+                            <a href='#' onclick=\"confirmBatalkan({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Batalkan Booking'><i class=\"bx bx-x-circle text-md\"></i></a>
+                            ";
             } elseif ($row['status'] == 'Selesai' || $row['status'] == 'Dibatalkan') {
                 echo "
-                        <a href='#' onclick=\"confirmAktifkan({$row['id']}, '<?php echo $js_params; ?>')\" class='w-8 h-8 flex items-center justify-center bg-gray-200 text-HitamTeks rounded-full hover:bg-OrenTua hover:text-white transition' title='Aktifkan Kembali'><i class=\"bx bx-undo text-md\"></i></a>
-                        ";
+                            <a href='#' onclick=\"confirmAktifkan({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-gray-200 text-HitamTeks rounded-full hover:bg-OrenTua hover:text-white transition' title='Aktifkan Kembali'><i class=\"bx bx-undo text-md\"></i></a>
+                            ";
             }
 
             echo "</div></td></tr>";
