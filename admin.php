@@ -234,7 +234,7 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                 <li>
                     <a href="#" class="flex items-center gap-3 py-3 px-5 text-HitamTeks hover:bg-gray-100 hover:shadow-soft hover:text-UnguAksen font-semibold rounded-xl transition-all">
                         <i class='bx bx-store text-2xl'></i>
-                        Layanan
+                        Riwayat Ulasan
                     </a>
                 </li>
             </ul>
@@ -321,9 +321,10 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                                 echo "<th class='p-4 text-left font-bold text-sm uppercase text-white bg-OrenTua $rounded_l $rounded_r'>$h</th>";
                             }
                             ?>
+
                         </tr>
                     </thead>
-                    <tbody>
+<tbody>
     <?php
     if(mysqli_num_rows($result) > 0){
         $no = $offset + 1;
@@ -448,9 +449,17 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                         <button class="flex items-center gap-2 bg-UnguAksen text-white px-6 py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
                             <i class='bx bx-plus text-2xl'></i> Tambah Booking Baru
                         </button>
-                    </a>
+                    </a>         
             </nav>
-            <?php endif; ?>
+            <?php else: ?>
+            <div class="flex justify-end pt-6 border-t border-OrenTua">
+                 <a href="booking-admin">
+                    <button class="flex items-center gap-2 bg-UnguAksen text-white px-6 py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
+                        <i class='bx bx-plus text-2xl'></i> Tambah Booking Baru
+                    </button>
+                </a>
+            </div>
+            <?php endif; ?>             
             </div>
         </div>
     </main>
