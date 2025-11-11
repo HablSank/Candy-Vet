@@ -170,14 +170,15 @@ include 'koneksi.php';
 
             <div class="mt-6 space-y-6 max-w-[600px] text-lg">
             <p class="text-gray-700 leading-relaxed text-justify">
-                Kami memberikan standar perawatan medis tertinggi untuk sahabat kesayangan Anda.
-                Didukung oleh tim dokter hewan profesional dan fasilitas modern.
-                CandyVet siap melayani setiap kebutuhan kesehatan hewan Anda.
+            Sejak didirikan pada tahun 2018, misi kami sederhana: memberikan perawatan terbaik dan penuh kasih 
+            sayang untuk sahabat terkasih Anda. Kami memahami bahwa hewan peliharaan adalah bagian tak terpisahkan 
+            dari keluarga, dan kami memperlakukan setiap pasien dengan kelembutan dan perhatian yang sama seperti kami 
+            merawat hewan kami sendiri.
             </p>
             <p class="text-gray-700 leading-relaxed text-justify">
-                Memberikan standar perawatan medis tertinggi untuk sahabat kesayangan Anda
-                adalah misi kami. Didukung oleh tim dokter hewan profesional dan fasilitas modern.
-                CandyVet siap melayani setiap kebutuhan kesehatan hewan Anda.
+            Berawal dari sebuah impian di tahun 2018, Candy Vet telah tumbuh menjadi pusat kesehatan hewan yang didukung 
+            oleh tim dokter hewan dan staf profesional yang berdedikasi. Kami di sini untuk mendampingi setiap langkah 
+            perjalanan kesehatan hewan Anda, mulai dari vaksinasi pertama hingga perawatan senior.
             </p>
             </div>
         </div>
@@ -195,8 +196,8 @@ include 'koneksi.php';
                     <img src="assets/pet_hotel.jpg" alt="Pet Hotel CandyVet" class="w-full h-48 object-cover">
                 </div>
                 <h3 class="font-bold text-2xl text-gray-800 mb-2 text-center">PET HOTEL</h3>
-                <p class="text-gray-800 text-sm mb-6 flex-grow">
-                    Menyediakan dokter hewan yang selalu siap, serta lingkungan yang luas dan bersih. CandyVet Pet Hotel menjamin kenyamanan maksimal untuk hewan kesayanganmu.
+                <p class="text-gray-800 text-lg mb-6 flex-grow">
+                    Menyediakan dokter hewan yang selalu siap, serta lingkungan yang luas dan bersih. Candy Vet Pet Hotel menjamin kenyamanan maksimal untuk hewan kesayanganmu.
                 </p>
                 <a href="#fasilitas" class="font-semibold text-black hover:text-[#9E00BA] self-end">
                     Lihat lebih lanjut <span class="text-4xl font-light relative top-1">&raquo;</span>
@@ -208,7 +209,7 @@ include 'koneksi.php';
                     <img src="assets/pemeriksaan.jpg" alt="Pemeriksaan Hewan CandyVet" class="w-full h-48 object-cover">
                 </div>
                 <h3 class="font-bold text-2xl text-gray-800 mb-2 text-center">PEMERIKSAAN</h3>
-                <p class="text-gray-800 text-sm mb-6 flex-grow">
+                <p class="text-gray-800 text-lg mb-6 flex-grow">
                     Memeriksa kesehatan hewan secara menyeluruh untuk mencegah penyakit agar hewan tetap sehat dan aktif.
                 </p>
                 <a href="layanan" class="font-semibold text-black hover:text-[#9E00BA] self-end">
