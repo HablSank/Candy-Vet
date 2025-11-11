@@ -13,7 +13,6 @@ Options -Indexes
 # atau (localhost/Candy-Vet/index), arahkan secara diam-diam ke file index.html.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(index)?/?$ index.html [L]
 
 # --- Aturan Umum untuk Semua Halaman Lain ---
 # Kondisi ini berlaku untuk semua aturan di bawahnya:

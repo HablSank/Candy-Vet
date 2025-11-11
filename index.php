@@ -233,23 +233,23 @@ include 'koneksi.php';
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (6).jpg" alt="Kandang Pet Hotel" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/pethotel_image (1).jpg" alt="Kandang Pet Hotel" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (4).jpg" alt="Litter Box Kucing" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/pethotel_image (2).jpg" alt="Litter Box Kucing" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (3).jpg" alt="Pohon Kucing" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/pethotel_image (3).jpg" alt="Pohon Kucing" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (2).jpg" alt="Anjing makan" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/pethotel_image (4).jpg" alt="Anjing makan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (9).jpg" alt="Kucing makan" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/pethotel_image (5).jpg" alt="Kucing makan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (7).jpg" alt="Jalan-jalan dengan anjing" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/pethotel_image (6).jpg" alt="Jalan-jalan dengan anjing" class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
@@ -261,23 +261,23 @@ include 'koneksi.php';
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (5).jpg" alt="Kasur pemeriksaan" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/fasilitas_image (1).jpg" alt="Kasur pemeriksaan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (10).jpg" alt="Alat-alat kesehatan" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/fasilitas_image (2).jpg" alt="Alat-alat kesehatan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (8).jpg" alt="Meja pemeriksaan" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/fasilitas_image (3).jpg" alt="Meja pemeriksaan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (12).jpg" alt="Kandang peliharaan" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/fasilitas_image (4).jpg" alt="Kandang peliharaan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (1).jpg" alt="Ruangan pemeriksaan" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/fasilitas_image (5).jpg" alt="Ruangan pemeriksaan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md">
-                    <img src="assets/fasilitas_image (11).jpg" alt="Anjing di mobil" class="w-full h-full object-cover">
+                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                    <img src="assets/fasilitas_image (6).jpg" alt="Anjing di mobil" class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
