@@ -86,18 +86,12 @@
 
         // LOGIKA SEARCH DASHBOARD
         document.getElementById('searchInput').addEventListener('keyup', function() {
-            const searchText = this.value.toLowerCase();
+            const searchValue = this.value.toLowerCase();
             const rows = document.querySelectorAll('tbody tr');
             
-            let found = false;
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
-                if (text.includes(searchText)) {
-                    row.style.display = '';
-                    found = true;
-                } else {
-                    row.style.display = 'none';
-                }
+                row.style.display = text.includes(searchValue) ? '' : 'none';
             });
         });
 

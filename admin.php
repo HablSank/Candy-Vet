@@ -232,7 +232,7 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                 </li>
                 <!-- Teks Hitam, Non-Aktif (Ditambahkan hover:text-UnguAksen) -->
                 <li>
-                    <a href="#" class="flex items-center gap-3 py-3 px-5 text-HitamTeks hover:bg-gray-100 hover:shadow-soft hover:text-UnguAksen font-semibold rounded-xl transition-all">
+                    <a href="ulasan-admin" class="flex items-center gap-3 py-3 px-5 text-HitamTeks hover:bg-gray-100 hover:shadow-soft hover:text-UnguAksen font-semibold rounded-xl transition-all">
                         <i class='bx bx-store text-2xl'></i>
                         Riwayat Ulasan
                     </a>
