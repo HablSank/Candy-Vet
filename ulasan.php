@@ -1,3 +1,80 @@
+<?php
+require 'vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__); 
+$dotenv->load();
+include 'koneksi.php';
+
+include 'koneksi.php'; 
+
+
+if (!isset($conn) || $conn->connect_error) {
+    
+    die("Error KONEKSI DATABASE: " . ($conn->connect_error ?? "Variabel \$conn tidak ditemukan."));
+}
+
+
+
+if (isset($_POST['submit'])) {
+    
+    
+    $nm_majikan = htmlspecialchars(trim($_POST['nm_majikan']));
+    $nm_hewan = htmlspecialchars(trim($_POST['nm_hewan']));
+    $ulasan = htmlspecialchars(trim($_POST['ulasan']));
+    
+   
+    $tgl_ulasan = date("Y-m-d H:i:s"); 
+    $status_pending = 'Pending'; 
+
+    
+    if (empty($nm_majikan) || empty($nm_hewan) || empty($ulasan)) {
+        
+    } else {
+        
+       
+        $sql = "INSERT INTO tb_ulasan (nm_majikan, nm_hewan, ulasan, status, tgl_ulasan) VALUES (?, ?, ?, ?, ?)";
+        
+      
+        $stmt = $conn->prepare($sql);
+        
+        
+        if ($stmt === false) {
+            die("Error PREPARE SQL: " . $conn->error); 
+        }
+
+       
+        $stmt->bind_param("sssss", $nm_majikan, $nm_hewan, $ulasan, $status_pending, $tgl_ulasan);
+
+        
+        if ($stmt->execute()) {
+           
+            session_start();
+            $_SESSION['ulasan_sukses'] = true;
+            header("Location: ulasan"); 
+            exit();
+
+        } else {
+           
+            die("Error EKSEKUSI SQL: " . $stmt->error); 
+        }
+
+       
+    }
+}
+
+
+session_start();
+$script_sukses = false;
+if (isset($_SESSION['ulasan_sukses']) && $_SESSION['ulasan_sukses'] === true) {
+    unset($_SESSION['ulasan_sukses']);
+    $script_sukses = true;
+}
+
+
+if (isset($conn)) {
+    $conn->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>

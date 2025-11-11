@@ -1,3 +1,7 @@
+<?php 
+include 'koneksi.php';
+?>
+
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 <head>
@@ -314,114 +318,54 @@
         </div>
     </section>
 
-<section id="ulasan" class="py-24 lg:px-24 lg:py-28" style="font-family: 'Poppins'">
-    <div class="mx-auto">
-        <h2 class="text-3xl md:text-4xl font-bold text-center px-4">
-            <span class="text-[#9E00BA]">Ulasan</span> <span class="text-[#FAB12F]">Pelanggan</span> <span class="text-[#F4631E]">Kami</span>
-        </h2>
+<section id="testimoni" class="py-20">
+  <div class="max-w-6xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-10 text-[#9E00BA]">Apa Kata Mereka?</h2>
 
-        <div class="relative">
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper py-12">
-                    
-                    <div class="swiper-slide h-auto bg-[#FAB12F] p-8 rounded-2xl shadow-lg flex flex-col">
-                        <blockquote class="text-lg text-gray-800 italic leading-relaxed mb-6 flex-grow">
-                            “Tempat ini <span class="font-bold text-[#9E00BA]">sangat bersih</span> dan <span class="font-bold text-[#9E00BA]">perawatannya sangat bagus</span>, Next saya akan bawa Rocky kemari untuk cek kesehatan.”
-                        </blockquote>
-                        <div class="flex items-center gap-3">
-                            <div class="w-16 h-16 bg-[#F4631E] rounded-full flex items-center justify-center">
-                                <img src="assets/testimoni_user.png" alt="User Testimoni" class="w-12 h-12"/>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-900">Budi Santoso</p>
-                                <p class="text-sm text-gray-700">Pemilik Anjing "Rocky"</p>
-                            </div>
+    
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        <?php
+        
+        $query_ulasan = "SELECT nm_majikan, nm_hewan, ulasan, tgl_ulasan FROM tb_ulasan WHERE status = 'Approved' ORDER BY tgl_ulasan DESC";
+        $result_ulasan = $conn->query($query_ulasan);
+
+        if ($result_ulasan && $result_ulasan->num_rows > 0) {
+            while ($row = $result_ulasan->fetch_assoc()) {
+                $nama = htmlspecialchars($row['nm_majikan']);
+                $hewan = htmlspecialchars($row['nm_hewan']);
+                $isi_ulasan = htmlspecialchars($row['ulasan']);
+                $tgl = date("d M Y", strtotime($row['tgl_ulasan']));
+
+                echo '
+                <div class="swiper-slide h-auto bg-[#FAB12F] p-8 rounded-2xl shadow-lg flex flex-col">
+                    <blockquote class="text-lg text-gray-800 italic leading-relaxed mb-6 flex-grow">
+                        “' . $isi_ulasan . '”
+                    </blockquote>
+                    <div class="flex items-center gap-3">
+                        <div class="w-16 h-16 bg-[#F4631E] rounded-full flex items-center justify-center">
+                            <img src="assets/testimoni_user.png" alt="User Testimoni" class="w-12 h-12"/>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900">' . $nama . '</p>
+                            <p class="text-sm text-gray-700">Pemilik ' . $hewan . '</p>
+                            <p class="text-xs text-gray-600 mt-1">' . $tgl . '</p>
                         </div>
                     </div>
+                </div>';
+            }
+        } else {
+            echo "<p class='text-center text-gray-600'>Belum ada ulasan yang disetujui.</p>";
+        }
+        ?>
+      </div>
 
-                    <div class="swiper-slide h-auto bg-[#FAB12F] p-8 rounded-2xl shadow-lg flex flex-col">
-                        <blockquote class="text-lg text-gray-800 italic leading-relaxed mb-6 flex-grow">
-                            “Harga-harga perawatan dan barang-barang disini <span class="font-bold text-[#9E00BA]">sangat aman dikantong</span>.”
-                        </blockquote>
-                        <div class="flex items-center gap-3">
-                            <div class="w-16 h-16 bg-[#F4631E] rounded-full flex items-center justify-center">
-                                <img src="assets/testimoni_user.png" alt="User Testimoni" class="w-12 h-12"/>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-900">Mulyono Setiawan</p>
-                                <p class="text-sm text-gray-700">Pemilik Kucing "Nero"</p>
-                            </div>
-                        </div>
-                    </div>
+      
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-pagination"></div>
 
-                    <div class="swiper-slide h-auto bg-[#FAB12F] p-8 rounded-2xl shadow-lg flex flex-col">
-                        <blockquote class="text-lg text-gray-800 italic leading-relaxed mb-6 flex-grow">
-                            “<span class="font-bold text-[#9E00BA]">Pelayanan ramah bintang 100</span>, kucing saya jadi sehat kembali karena dirawat disini”
-                        </blockquote>
-                        <div class="flex items-center gap-3">
-                            <div class="w-16 h-16 bg-[#F4631E] rounded-full flex items-center justify-center">
-                                <img src="assets/testimoni_user.png" alt="User Testimoni" class="w-12 h-12"/>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-900">Mustofa Bahari</p>
-                                <p class="text-sm text-gray-700">Pemilik Kucing "Simba"</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="swiper-slide h-auto bg-[#FAB12F] p-8 rounded-2xl shadow-lg flex flex-col">
-                        <blockquote class="text-lg text-gray-800 italic leading-relaxed mb-6 flex-grow">
-                            “<span class="font-bold text-[#9E00BA]">Fasilitasnya bersih dan modern</span>, bikin tenang ninggalin anabul di Pet Hotel-nya. <span class="font-bold text-[#9E00BA]">Sangat direkomendasikan!</span>”
-                        </blockquote>
-                        <div class="flex items-center gap-3">
-                            <div class="w-16 h-16 bg-[#F4631E] rounded-full flex items-center justify-center">
-                                <img src="assets/testimoni_user.png" alt="User Testimoni" class="w-12 h-12"/>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-900">Rina Handayani</p>
-                                <p class="text-sm text-gray-700">Pemilik Anjing "Choco"</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="swiper-slide h-auto bg-[#FAB12F] p-8 rounded-2xl shadow-lg flex flex-col">
-                        <blockquote class="text-lg text-gray-800 italic leading-relaxed mb-6 flex-grow">
-                            “<span class="font-bold text-[#9E00BA]">Dokternya sabar banget</span> jawabin semua pertanyaanku yang panik tentang kucingku. Pasti balik lagi.”
-                        </blockquote>
-                        <div class="flex items-center gap-3">
-                            <div class="w-16 h-16 bg-[#F4631E] rounded-full flex items-center justify-center">
-                                <img src="assets/testimoni_user.png" alt="User Testimoni" class="w-12 h-12"/>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-900">Ahmad Zaini</p>
-                                <p class="text-sm text-gray-700">Pemilik Kucing "Snowflake"</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="swiper-slide h-auto bg-[#FAB12F] p-8 rounded-2xl shadow-lg flex flex-col">
-                        <blockquote class="text-lg text-gray-800 italic leading-relaxed mb-6 flex-grow">
-                            “<span class="font-bold text-[#9E00BA]">Proses booking</span> jadwal via web-nya <span class="font-bold text-[#9E00BA]">gampang dan cepat</span>. Sangat membantu buat yang jadwalnya padat. Mantap!”
-                        </blockquote>
-                        <div class="flex items-center gap-3">
-                            <div class="w-16 h-16 bg-[#F4631E] rounded-full flex items-center justify-center">
-                                <img src="assets/testimoni_user.png" alt="User Testimoni" class="w-12 h-12"/>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-900">Lestari</p>
-                                <p class="text-sm text-gray-700">Pemilik Hamster "Mochi"</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="swiper-button-prev text-[#F4631E]"></div>
-            <div class="swiper-button-next text-[#F4631E] "></div>
-            
-            <div class="swiper-pagination !relative"></div>
-
-            <div class="pt-4 space-y-3 justify-center px-10">
+       <div class="pt-4 space-y-3 justify-center px-10">
                 <a href="ulasan" 
                     type="submit" 
                     name="submit" 
@@ -429,8 +373,8 @@
                     Beri Ulasan
                 </a>
             </div>
-        </div>
     </div>
+  </div>
 </section>
 
     <section id="panduan-booking" class="py-16 lg:py-24 bg-repeat bg-center md:px-20" style="background-image: url('assets/paw-pattern.png');">
