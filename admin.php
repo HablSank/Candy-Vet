@@ -210,52 +210,58 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
     </style>
 </head>
 <!-- Latar Belakang Body menggunakan Oren Muda -->
-<body class="bg-OrenMuda font-sans flex min-h-screen text-HitamTeks">
+ <body class="bg-OrenMuda font-sans flex min-h-screen text-HitamTeks">
 
-    <!-- SIDEBAR: BACKGROUND DIUBAH MENJADI PUTIH (bg-PutihCard) -->
-    <aside class="w-72 bg-PutihCard p-8 fixed h-screen rounded-e-3xl flex flex-col justify-between shadow-lg">
+    <!-- SIDEBAR -->
+    <aside id="sidebar"
+        class="fixed top-0 left-0 w-72 bg-PutihCard p-8 h-screen rounded-e-3xl flex flex-col justify-between shadow-lg z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
         <div>
-            <!-- Header Sidebar dengan Garis Oren Tua di bawah -->
+            <!-- Header Sidebar -->
             <div class="flex items-center mb-6 pb-4 border-b border-OrenTua">
-                <!-- Logo dipertahankan -->
                 <img src="./assets/logo.png" alt="CandyVet Logo" class="w-[100px] h-[100px] object-contain">
-                <!-- Teks menggunakan warna Hitam (Ukuran diperkecil dari text-3xl menjadi text-2xl) -->
                 <h2 class="text-HitamTeks text-2xl font-extrabold ml-2">CandyVet</h2>
             </div>
             <ul class="space-y-3">
-                <!-- Teks Hitam, Background Aktif (Oren Tua) - Ditambah HOVER UNGU -->
                 <li>
-                    <a href="admin" class="flex items-center gap-3 py-3 px-5 bg-OrenTua text-white font-semibold rounded-xl shadow-soft transition-all hover:bg-UnguAksen hover:shadow-lg">
-                        <i class='bx bxs-dashboard text-2xl'></i> 
+                    <a href="admin"
+                        class="flex items-center gap-3 py-3 px-5 bg-OrenTua text-white font-semibold rounded-xl shadow-soft transition-all hover:bg-UnguAksen hover:shadow-lg">
+                        <i class='bx bxs-dashboard text-2xl'></i>
                         Riwayat Booking
                     </a>
                 </li>
-                <!-- Teks Hitam, Non-Aktif (Ditambahkan hover:text-UnguAksen) -->
                 <li>
-                    <a href="ulasan-admin" class="flex items-center gap-3 py-3 px-5 text-HitamTeks hover:bg-gray-100 hover:shadow-soft hover:text-UnguAksen font-semibold rounded-xl transition-all">
+                    <a href="#"
+                        class="flex items-center gap-3 py-3 px-5 text-HitamTeks hover:bg-gray-100 hover:shadow-soft hover:text-UnguAksen font-semibold rounded-xl transition-all">
                         <i class='bx bx-store text-2xl'></i>
                         Riwayat Ulasan
                     </a>
                 </li>
             </ul>
         </div>
-        
-        <!-- Tombol Keluar di Bawah dengan Garis Oren Tua di atas (Ditambahkan hover:text-UnguAksen) -->
         <div class="pt-4 border-t border-OrenTua">
-            <a href="#" onclick="confirmlogout()" class="flex items-center gap-3 py-3 px-5 text-HitamTeks hover:bg-gray-100 hover:shadow-soft hover:text-UnguAksen font-semibold rounded-xl transition-all">
+            <a href="#" onclick="confirmlogout()"
+                class="flex items-center gap-3 py-3 px-5 text-HitamTeks hover:bg-gray-100 hover:shadow-soft hover:text-UnguAksen font-semibold rounded-xl transition-all">
                 <i class='bx bx-log-out text-2xl'></i> Keluar
             </a>
-
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 lg:ml-72 p-10">
+    <!-- OVERLAY SAAT SIDEBAR AKTIF DI MOBILE -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
 
-        <!-- Header dan Search Bar -->
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 lg:ml-72 p-6 sm:p-10 w-full transition-all duration-300">
+
+        <!-- HEADER -->
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-            <!-- Teks Hitam -->
-            <h1 class="text-HitamTeks text-4xl font-extrabold drop-shadow">RIWAYAT BOOKING</h1>
+            <div class="flex items-center w-full justify-between md:justify-start">
+                <!-- Tombol Menu Mobile -->
+                <button onclick="toggleSidebar()" class="lg:hidden text-OrenTua text-3xl mr-3 focus:outline-none">
+                    <i class='bx bx-menu'></i>
+                </button>
+                <h1 class="text-HitamTeks text-4xl font-extrabold drop-shadow">RIWAYAT BOOKING</h1>
+            </div>
+
             <!-- Search Bar -->
             <div class="relative w-full md:w-80">
                 <input type="text" placeholder="Cari..." id="searchInput"
@@ -264,217 +270,168 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
             </div>
         </header>
 
-        <!-- Pesan Alert
+        <!-- ALERT PESAN (PHP) -->
+        <!--
         <?php
         if(isset($_GET['pesan'])){
             $alert_text = '';
             if($_GET['pesan'] == 'dibatalkan') $alert_text = '✓ Booking berhasil dibatalkan!';
             elseif($_GET['pesan'] == 'selesai') $alert_text = '✓ Booking berhasil ditandai selesai!';
             elseif($_GET['pesan'] == 'aktifkan') $alert_text = '✓ Status booking berhasil diaktifkan kembali!';
-
             if($alert_text){
                 echo '<div class="bg-green-100 text-green-800 font-semibold p-4 rounded-xl mb-6 shadow-soft animate-slideDown">'.$alert_text.'</div>';
             }
         }
         ?>
         -->
-        <!-- Card Konten Utama: Background Putih -->
-        <div class="bg-PutihCard p-8 rounded-3xl shadow-soft">
 
-            <!-- Judul "Semua Bookings" dengan Garis Oren Tua di bawah -->
+        <!-- CARD UTAMA -->
+        <div class="bg-PutihCard p-6 sm:p-8 rounded-3xl shadow-soft">
+
+            <!-- Judul -->
             <div class="text-center mb-8">
                 <h2 class="text-HitamTeks text-2xl font-bold relative inline-block pb-1.5">
                     <?php 
                         $title_map = ['semua' => 'Semua Bookings', 'Aktif' => 'Booking Aktif', 'Selesai' => 'Booking Selesai', 'Dibatalkan' => 'Booking Dibatalkan'];
                         echo $title_map[$status_filter] ?? 'Semua Bookings';
                     ?>
-                    <!-- Garis Oren Tua -->
                     <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-0.5 bg-OrenTua rounded-full"></span>
                 </h2>
             </div>
 
-            <!-- Filter Tabs Status -->
-            <div class="flex gap-3 mb-6 flex-wrap justify-center">
+            <!-- Filter Tabs -->
+            <div class="flex gap-2 sm:gap-3 mb-6 flex-wrap justify-center">
                 <?php
                 $tabs = ['semua'=>'Semua','Aktif'=>'Aktif','Selesai'=>'Selesai','Dibatalkan'=>'Dibatalkan'];
                 foreach ($tabs as $key=>$label) {
-                    // Menggunakan OrenTua 
                     $active = ($status_filter == $key) ? 'bg-OrenTua text-white' : 'bg-gray-100 text-HitamTeks';
-                    // Hover menggunakan OrenTua 
-                    echo "<a href='admin?status=$key' class='px-5 py-2 font-semibold rounded-xl transition hover:scale-[1.02] hover:bg-OrenTua hover:text-white $active'>$label</a>";
+                    echo "<a href='admin?status=$key' class='px-4 sm:px-5 py-2 font-semibold rounded-xl transition hover:scale-[1.02] hover:bg-OrenTua hover:text-white $active'>$label</a>";
                 }
                 ?>
             </div>
 
+            <!-- TABEL -->
             <div class="overflow-x-auto">
-                <table class="w-full border-separate table-spacing">
+                <table class="w-full min-w-[720px] border-separate table-spacing">
                     <thead>
                         <tr>
                             <?php
-                            // Header bar menggunakan warna Oren Tua
-                            // Menambahkan 'Tanggal Booking'
                             $headers = ['No.', 'Nama Majikan', 'Nama Hewan', 'Jenis Hewan', 'Tanggal Booking', 'Status', 'Aksi'];
                             foreach($headers as $i => $h){
                                 $rounded_l = ($i==0) ? 'rounded-l-xl' : '';
                                 $rounded_r = ($i==count($headers)-1) ? 'rounded-r-xl' : '';
-                                // Garis vertikal dihilangkan
                                 echo "<th class='p-4 text-left font-bold text-sm uppercase text-white bg-OrenTua $rounded_l $rounded_r'>$h</th>";
                             }
                             ?>
-
                         </tr>
                     </thead>
-<tbody>
-    <?php
-    if(mysqli_num_rows($result) > 0){
-        $no = $offset + 1;
-        
-        // Mendapatkan semua baris data ke dalam array
-        $data_rows = [];
-        while($row = mysqli_fetch_assoc($result)) {
-            $data_rows[] = $row;
-        }
-        
-        $total_rows_on_page = count($data_rows); // Total baris di halaman ini
-        
-        // ++ PETA DATA: Angka dari DB ke Teks (untuk Tampilan) ++
-        $map_hewan_display = [
-            0 => 'Kucing', 
-            1 => 'Anjing', 
-            2 => 'Kelinci', 
-            3 => 'Burung', 
-            4 => 'Lainnya' 
-        ];
-        // ++ SELESAI TAMBAHAN
-        
-        // Asumsikan $js_params sudah didefinisikan di bagian PHP atas (di luar <tbody>)
-        $js_params = $js_params ?? ''; // Fallback jika belum didefinisikan
-        
-        foreach($data_rows as $index => $row){
-            $badge_class = 'bg-yellow-100 text-yellow-800';
-            if($row['status'] == 'Aktif') $badge_class = 'bg-green-100 text-green-700';
-            elseif($row['status'] == 'Selesai') $badge_class = 'bg-blue-100 text-blue-700';
-            elseif($row['status'] == 'Dibatalkan') $badge_class = 'bg-red-100 text-red-700';
-            
-            // LOGIKA UTAMA: Menggunakan border-b border-OrenTua kecuali untuk baris terakhir
-            // Pastikan 'OrenTua' didefinisikan di Tailwind config Anda (sudah ada di kode sebelumnya)
-            $border_class = ($index < $total_rows_on_page - 1) ? 'border-b border-OrenTua' : ''; 
-            
-            echo "<tr class='bg-PutihCard hover:bg-orange-50 transition'>"; 
-            
-            echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>$no</td>";
-            echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>".htmlspecialchars($row['nm_majikan'] ?? "")."</td>";
-            echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['nm_hewan'] ?? "")."</td>";
-            
-            // LOGIKA JENIS HEWAN
-            $jenis_hewan_int_db = (int)($row['jenis_hewan'] ?? -1); 
-            $display_jenis_hewan = $map_hewan_display[$jenis_hewan_int_db] ?? 'Data Salah';
-            
-            echo "<td class='p-4 text-HitamTeks $border_class'>".$display_jenis_hewan."</td>";
-            
-            // Kolom Tanggal Booking
-            $raw_date = $row['tanggal_booking'] ?? "";
-            if (!empty($raw_date) && $raw_date != '0000-00-00') {
-                $formatted_date = date('d F Y', strtotime($raw_date)); 
-            } else {
-                $formatted_date = "-";
-            }
-
-            echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($formatted_date)."</td>";
-
-            // Status cell
-            echo "<td class='p-4 $border_class'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span></td>";
-            
-            // Cell Aksi
-            echo "<td class='p-4 $border_class'>
-                        <div class='flex gap-2 items-center'>
-                            
-                            <button type='button' onclick='showDetailModal({$row['id']})' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></button>
-
-                            <a href='booking-admin?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition' title='Edit Booking'><i class=\"bx bx-pencil text-md\"></i></a>
-                            ";
-                            
-            if($row['status']=='Aktif'){
-                echo "
-                            <a href='#' onclick=\"confirmSelesai({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Tandai Selesai'><i class=\"bx bx-check-circle text-md\"></i></a>
-                            <a href='#' onclick=\"confirmBatalkan({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Batalkan Booking'><i class=\"bx bx-x-circle text-md\"></i></a>
-                            ";
-            } elseif ($row['status'] == 'Selesai' || $row['status'] == 'Dibatalkan') {
-                echo "
-                            <a href='#' onclick=\"confirmAktifkan({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-gray-200 text-HitamTeks rounded-full hover:bg-OrenTua hover:text-white transition' title='Aktifkan Kembali'><i class=\"bx bx-undo text-md\"></i></a>
-                            ";
-            }
-
-            echo "</div></td></tr>";
-            $no++;
-        }
-    } else {
-        echo '<tr><td colspan="7" class="text-center p-12 text-gray-500"><i class="bx bx-folder-open text-3xl mb-2 block"></i>Tidak ada data booking</td></tr>';
-    }
-    ?>
-</tbody>
-                </table>
-            <?php if ($total_halaman > 1): ?>
-            <nav class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-8 pt-6 border-t border-OrenMuda">
-                
-                <div class="text-sm text-gray-500">
-                    Halaman <span class="font-bold text-HitamTeks"><?php echo $halaman_sekarang; ?></span> dari <span class="font-bold text-HitamTeks"><?php echo $total_halaman; ?></span>
-                    (Total <?php echo $total_data; ?> booking)
-                </div>
-
-                <div class="flex gap-2 flex-wrap mx-auto">
-                    <?php if($halaman_sekarang > 1): ?>
-                        <a href="admin?page=<?php echo $halaman_sekarang - 1; ?><?php echo $status_param_url; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
-                            <span class="relative bottom-0.5">&laquo;</span>
-                        </a>
-                    <?php else: ?>
-                        <span class="px-4 py-2 text-sm font-semibold bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed relative bottom-0.5">&laquo;</span>
-                    <?php endif; ?>
-
-                    <?php for($i = 1; $i <= $total_halaman; $i++): ?>
+                    <tbody>
                         <?php
-                            $is_active = ($i == $halaman_sekarang);
-                            $active_class = $is_active ? 'bg-OrenTua text-white' : 'bg-gray-100 text-HitamTeks hover:bg-OrenMuda';
+                        if(mysqli_num_rows($result) > 0){
+                            $no = $offset + 1;
+                            $data_rows = [];
+                            while($row = mysqli_fetch_assoc($result)) {
+                                $data_rows[] = $row;
+                            }
+                            $total_rows_on_page = count($data_rows);
+                            $map_hewan_display = [0 => 'Kucing', 1 => 'Anjing', 2 => 'Kelinci', 3 => 'Burung', 4 => 'Lainnya'];
+                            $js_params = $js_params ?? '';
+                            foreach($data_rows as $index => $row){
+                                $badge_class = 'bg-yellow-100 text-yellow-800';
+                                if($row['status'] == 'Aktif') $badge_class = 'bg-green-100 text-green-700';
+                                elseif($row['status'] == 'Selesai') $badge_class = 'bg-blue-100 text-blue-700';
+                                elseif($row['status'] == 'Dibatalkan') $badge_class = 'bg-red-100 text-red-700';
+                                $border_class = ($index < $total_rows_on_page - 1) ? 'border-b border-OrenTua' : ''; 
+                                echo "<tr class='bg-PutihCard hover:bg-orange-50 transition'>";
+                                echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>$no</td>";
+                                echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>".htmlspecialchars($row['nm_majikan'] ?? "")."</td>";
+                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['nm_hewan'] ?? "")."</td>";
+                                $jenis_hewan_int_db = (int)($row['jenis_hewan'] ?? -1); 
+                                $display_jenis_hewan = $map_hewan_display[$jenis_hewan_int_db] ?? 'Data Salah';
+                                echo "<td class='p-4 text-HitamTeks $border_class'>".$display_jenis_hewan."</td>";
+                                $raw_date = $row['tanggal_booking'] ?? "";
+                                $formatted_date = (!empty($raw_date) && $raw_date != '0000-00-00') ? date('d F Y', strtotime($raw_date)) : "-";
+                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($formatted_date)."</td>";
+                                echo "<td class='p-4 $border_class'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span></td>";
+                                echo "<td class='p-4 $border_class'>
+                                        <div class='flex gap-2 items-center'>
+                                            <button type='button' onclick='showDetailModal({$row['id']})' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></button>
+                                            <a href='booking-admin?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition' title='Edit Booking'><i class=\"bx bx-pencil text-md\"></i></a>";
+                                if($row['status']=='Aktif'){
+                                    echo "<a href='#' onclick=\"confirmSelesai({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Tandai Selesai'><i class=\"bx bx-check-circle text-md\"></i></a>
+                                          <a href='#' onclick=\"confirmBatalkan({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Batalkan Booking'><i class=\"bx bx-x-circle text-md\"></i></a>";
+                                } elseif ($row['status'] == 'Selesai' || $row['status'] == 'Dibatalkan') {
+                                    echo "<a href='#' onclick=\"confirmAktifkan({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-gray-200 text-HitamTeks rounded-full hover:bg-OrenTua hover:text-white transition' title='Aktifkan Kembali'><i class=\"bx bx-undo text-md\"></i></a>";
+                                }
+                                echo "</div></td></tr>";
+                                $no++;
+                            }
+                        } else {
+                            echo '<tr><td colspan="7" class="text-center p-12 text-gray-500"><i class="bx bx-folder-open text-3xl mb-2 block"></i>Tidak ada data booking</td></tr>';
+                        }
                         ?>
-                        <a href="admin?page=<?php echo $i; ?><?php echo $status_param_url; ?>" class="px-4 py-2 text-sm font-semibold rounded-lg transition <?php echo $active_class; ?> <?php if(!$is_active) echo 'hidden sm:block'; ?>">
-                            <?php echo $i; ?>
-                        </a>
-                    <?php endfor; ?>
+                    </tbody>
+                </table>
 
-                    <?php if($halaman_sekarang < $total_halaman): ?>
-                        <a href="admin?page=<?php echo $halaman_sekarang + 1; ?><?php echo $status_param_url; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
-                            <span class="relative bottom-0.5">&raquo;</span>
-                        </a>
-                    <?php else: ?>
-                        <span class="px-4 py-2 text-sm font-semibold bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed relative bottom-0.5">&raquo;</span>
-                    <?php endif; ?>
-                </div>
+                <!-- PAGINATION -->
+                <?php if ($total_halaman > 1): ?>
+                <nav class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-8 pt-6 border-t border-OrenMuda">
+                    <div class="text-sm text-gray-500">
+                        Halaman <span class="font-bold text-HitamTeks"><?php echo $halaman_sekarang; ?></span> dari <span class="font-bold text-HitamTeks"><?php echo $total_halaman; ?></span>
+                        (Total <?php echo $total_data; ?> booking)
+                    </div>
+                    <div class="flex gap-2 flex-wrap mx-auto">
+                        <?php if($halaman_sekarang > 1): ?>
+                            <a href="admin?page=<?php echo $halaman_sekarang - 1; ?><?php echo $status_param_url; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
+                                &laquo;
+                            </a>
+                        <?php else: ?>
+                            <span class="px-4 py-2 text-sm font-semibold bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed">&laquo;</span>
+                        <?php endif; ?>
+
+                        <?php for($i = 1; $i <= $total_halaman; $i++): ?>
+                            <?php
+                                $is_active = ($i == $halaman_sekarang);
+                                $active_class = $is_active ? 'bg-OrenTua text-white' : 'bg-gray-100 text-HitamTeks hover:bg-OrenMuda';
+                            ?>
+                            <a href="admin?page=<?php echo $i; ?><?php echo $status_param_url; ?>" class="px-4 py-2 text-sm font-semibold rounded-lg transition <?php echo $active_class; ?> <?php if(!$is_active) echo 'hidden sm:block'; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        <?php endfor; ?>
+
+                        <?php if($halaman_sekarang < $total_halaman): ?>
+                            <a href="admin?page=<?php echo $halaman_sekarang + 1; ?><?php echo $status_param_url; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
+                                &raquo;
+                            </a>
+                        <?php else: ?>
+                            <span class="px-4 py-2 text-sm font-semibold bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed">&raquo;</span>
+                        <?php endif; ?>
+                    </div>
                     <a href="booking-admin">
                         <button class="flex items-center gap-2 bg-UnguAksen text-white px-6 py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
                             <i class='bx bx-plus text-2xl'></i> Tambah Booking Baru
                         </button>
-                    </a>         
-            </nav>
-            <?php else: ?>
-            <div class="flex justify-end pt-6 border-t border-OrenTua">
-                 <a href="booking-admin">
-                    <button class="flex items-center gap-2 bg-UnguAksen text-white px-6 py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
-                        <i class='bx bx-plus text-2xl'></i> Tambah Booking Baru
-                    </button>
-                </a>
-            </div>
-            <?php endif; ?>             
+                    </a>
+                </nav>
+                <?php else: ?>
+                <div class="flex justify-end pt-6 border-t border-OrenTua">
+                    <a href="booking-admin">
+                        <button class="flex items-center gap-2 bg-UnguAksen text-white px-6 py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
+                            <i class='bx bx-plus text-2xl'></i> Tambah Booking Baru
+                        </button>
+                    </a>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
     </main>
 
-
-<div id="modalOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden" onclick="hideDetailModal()"></div>
-
+    <!-- MODAL DETAIL -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden" onclick="hideDetailModal()"></div>
     <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto hidden">
         <div class="relative z-20 w-full max-w-xl transform overflow-hidden rounded-xl bg-[#FFFFFF] text-[#1F2937] shadow-2xl transition-all">
             <div class="p-8">
-                <button onclick="hideDetailModal()" class="absolute top-4 right-6 text-[#1F2937] hover:opacity-75 print-hide">
+                <button onclick="hideDetailModal()" class="absolute top-4 right-6 text-[#1F2937] hover:opacity-75">
                     <span class="material-symbols-outlined text-2xl font-bold">X</span>
                 </button>
 
@@ -485,72 +442,45 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
 
                 <div class="space-y-6">
                     <div>
-                        <h3 class="text-lg font-bold leading-tight tracking-tight text-[#FA812F] mb-3">Informasi Majikan</h3>
+                        <h3 class="text-lg font-bold text-[#FA812F] mb-3">Informasi Majikan</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                            <div class="flex flex-col">
-                                <p class="text-sm font-medium text-[#1F2937]/80">Nama Majikan</p>
-                                <p id="modalNamaMajikan" class="text-base font-semibold">-</p>
-                            </div>
-                            <div class="flex flex-col">
-                                <p class="text-sm font-medium text-[#1F2937]/80">Email</p>
-                                <p id="modalEmail" class="text-base font-semibold">-</p>
-                            </div>
-                            <div class="flex flex-col">
-                                <p class="text-sm font-medium text-[#1F2937]/80">No. Telepon</p>
-                                <p id="modalTelepon" class="text-base font-semibold">-</p>
-                            </div>
-                            <div class="flex flex-col">
-                                <p class="text-sm font-medium text-[#1F2937]/80">Tanggal Booking</p>
-                                <p id="modalTanggalBooking" class="text-base font-semibold">-</p>
-                            </div>
+                            <div><p class="text-sm font-medium text-[#1F2937]/80">Nama Majikan</p><p id="modalNamaMajikan" class="text-base font-semibold">-</p></div>
+                            <div><p class="text-sm font-medium text-[#1F2937]/80">Email</p><p id="modalEmail" class="text-base font-semibold">-</p></div>
+                            <div><p class="text-sm font-medium text-[#1F2937]/80">No. Telepon</p><p id="modalTelepon" class="text-base font-semibold">-</p></div>
+                            <div><p class="text-sm font-medium text-[#1F2937]/80">Tanggal Booking</p><p id="modalTanggalBooking" class="text-base font-semibold">-</p></div>
                         </div>
                     </div>
-
                     <div class="border-t border-gray-200"></div>
-
                     <div>
-                        <h3 class="text-lg font-bold leading-tight tracking-tight text-[#FA812F] mb-3">Informasi Hewan</h3>
+                        <h3 class="text-lg font-bold text-[#FA812F] mb-3">Informasi Hewan</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                            <div class="flex flex-col">
-                                <p class="text-sm font-medium text-[#1F2937]/80">Nama Hewan</p>
-                                <p id="modalNamaHewan" class="text-base font-semibold">-</p>
-                            </div>
-                            <div class="flex flex-col">
-                                <p class="text-sm font-medium text-[#1F2937]/80">Jenis Hewan</p>
-                                <p id="modalJenisHewan" class="text-base font-semibold">-</p>
-                            </div>
-                            <div class="flex flex-col">
-                                <p class="text-sm font-medium text-[#1F2937]/80">Usia</p>
-                                <p id="modalUsiaHewan" class="text-base font-semibold">-</p>
-                            </div>
-                            <div class="flex flex-col">
-                                <p class="text-sm font-medium text-[#1F2937]/80">Jenis Kelamin</p>
-                                <p id="modalJenisKelamin" class="text-base font-semibold">-</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-gray-200"></div>
-
-                    <div>
-                        <h3 class="text-lg font-bold leading-tight tracking-tight text-[#FA812F] mb-2">Keluhan</h3>
-                        <div class="rounded-lg bg-gray-100 p-4">
-                            <p id="modalKeluhan" class="text-sm font-normal leading-relaxed">-</p>
+                            <div><p class="text-sm font-medium text-[#1F2937]/80">Nama Hewan</p><p id="modalNamaHewan" class="text-base font-semibold">-</p></div>
+                            <div><p class="text-sm font-medium text-[#1F2937]/80">Jenis Hewan</p><p id="modalJenisHewan" class="text-base font-semibold">-</p></div>
+                            <div class="sm:col-span-2"><p class="text-sm font-medium text-[#1F2937]/80">Keluhan</p><p id="modalKeluhan" class="text-base font-semibold">-</p></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-8 flex flex-col sm:flex-row-reverse gap-3 print-hide">
-                    <a id="modalEditButton" href="booking-admin" class="flex w-full items-center justify-center gap-2 rounded-lg bg-[#FA812F] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-opacity-90">
-                        Edit
-                    </a>
-                    <button onclick="printDetail()" class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-[#1F2937] shadow-sm transition-colors hover:bg-gray-100">
-                        Cetak
-                    </button>
+                <div class="mt-8 flex justify-end">
+                    <button onclick="hideDetailModal()" class="px-5 py-2 rounded-full bg-[#FA812F] text-white font-semibold hover:bg-[#e46f21] transition">Tutup</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- SCRIPT SIDEBAR TOGGLE -->
+    <script>
+        const sidebar = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+        function toggleSidebar() {
+            sidebar.classList.toggle("-translate-x-full");
+            sidebarOverlay.classList.toggle("hidden");
+        }
+    </script>
+</body>
+
+
     <script src="admin.js"></script>
 </body>
 </html>
