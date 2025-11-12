@@ -233,23 +233,23 @@ include 'koneksi.php';
                 <img src="assets/logo_pethotel.png" alt="Logo pet hotel" class="w-auto h-12 relative bottom-1.5">
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-items-center">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/pethotel_image (1).jpg" alt="Kandang Pet Hotel" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/pethotel_image (2).jpg" alt="Litter Box Kucing" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/pethotel_image (3).jpg" alt="Pohon Kucing" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/pethotel_image (4).jpg" alt="Anjing makan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/pethotel_image (5).jpg" alt="Kucing makan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/pethotel_image (6).jpg" alt="Jalan-jalan dengan anjing" class="w-full h-full object-cover">
                 </div>
             </div>
@@ -261,23 +261,23 @@ include 'koneksi.php';
                 <img src="assets/logo_pemeriksaan.png" alt="Logo pet hotel" class="w-auto h-12 relative bottom-1.5">
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-items-center">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/fasilitas_image (1).jpg" alt="Kasur pemeriksaan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/fasilitas_image (2).jpg" alt="Alat-alat kesehatan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/fasilitas_image (3).jpg" alt="Meja pemeriksaan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/fasilitas_image (4).jpg" alt="Kandang peliharaan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/fasilitas_image (5).jpg" alt="Ruangan pemeriksaan" class="w-full h-full object-cover">
                 </div>
-                <div class="overflow-hidden rounded-xl shadow-md aspect-video">
+                <div class="overflow-hidden rounded-xl shadow-md h-80 w-full max-w-[320px]">
                     <img src="assets/fasilitas_image (6).jpg" alt="Anjing di mobil" class="w-full h-full object-cover">
                 </div>
             </div>
@@ -288,7 +288,7 @@ include 'koneksi.php';
 
 
     <section id="owner" class="flex flex-col items-center justify-center bg-[#FEF3E2] py-12 px-6"  style="background-image: url('assets/paw-pattern.png');">
-        <h2 class="text-3xl sm:text-5xl font-bold text-center mb-6 pt-24" style="font-family: 'Poppins'">
+        <h2 class="text-2xl sm:text-4xl font-bold text-center mb-6 pt-24" style="font-family: 'Poppins'">
             <span class="text-[#FAB12F]">O</span><span class="text-[#F4631E]">W</span><span class="text-[#F4631E]">N</span><span class="text-[#9E00BA]">E</span><span class="text-[#9E00BA]">R</span>
       </h2>
 
