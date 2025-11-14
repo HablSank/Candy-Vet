@@ -3,22 +3,21 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Sesuaikan path ini jika kamu tidak menggunakan Composer
 require 'vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__); 
 $dotenv->load();
 include 'koneksi.php';
 
-// --- PETA DATA: Teks ke Angka (sesuai database) ---
+// --- PETA DATA: Teks ke ID (Sesuai dengan Database Baru) ---
 $map_hewan = [
-    'Kucing' => 0,
+    'Kucing' => 0,      // ID di tb_jenis_hewan
     'Anjing' => 1,
     'Kelinci' => 2,
     'Burung' => 3,
     'Lainnya' => 4
 ];
 $map_kelamin = [
-    'Jantan' => 0,
+    'Jantan' => 0,      // ID di tb_jenis_kelamin
     'Betina' => 1
 ];
 // --------------------------------------------------
@@ -30,37 +29,37 @@ if(isset($_POST['submit'])) {
     // Ambil teks dari form (cth: "Kucing" atau "Lainnya")
     $jenis_hewan_teks = $_POST['jenis_hewan']; 
     
-    // Ubah teks menjadi angka (cth: 0 atau 4)
-    $jenis_hewan_int = $map_hewan[$jenis_hewan_teks] ?? 4; // Default ke '4' jika ada error
+    // Ubah teks menjadi ID (cth: 0 atau 4)
+    $id_jenis_hewan = $map_hewan[$jenis_hewan_teks] ?? 4;
     
     // Siapkan kolom custom. Hanya diisi jika user memilih "Lainnya"
     $jenis_hewan_custom = NULL;
-    if ($jenis_hewan_int == 4 && !empty($_POST['hewan_lainnya'])) {
+    if ($id_jenis_hewan == 4 && !empty($_POST['hewan_lainnya'])) {
         $jenis_hewan_custom = $_POST['hewan_lainnya'];
     }
 
-    // Ubah teks jenis kelamin menjadi angka (cth: 0 atau 1)
-    $jenis_kelamin_int = $map_kelamin[$_POST['jenis_kelamin_hewan']] ?? 0;
+    // Ubah teks jenis kelamin menjadi ID (cth: 0 atau 1)
+    $id_jenis_kelamin = $map_kelamin[$_POST['jenis_kelamin_hewan']] ?? 0;
 
-    // --- Bagian 2: Simpan data ke database (Query diubah) ---
-    // Query ini sekarang sesuai dengan tb_form (6).sql
+    // --- Bagian 2: Simpan data ke database ---
+    // ✅ NAMA KOLOM SUDAH BENAR (Sesuai STEP 1)
     $stmt = $conn->prepare("INSERT INTO tb_form (
         nm_majikan, email_majikan, no_tlp_majikan, 
-        nm_hewan, jenis_hewan, jenis_hewan_custom, 
-        usia_hewan, jenis_kelamin_hewan, keluhan
+        nm_hewan, id_jenis_hewan, jenis_hewan_custom, 
+        usia_hewan, id_jenis_kelamin, keluhan
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
-    // Tipe data diubah menjadi "ssssisisi" (string, integer, string, integer, string)
-    // BENAR
-        $stmt->bind_param("ssssisiis",
+    // Tipe: s=string, i=integer
+    // 9 parameter: (s)(s)(s)(s)(i)(s)(i)(i)(s)
+    $stmt->bind_param("ssssisiis",
         $_POST['nm_majikan'],
         $_POST['email_majikan'],
         $_POST['no_tlp_majikan'],
         $_POST['nm_hewan'],
-        $jenis_hewan_int,       // integer
+        $id_jenis_hewan,        // ✅ ID INTEGER
         $jenis_hewan_custom,    // string (atau NULL)
-        $_POST['usia_hewan'],    // integer (otomatis dikonversi PHP)
-        $jenis_kelamin_int,     // integer
+        $_POST['usia_hewan'],   // integer
+        $id_jenis_kelamin,      // ✅ ID INTEGER
         $_POST['keluhan']
     );
     
@@ -69,7 +68,6 @@ if(isset($_POST['submit'])) {
         $mail = new PHPMailer(true);
 
         try {
-            // --- PENGATURAN YANG PERLU KAMU UBAH ---
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
@@ -77,13 +75,10 @@ if(isset($_POST['submit'])) {
             $mail->Password   = $_ENV['GMAIL_APP_PASSWORD'];
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
-            // -----------------------------------------
 
-            // Pengirim & Penerima
             $mail->setFrom('no-reply@candyvet.com', 'Admin CandyVet');
             $mail->addAddress($_POST['email_majikan'], $_POST['nm_majikan']);
 
-            // Konten Email
             // Logika ini sudah benar, menampilkan teks yg diisi user
             $display_hewan_email = $_POST['jenis_hewan'];
             if ($display_hewan_email == 'Lainnya' && !empty($_POST['hewan_lainnya'])) {
@@ -110,12 +105,9 @@ if(isset($_POST['submit'])) {
         }
 
         // --- Bagian 4: Siapkan & Redirect ke WhatsApp ---
-        
-        // --- PENGATURAN YANG PERLU KAMU UBAH ---
         $nomorAdminWA = $_ENV['ADMIN_WHATSAPP'];
-        // -----------------------------------------
         
-        // Logika ini juga sudah benar, menggunakan teks
+        // Logika ini sudah benar, menggunakan teks
         $display_hewan_wa = $_POST['jenis_hewan'];
         if ($display_hewan_wa == 'Lainnya' && !empty($_POST['hewan_lainnya'])) {
             $display_hewan_wa = $_POST['hewan_lainnya'];
@@ -160,7 +152,7 @@ if(isset($_POST['submit'])) {
 </head>
 <body class="bg-[#FEF3E2]" style="font-family: 'Poppins', sans-serif;">
     
-        <nav class="fixed top-0 left-0 right-0 z-50 bg-[#FEF3E2]/80 backdrop-blur-md border- md:border-gray-200/50">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#FEF3E2]/80 backdrop-blur-md border- md:border-gray-200/50">
         <div class="container mx-auto flex items-center justify-between h-20 px-4">
             <a href="index" class="flex items-center space-x-2">
                 <img src="assets/logo.png" alt="CandyVet Logo" class="h-14 w-auto xl:h-24 xl:w-24">
@@ -198,7 +190,6 @@ if(isset($_POST['submit'])) {
         </div>
     </nav>
 
-
     <section class="max-w-xl mx-auto pt-24 my-12 px-4">
         <h2 class="text-center text-2xl sm:text-3xl font-bold text-gray-800 mb-10">
             Formulir Booking CandyVet
@@ -229,34 +220,32 @@ if(isset($_POST['submit'])) {
             </div>
 
             <div class="relative">
-    <label for="jenis_hewan" class="block text-lg font-semibold text-gray-700 mb-2">
-        Jenis Hewan
-    </label>
+                <label for="jenis_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Jenis Hewan</label>
 
-    <select id="jenis_hewan" name="jenis_hewan"
-        onchange="toggleInput(this)" required
-        class="w-full appearance-none px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition pr-10">
-        <option value="" disabled selected>Pilih jenis hewan</option>
-        <option value="Kucing">Kucing</option>
-        <option value="Anjing">Anjing</option>
-        <option value="Kelinci">Kelinci</option>
-        <option value="Burung">Burung</option>
-        <option value="Lainnya">Lainnya</option>
-    </select>
+                <select id="jenis_hewan" name="jenis_hewan"
+                    onchange="toggleInput(this)" required
+                    class="w-full appearance-none px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition pr-10">
+                    <option value="" disabled selected>Pilih jenis hewan</option>
+                    <option value="Kucing">Kucing</option>
+                    <option value="Anjing">Anjing</option>
+                    <option value="Kelinci">Kelinci</option>
+                    <option value="Burung">Burung</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
 
-    <!-- SVG panah -->
-    <svg class="absolute right-4 top-[54px] w-5 h-5 text-gray-500 pointer-events-none"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 30 24">
-        <path d="M29.0561 3.14713e-05L29.0561 9.21603L14.5281 23.936L7.24792e-05 9.21603V3.14713e-05L14.5281 14.784L29.0561 3.14713e-05Z" fill="#DD0303"/>
-    </svg>
+                <!-- SVG panah -->
+                <svg class="absolute right-4 top-[54px] w-5 h-5 text-gray-500 pointer-events-none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 30 24">
+                    <path d="M29.0561 3.14713e-05L29.0561 9.21603L14.5281 23.936L7.24792e-05 9.21603V3.14713e-05L14.5281 14.784L29.0561 3.14713e-05Z" fill="#DD0303"/>
+                </svg>
 
-    <!-- Input muncul jika pilih 'Lainnya' -->
-    <input type="text" id="hewan_lainnya" name="hewan_lainnya"
-        placeholder="Tulis jenis hewan" required
-        class="hidden mt-3 w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
-</div>
+                <!-- Input muncul jika pilih 'Lainnya' -->
+                <input type="text" id="hewan_lainnya" name="hewan_lainnya"
+                    placeholder="Tulis jenis hewan" required
+                    class="hidden mt-3 w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
+            </div>
 
             <div>
                 <label for="usia_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Usia Hewan (Tahun)</label>

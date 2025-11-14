@@ -11,16 +11,11 @@ if (!isset($conn)) {
 }
 
 // --- Kumpulkan Parameter URL untuk Redirect ---
-// Ini penting agar filter & halaman tidak reset setelah aksi
 $redirect_params = '';
-// Jika ada filter status, simpan
 if(isset($_GET['status'])) $redirect_params .= '&status=' . urlencode($_GET['status']); 
-// Jika ada info halaman, simpan
 if(isset($_GET['page'])) $redirect_params .= '&page=' . (int)$_GET['page'];
 
-
 // --- Logic untuk Batalkan, Selesai, Aktifkan ---
-
 if(isset($_GET['batalkan'])){
     $id = $_GET['batalkan'];
     $stmt = mysqli_prepare($conn, "UPDATE tb_form SET status = 'Dibatalkan' WHERE id = ?");
@@ -28,8 +23,6 @@ if(isset($_GET['batalkan'])){
     if(mysqli_stmt_execute($stmt)){
         header("Location: admin?pesan=dibatalkan" . $redirect_params);
         exit;
-    } else {
-        echo "Error batalkan: " . mysqli_error($conn);
     }
 }
 
@@ -40,8 +33,6 @@ if(isset($_GET['selesai'])){
     if(mysqli_stmt_execute($stmt)){
         header("Location: admin?pesan=selesai" . $redirect_params);
         exit;
-    } else {
-        echo "Error selesai: " . mysqli_error($conn);
     }
 }
 
@@ -52,53 +43,57 @@ if(isset($_GET['aktifkan'])){
     if(mysqli_stmt_execute($stmt)){
         header("Location: admin?pesan=aktifkan" . $redirect_params);
         exit;
-    } else {
-        echo "Error aktifkan: " . mysqli_error($conn);
     }
 }
 
-// --- LOGIKA PAGINATION (HALAMAN) BARU---
-$data_per_halaman = 5; // Tentukan 5 data per halaman
-// Cek URL, user ada di halaman berapa? Default-nya halaman 1
+// --- LOGIKA PAGINATION ---
+$data_per_halaman = 5;
 $halaman_sekarang = isset($_GET['page']) ? (int)$_GET['page'] : 1; 
 if ($halaman_sekarang < 1) $halaman_sekarang = 1;
-// Hitung data yang harus di-skip di SQL
 $offset = ($halaman_sekarang - 1) * $data_per_halaman; 
 
-// --- LOGIKA FILTER STATUS (Dimodifikasi untuk Pagination) ---
+// --- LOGIKA FILTER STATUS ---
 $status_filter = isset($_GET['status']) ? $_GET['status'] : 'semua';
-$status_param_url = ''; // Ini untuk disimpan di link tombol pagination nanti
-$where_clause = ''; // Ini adalah klausa 'WHERE' untuk query SQL
+$status_param_url = ''; 
+$where_clause = ''; 
 
 if($status_filter != 'semua'){
     $status_filter_safe = mysqli_real_escape_string($conn, $status_filter);
-    $where_clause = "WHERE status = '$status_filter_safe'";
-    $status_param_url = "&status=" . urlencode($status_filter); // Simpan status untuk link
+    $where_clause = "WHERE f.status = '$status_filter_safe'";
+    $status_param_url = "&status=" . urlencode($status_filter);
 }
 
-// --- DUA QUERY BARU (PENTING UNTUK PAGINATION) ---
-
-// 1. Query untuk MENGHITUNG TOTAL DATA (sesuai filter)
-// Kita perlu tahu total data untuk menghitung total halaman
-$query_total = "SELECT COUNT(*) as total FROM tb_form $where_clause";
+// --- QUERY HITUNG TOTAL DATA ---
+$query_total = "SELECT COUNT(*) as total FROM tb_form f $where_clause";
 $result_total = mysqli_query($conn, $query_total);
 $data_total = mysqli_fetch_assoc($result_total);
 $total_data = (int)$data_total['total'];
+$total_halaman = ceil($total_data / $data_per_halaman);
 
-// Hitung total halaman yang akan ada
-$total_halaman = ceil($total_data / $data_per_halaman); // ceil() = bulatkan ke atas
+// --- QUERY AMBIL DATA DENGAN JOIN ---
+$query_data = "
+    SELECT 
+        f.id,
+        f.nm_majikan,
+        f.nm_hewan,
+        f.id_jenis_hewan,
+        jh.nama_jenis_hewan,
+        f.jenis_hewan_custom,
+        f.tanggal_booking,
+        f.status
+    FROM tb_form f
+    LEFT JOIN tb_jenis_hewan jh ON f.id_jenis_hewan = jh.id_jenis_hewan
+    $where_clause 
+    ORDER BY f.id ASC 
+    LIMIT $data_per_halaman OFFSET $offset
+";
 
-// 2. Query untuk MENGAMBIL DATA (sesuai filter DAN halaman)
-// Kita tambahkan LIMIT (5 data) dan OFFSET (skip berapa data)
-$query_data = "SELECT * FROM tb_form $where_clause ORDER BY id ASC LIMIT $data_per_halaman OFFSET $offset";
 $result = mysqli_query($conn, $query_data);
 
 if (!$result) {
     die("Query gagal: " . mysqli_error($conn));
 }
 
-// Variabel untuk parameter JS (ini untuk langkah 3 & 4 nanti)
-// Ini akan menghasilkan string seperti "status=Aktif&page=2"
 $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
 ?>
 
@@ -117,12 +112,11 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
             theme: {
                 extend: {
                     colors: {
-                        // WARNA REVISI
-                        HitamTeks: '#1F2937', // Hitam gelap untuk semua teks
-                        OrenTua: '#FA812F', // Jingga Tua
-                        OrenMuda: '#FAB12F', // Jingga Muda (digunakan untuk latar belakang body)
-                        PutihCard: '#FFFFFF', // Putih untuk card konten dan sidebar
-                        UnguAksen: '#9E00BA', // Aksen Ungu
+                        HitamTeks: '#1F2937',
+                        OrenTua: '#FA812F',
+                        OrenMuda: '#FAB12F',
+                        PutihCard: '#FFFFFF',
+                        UnguAksen: '#9E00BA',
                     },
                     boxShadow: {
                         'soft': '0 4px 15px rgba(0,0,0,0.08)',
@@ -153,8 +147,6 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
             border-right: none !important;
         }
 
-        /* SweetAlert Styling - Menggunakan OrenTua */
-        /* Pastikan custom class di JS terdefinisi dengan benar jika ingin override */
         .swal2-styled.swal2-confirm {
             background-color: #FA812F !important; 
             color: white !important;
@@ -163,60 +155,86 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .swal2-styled.swal2-cancel {
-            /* Menggunakan OrenMuda untuk tombol Batal */
             background-color: #FAB12F !important; 
             color: #495057 !important;
             border: 1px solid #ced4da !important;
             font-weight: 600 !important;
         }
-        /* Tambahkan style untuk konfirmasi Batalkan yang menggunakan warna merah */
         .swal2-styled.swal2-confirm-red {
             background-color: rgba(220, 53, 69, 1) !important;
         }
 
-        @media print {
-            body * {
-                visibility: hidden;
-            }
+@media print {
+    @page {
+        margin: 0.5cm; /* Margin halaman minimal */
+        size: auto;
+    }
 
-            #detailModal, #detailModal * {
-                visibility: visible;
-            }
+    body * {
+        visibility: hidden;
+    }
 
-            #detailModal {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: auto;
-                box-shadow: none;
-                border: none;
-                overflow: visible;
-            }
-            
-            #modalOverlay, .print-hide {
+    #detailModal, #detailModal * {
+        visibility: visible;
+    }
+
+    #detailModal {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(0.95); /* Lebih gede dari 0.8 */
+        width: 100%;
+        height: auto;
+        box-shadow: none;
+        border: none;
+        overflow: visible;
+    }
+    
+    #modalOverlay, .print-hide {
+        display: none !important;
+    }
+    
+    #closeOverlay, .print-hide {
                 display: none !important;
             }
 
-            .rounded-lg.bg-gray-100 {
-                background-color: #f3f4f6 !important;
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact;
-            }
-        }
-        body.modal-open {
-        overflow: hidden;
-        }
-    </style>
+
+
+    /* Paksa semua warna background & border muncul */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+
+    .rounded-lg.bg-gray-100 {
+        background-color: #f3f4f6 !important;
+    }
+
+    /* Pastikan warna oranye tetap muncul */
+    .text-\[\#FA812F\] {
+        color: #FA812F !important;
+    }
+
+    h3.text-\[\#FA812F\] {
+        color: #FA812F !important;
+    }
+
+    .font-black.text-\[\#FA812F\] {
+        color: #FA812F !important;
+    }
+}
+
+body.modal-open {
+    overflow: hidden;
+} </style>
 </head>
-<!-- Latar Belakang Body menggunakan Oren Muda -->
- <body class="bg-OrenMuda font-sans flex min-h-screen text-HitamTeks">
+<body class="bg-OrenMuda font-sans flex min-h-screen text-HitamTeks">
 
     <!-- SIDEBAR -->
     <aside id="sidebar"
         class="fixed top-0 left-0 w-72 bg-PutihCard p-8 h-screen rounded-e-3xl flex flex-col justify-between shadow-lg z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
         <div>
-            <!-- Header Sidebar -->
             <div class="flex items-center mb-6 pb-4 border-b border-OrenTua">
                 <img src="./assets/logo.png" alt="CandyVet Logo" class="w-[100px] h-[100px] object-contain">
                 <h2 class="text-HitamTeks text-2xl font-extrabold ml-2">CandyVet</h2>
@@ -230,7 +248,7 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                     </a>
                 </li>
                 <li>
-                    <a href="#"
+                    <a href="ulasan-admin"
                         class="flex items-center gap-3 py-3 px-5 text-HitamTeks hover:bg-gray-100 hover:shadow-soft hover:text-UnguAksen font-semibold rounded-xl transition-all">
                         <i class='bx bx-store text-2xl'></i>
                         Riwayat Ulasan
@@ -246,7 +264,6 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
         </div>
     </aside>
 
-    <!-- OVERLAY SAAT SIDEBAR AKTIF DI MOBILE -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
 
     <!-- MAIN CONTENT -->
@@ -255,35 +272,18 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
         <!-- HEADER -->
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
             <div class="flex items-center w-full justify-between md:justify-start">
-                <!-- Tombol Menu Mobile -->
                 <button onclick="toggleSidebar()" class="lg:hidden text-OrenTua text-3xl mr-3 focus:outline-none">
                     <i class='bx bx-menu'></i>
                 </button>
                 <h1 class="text-HitamTeks text-4xl font-extrabold drop-shadow">RIWAYAT BOOKING</h1>
             </div>
 
-            <!-- Search Bar -->
             <div class="relative w-full md:w-80">
                 <input type="text" placeholder="Cari..." id="searchInput"
                     class="w-full py-3 pl-5 pr-12 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-OrenTua text-gray-700">
                 <i class='bx bx-search absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl'></i>
             </div>
         </header>
-
-        <!-- ALERT PESAN (PHP) -->
-        <!--
-        <?php
-        if(isset($_GET['pesan'])){
-            $alert_text = '';
-            if($_GET['pesan'] == 'dibatalkan') $alert_text = '✓ Booking berhasil dibatalkan!';
-            elseif($_GET['pesan'] == 'selesai') $alert_text = '✓ Booking berhasil ditandai selesai!';
-            elseif($_GET['pesan'] == 'aktifkan') $alert_text = '✓ Status booking berhasil diaktifkan kembali!';
-            if($alert_text){
-                echo '<div class="bg-green-100 text-green-800 font-semibold p-4 rounded-xl mb-6 shadow-soft animate-slideDown">'.$alert_text.'</div>';
-            }
-        }
-        ?>
-        -->
 
         <!-- CARD UTAMA -->
         <div class="bg-PutihCard p-6 sm:p-8 rounded-3xl shadow-soft">
@@ -334,23 +334,30 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                                 $data_rows[] = $row;
                             }
                             $total_rows_on_page = count($data_rows);
-                            $map_hewan_display = [0 => 'Kucing', 1 => 'Anjing', 2 => 'Kelinci', 3 => 'Burung', 4 => 'Lainnya'];
-                            $js_params = $js_params ?? '';
                             foreach($data_rows as $index => $row){
                                 $badge_class = 'bg-yellow-100 text-yellow-800';
                                 if($row['status'] == 'Aktif') $badge_class = 'bg-green-100 text-green-700';
                                 elseif($row['status'] == 'Selesai') $badge_class = 'bg-blue-100 text-blue-700';
                                 elseif($row['status'] == 'Dibatalkan') $badge_class = 'bg-red-100 text-red-700';
-                                $border_class = ($index < $total_rows_on_page - 1) ? 'border-b border-OrenTua' : ''; 
+                                $border_class = ($index < $total_rows_on_page - 1) ? 'border-b border-OrenTua' : '';
+                                
+                                // ✅ Tentukan jenis hewan yang ditampilkan (dengan JOIN)
+                                if ((int)$row['id_jenis_hewan'] == 4) {
+                                    // Jika Lainnya, gunakan custom
+                                    $display_jenis_hewan = $row['jenis_hewan_custom'] ?? 'Lainnya';
+                                } else {
+                                    // Jika standar, gunakan dari JOIN
+                                    $display_jenis_hewan = $row['nama_jenis_hewan'] ?? 'Data Salah';
+                                }
+                                
+                                $raw_date = $row['tanggal_booking'] ?? "";
+                                $formatted_date = (!empty($raw_date) && $raw_date != '0000-00-00') ? date('d F Y', strtotime($raw_date)) : "-";
+                                
                                 echo "<tr class='bg-PutihCard hover:bg-orange-50 transition'>";
                                 echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>$no</td>";
                                 echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>".htmlspecialchars($row['nm_majikan'] ?? "")."</td>";
                                 echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['nm_hewan'] ?? "")."</td>";
-                                $jenis_hewan_int_db = (int)($row['jenis_hewan'] ?? -1); 
-                                $display_jenis_hewan = $map_hewan_display[$jenis_hewan_int_db] ?? 'Data Salah';
                                 echo "<td class='p-4 text-HitamTeks $border_class'>".$display_jenis_hewan."</td>";
-                                $raw_date = $row['tanggal_booking'] ?? "";
-                                $formatted_date = (!empty($raw_date) && $raw_date != '0000-00-00') ? date('d F Y', strtotime($raw_date)) : "-";
                                 echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($formatted_date)."</td>";
                                 echo "<td class='p-4 $border_class'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span></td>";
                                 echo "<td class='p-4 $border_class'>
@@ -456,14 +463,23 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                             <div><p class="text-sm font-medium text-[#1F2937]/80">Nama Hewan</p><p id="modalNamaHewan" class="text-base font-semibold">-</p></div>
                             <div><p class="text-sm font-medium text-[#1F2937]/80">Jenis Hewan</p><p id="modalJenisHewan" class="text-base font-semibold">-</p></div>
+                            <div><p class="text-sm font-medium text-[#1F2937]/80">Jenis Kelamin</p><p id="modalJenisKelamin" class="text-base font-semibold">-</p></div>
+                            <div><p class="text-sm font-medium text-[#1F2937]/80">Usia Hewan</p><p id="modalUsiaHewan" class="text-base font-semibold">-</p></div>
                             <div class="sm:col-span-2"><p class="text-sm font-medium text-[#1F2937]/80">Keluhan</p><p id="modalKeluhan" class="text-base font-semibold">-</p></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-8 flex justify-end">
-                    <button onclick="hideDetailModal()" class="px-5 py-2 rounded-full bg-[#FA812F] text-white font-semibold hover:bg-[#e46f21] transition">Tutup</button>
-                </div>
+                <div class="mt-8 flex justify-end gap-3 print-hide">
+    <button id="closeOverlay" onclick="hideDetailModal()" class="absolute top-4 right-6 text-[#1F2937] hover:opacity-75">
+                    <span class="material-symbols-outlined text-2xl font-bold">X</span>
+                </button>
+    <button onclick="printDetail()" class="flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors bg-[#FA812F] hover:bg-[#E37129]">
+       </i> Cetak </button>
+    </button>
+    <button onclick="hideDetailModal()" class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-black shadow-sm transition-colors hover:bg-gray-100">
+        </i> Tutup
+    </button> </div>
             </div>
         </div>
     </div>
@@ -478,8 +494,6 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
             sidebarOverlay.classList.toggle("hidden");
         }
     </script>
-</body>
-
 
     <script src="admin.js"></script>
 </body>

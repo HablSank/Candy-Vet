@@ -6,7 +6,7 @@ if(!isset($_SESSION['user'])){
 }
 include 'koneksi.php';
 
-// --- PETA DATA: Teks ke Angka (sesuai database) ---
+// --- PETA DATA: Teks ke ID (Sesuai dengan tb_jenis_hewan & tb_jenis_kelamin) ---
 $map_hewan = [
     'Kucing' => 0,
     'Anjing' => 1,
@@ -20,67 +20,108 @@ $map_kelamin = [
 ];
 // --------------------------------------------------
 
-
 // --- LOGIKA 1: TANGANI SUBMIT FORM (POST) ---
 if(isset($_POST['submit'])) {
     
     // --- Persiapan Data untuk Database ---
-    $jenis_hewan_teks = $_POST['jenis_hewan'];
-    $jenis_hewan_int = $map_hewan[$jenis_hewan_teks] ?? 4; 
+    $jenis_hewan_teks = $_POST['jenis_hewan'] ?? '';
+    $id_jenis_hewan = $map_hewan[$jenis_hewan_teks] ?? 4;
     
     $jenis_hewan_custom = NULL;
-    if ($jenis_hewan_int == 4 && !empty($_POST['hewan_lainnya'])) {
+    if ($id_jenis_hewan == 4 && !empty($_POST['hewan_lainnya'])) {
         $jenis_hewan_custom = $_POST['hewan_lainnya'];
     }
 
-    $jenis_kelamin_int = $map_kelamin[$_POST['jenis_kelamin_hewan']] ?? 0;
+    $jenis_kelamin_teks = $_POST['jenis_kelamin_hewan'] ?? '';
+    $id_jenis_kelamin = $map_kelamin[$jenis_kelamin_teks] ?? 0;
     
     // Cek apakah ini mode EDIT (ada 'id' yang dikirim) atau mode TAMBAH BARU
     if(isset($_POST['id']) && !empty($_POST['id'])) {
         // --- Ini Mode UPDATE (Edit) ---
         $id_to_update = (int)$_POST['id'];
-        $stmt_update = $conn->prepare("UPDATE tb_form SET 
-            nm_majikan = ?, email_majikan = ?, no_tlp_majikan = ?, 
-            nm_hewan = ?, jenis_hewan = ?, jenis_hewan_custom = ?, 
-            usia_hewan = ?, jenis_kelamin_hewan = ?, keluhan = ? 
-            WHERE id = ?");
         
-        // Bind 10 parameter (9 data + 1 ID), tipe: "ssssisisis"
-        // BENAR
-        // BENAR
-        $stmt_update->bind_param("ssssisiisi",
-            $_POST['nm_majikan'], $_POST['email_majikan'], $_POST['no_tlp_majikan'],
-            $_POST['nm_hewan'], $jenis_hewan_int, $jenis_hewan_custom,
-            $_POST['usia_hewan'], $jenis_kelamin_int, $_POST['keluhan'], 
-            $id_to_update
-        );
-        
-        if($stmt_update->execute()) {
-            echo "<script>alert('Data booking berhasil diupdate!'); window.location.href='admin';</script>";
-        } else {
-            echo "<script>alert('Data GAGAL diupdate: " . $conn->error . "');</script>";
-        }
-        $stmt_update->close();
+       // ✅ PENTING: Gunakan nama kolom yang benar
+$stmt_update = $conn->prepare("UPDATE tb_form SET 
+    nm_majikan = ?, 
+    email_majikan = ?, 
+    no_tlp_majikan = ?, 
+    nm_hewan = ?, 
+    id_jenis_hewan = ?, 
+    jenis_hewan_custom = ?, 
+    usia_hewan = ?, 
+    id_jenis_kelamin = ?, 
+    keluhan = ? 
+    WHERE id = ?");
+
+if(!$stmt_update) {
+    die("Prepare failed: " . $conn->error);
+}
+
+// ✅ DIPERBAIKI: Format string dari 11 karakter jadi 10 karakter
+// s = string, i = integer
+// 10 parameter: 9 data + 1 ID
+// Urutan: nm_majikan(s), email(s), telepon(s), nm_hewan(s), 
+//         id_jenis_hewan(i), custom(s), usia(s), id_kelamin(i), keluhan(s), id(i)
+$result = $stmt_update->bind_param(
+    "ssssissisi",  // ← INI YANG DIUBAH (dari "ssssisiiisi")
+    $_POST['nm_majikan'],
+    $_POST['email_majikan'],
+    $_POST['no_tlp_majikan'],
+    $_POST['nm_hewan'],
+    $id_jenis_hewan,
+    $jenis_hewan_custom,
+    $_POST['usia_hewan'],
+    $id_jenis_kelamin,
+    $_POST['keluhan'],
+    $id_to_update
+);
+
+if(!$result) {
+    die("Bind param failed: " . $stmt_update->error);
+}
+
+if($stmt_update->execute()) {
+    echo "<script>alert('Data booking berhasil diupdate!'); window.location.href='admin';</script>";
+} else {
+    echo "<script>alert('Data GAGAL diupdate: " . $stmt_update->error . "');</script>";
+}
+$stmt_update->close();
 
     } else {
         // --- Ini Mode INSERT (Tambah Baru) ---
         $stmt_insert = $conn->prepare("INSERT INTO tb_form (
             nm_majikan, email_majikan, no_tlp_majikan, 
-            nm_hewan, jenis_hewan, jenis_hewan_custom, 
-            usia_hewan, jenis_kelamin_hewan, keluhan, status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Aktif')"); 
+            nm_hewan, id_jenis_hewan, jenis_hewan_custom, 
+            usia_hewan, id_jenis_kelamin, keluhan, status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
         
-        // Bind 9 parameter, tipe: "ssssisisi"
-        $stmt_insert->bind_param("ssssisisi",
-            $_POST['nm_majikan'], $_POST['email_majikan'], $_POST['no_tlp_majikan'],
-            $_POST['nm_hewan'], $jenis_hewan_int, $jenis_hewan_custom,
-            $_POST['usia_hewan'], $jenis_kelamin_int, $_POST['keluhan']
+        if(!$stmt_insert) {
+            die("Prepare failed: " . $conn->error);
+        }
+        
+        $status_aktif = 'Aktif';
+        $result = $stmt_insert->bind_param(
+            "ssssisisss",
+            $_POST['nm_majikan'],
+            $_POST['email_majikan'],
+            $_POST['no_tlp_majikan'],
+            $_POST['nm_hewan'],
+            $id_jenis_hewan,
+            $jenis_hewan_custom,
+            $_POST['usia_hewan'],
+            $id_jenis_kelamin,
+            $_POST['keluhan'],
+            $status_aktif
         );
+        
+        if(!$result) {
+            die("Bind param failed: " . $stmt_insert->error);
+        }
 
         if($stmt_insert->execute()) {
              echo "<script>alert('Booking baru berhasil ditambahkan!'); window.location.href='admin';</script>";
         } else {
-            echo "<script>alert('Data GAGAL disimpan: " . $conn->error . "');</script>";
+            echo "<script>alert('Data GAGAL disimpan: " . $stmt_insert->error . "');</script>";
         }
         $stmt_insert->close();
     }
@@ -97,7 +138,31 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
     $page_title = "Edit Booking";
     $id = (int)$_GET['id'];
     
-    $stmt_get = $conn->prepare("SELECT * FROM tb_form WHERE id = ?");
+    // ✅ Query dengan JOIN untuk pre-fill form
+    $stmt_get = $conn->prepare("
+        SELECT 
+            f.id,
+            f.nm_majikan,
+            f.email_majikan,
+            f.no_tlp_majikan,
+            f.nm_hewan,
+            f.id_jenis_hewan,
+            jh.nama_jenis_hewan,
+            f.jenis_hewan_custom,
+            f.usia_hewan,
+            f.id_jenis_kelamin,
+            jk.nama_jenis_kelamin,
+            f.keluhan
+        FROM tb_form f
+        LEFT JOIN tb_jenis_hewan jh ON f.id_jenis_hewan = jh.id_jenis_hewan
+        LEFT JOIN tb_jenis_kelamin jk ON f.id_jenis_kelamin = jk.id_jenis_kelamin
+        WHERE f.id = ?
+    ");
+    
+    if(!$stmt_get) {
+        die("Prepare failed: " . $conn->error);
+    }
+    
     $stmt_get->bind_param("i", $id);
     $stmt_get->execute();
     $result = $stmt_get->get_result();
@@ -114,22 +179,20 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
 function getData($field) {
     global $booking_data;
     if ($booking_data && isset($booking_data[$field])) {
-        // Tampilkan data apa adanya (bisa angka, bisa teks)
-        return htmlspecialchars($booking_data[$field], ENT_QUOTES);
+        $value = $booking_data[$field];
+        // Jangan gunakan htmlspecialchars untuk value attribute, gunakan untuk keamanan saja
+        return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
     }
     return ''; 
 }
 
-// Persiapan untuk logic "Jenis Hewan Lainnya" (BERDASARKAN ANGKA)
-// Ambil angka dari DB (cth: 0, 1, atau 4)
-$jenis_hewan_db_int = (int)getData('jenis_hewan');
-// Ambil teks custom (cth: "Penyu" atau NULL)
-$jenis_hewan_custom_db = getData('jenis_hewan_custom');
-// Cek apakah data di DB adalah 'Lainnya'
-$is_jenis_lainnya = ($jenis_hewan_db_int == 4);
+// Persiapan untuk logic "Jenis Hewan Lainnya"
+$id_jenis_hewan_db = (int)($booking_data['id_jenis_hewan'] ?? 0);
+$jenis_hewan_custom_db = $booking_data['jenis_hewan_custom'] ?? '';
+$is_jenis_lainnya = ($id_jenis_hewan_db == 4);
 
-// Persiapan untuk Jenis Kelamin (BERDASARKAN ANGKA)
-$jenis_kelamin_db_int = (int)getData('jenis_kelamin_hewan');
+// Persiapan untuk Jenis Kelamin
+$id_jenis_kelamin_db = (int)($booking_data['id_jenis_kelamin'] ?? 0);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -137,7 +200,6 @@ $jenis_kelamin_db_int = (int)getData('jenis_kelamin_hewan');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?> - CandyVet</title>
-    <link href="/dist/output.css" rel="stylesheet"> 
     <script src="https://cdn.tailwindcss.com"></script> 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -155,7 +217,7 @@ $jenis_kelamin_db_int = (int)getData('jenis_kelamin_hewan');
             </div>
             <a href="admin" class="flex items-center gap-2 bg-[#FEF3E2] border-[#9E00BA] border-2 rounded-lg py-2 px-4">
                 <span class="hidden sm:inline text-[#9E00BA] text-xl font-bold">Kembali</span>
-                <img src="./assets/kembali.png" alt="logo kembali" class="w-auto h-8">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9E00BA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
             </a>
         </div>
     </header>
@@ -167,7 +229,7 @@ $jenis_kelamin_db_int = (int)getData('jenis_kelamin_hewan');
 
         <hr class="w-1/2 mx-auto border-t-2 border-[#FA812F] mb-10">
 
-        <form action="booking-admin<?php if($is_edit_mode) echo '?id=' . (int)$booking_data['id']; ?>" method="POST" class="space-y-6">
+        <form action="booking-admin.php" method="POST" class="space-y-6">
             
             <?php if($is_edit_mode): ?>
                 <input type="hidden" name="id" value="<?php echo (int)$booking_data['id']; ?>">
@@ -195,20 +257,20 @@ $jenis_kelamin_db_int = (int)getData('jenis_kelamin_hewan');
 
             <div class="relative">
                 <label for="jenis_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Jenis Hewan</label>
-                <select id="jenis_hewan" name="jenis_hewan" onchange="toggleInput(this)" class="w-full appearance-none px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition pr-10">
+                <select id="jenis_hewan" name="jenis_hewan" onchange="toggleInput(this)" required class="w-full appearance-none px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition pr-10">
                     <option value="" <?php if(empty($booking_data)) echo 'selected'; ?> disabled>Pilih jenis hewan</option>
-                    <option value="Kucing" <?php if($jenis_hewan_db_int == 0) echo 'selected'; ?>>Kucing</option>
-                    <option value="Anjing" <?php if($jenis_hewan_db_int == 1) echo 'selected'; ?>>Anjing</option>
-                    <option value="Kelinci" <?php if($jenis_hewan_db_int == 2) echo 'selected'; ?>>Kelinci</option>
-                    <option value="Burung" <?php if($jenis_hewan_db_int == 3) echo 'selected'; ?>>Burung</option>
+                    <option value="Kucing" <?php if($id_jenis_hewan_db == 0) echo 'selected'; ?>>Kucing</option>
+                    <option value="Anjing" <?php if($id_jenis_hewan_db == 1) echo 'selected'; ?>>Anjing</option>
+                    <option value="Kelinci" <?php if($id_jenis_hewan_db == 2) echo 'selected'; ?>>Kelinci</option>
+                    <option value="Burung" <?php if($id_jenis_hewan_db == 3) echo 'selected'; ?>>Burung</option>
                     <option value="Lainnya" <?php if($is_jenis_lainnya) echo 'selected'; ?>>Lainnya</option>
                 </select>
                 <svg class="absolute right-4 top-[54px] w-5 h-5 text-gray-500 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 24"><path d="M29.0561 3.14713e-05L29.0561 9.21603L14.5281 23.936L7.24792e-05 9.21603V3.14713e-05L14.5281 14.784L29.0561 3.14713e-05Z" fill="#DD0303"/></svg>
 
                 <input type="text" id="hewan_lainnya" name="hewan_lainnya"
-                       value="<?php if($is_jenis_lainnya) echo $jenis_hewan_custom_db; // Isi dengan data custom, misal "Penyu" ?>"
+                       value="<?php if($is_jenis_lainnya) echo htmlspecialchars($jenis_hewan_custom_db, ENT_QUOTES, 'UTF-8'); ?>"
                        placeholder="Tulis jenis hewan"
-                       class="<?php if(!$is_jenis_lainnya) echo 'hidden'; // Tampilkan jika 'Lainnya' ?> mt-3 w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
+                       class="<?php if(!$is_jenis_lainnya) echo 'hidden'; ?> mt-3 w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
             </div>
 
             <div>
@@ -220,11 +282,11 @@ $jenis_kelamin_db_int = (int)getData('jenis_kelamin_hewan');
                 <label class="block text-lg font-semibold text-gray-700 mb-2">Jenis Kelamin Hewan</label>
                 <div class="flex items-center space-x-6 p-4 border-2 border-[#FA812F] rounded-xl bg-white">
                     <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" name="jenis_kelamin_hewan" value="Jantan" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200" <?php if($jenis_kelamin_db_int == 0) echo 'checked'; ?>>
+                        <input type="radio" name="jenis_kelamin_hewan" value="Jantan" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200" <?php if($id_jenis_kelamin_db == 0 || ($is_edit_mode && $id_jenis_kelamin_db == 0)) echo 'checked'; ?>>
                         <span class="text-base text-gray-800">Jantan</span>
                     </label>
                     <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" name="jenis_kelamin_hewan" value="Betina" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200" <?php if($jenis_kelamin_db_int == 1) echo 'checked'; ?>>
+                        <input type="radio" name="jenis_kelamin_hewan" value="Betina" required class="h-5 w-5 text-[#FA812F] focus:ring-orange-200" <?php if($id_jenis_kelamin_db == 1) echo 'checked'; ?>>
                         <span class="text-base text-gray-800">Betina</span>
                     </label>
                 </div>
