@@ -165,69 +165,40 @@ $js_params = ltrim($status_param_url . '&page=' . $halaman_sekarang, '&');
         }
 
 @media print {
-    @page {
-        margin: 0.5cm; /* Margin halaman minimal */
-        size: auto;
-    }
+            body * {
+                visibility: hidden;
+            }
 
-    body * {
-        visibility: hidden;
-    }
+            #detailModal, #detailModal * {
+                visibility: visible;
+            }
 
-    #detailModal, #detailModal * {
-        visibility: visible;
-    }
-
-    #detailModal {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%) scale(0.95); /* Lebih gede dari 0.8 */
-        width: 100%;
-        height: auto;
-        box-shadow: none;
-        border: none;
-        overflow: visible;
-    }
-    
-    #modalOverlay, .print-hide {
-        display: none !important;
-    }
-    
-    #closeOverlay, .print-hide {
+            #detailModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                box-shadow: none;
+                border: none;
+                overflow: visible;
+            }
+            
+            #modalOverlay, .print-hide {
                 display: none !important;
             }
 
-
-
-    /* Paksa semua warna background & border muncul */
-    * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        color-adjust: exact !important;
-    }
-
-    .rounded-lg.bg-gray-100 {
-        background-color: #f3f4f6 !important;
-    }
-
-    /* Pastikan warna oranye tetap muncul */
-    .text-\[\#FA812F\] {
-        color: #FA812F !important;
-    }
-
-    h3.text-\[\#FA812F\] {
-        color: #FA812F !important;
-    }
-
-    .font-black.text-\[\#FA812F\] {
-        color: #FA812F !important;
-    }
-}
+            .rounded-lg.bg-gray-100 {
+                background-color: #f3f4f6 !important;
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
+        }
 
 body.modal-open {
     overflow: hidden;
-} </style>
+} 
+</style>
 </head>
 <body class="bg-OrenMuda font-sans flex min-h-screen text-HitamTeks">
 
@@ -439,7 +410,7 @@ body.modal-open {
         <div class="relative z-20 w-full max-w-xl transform overflow-hidden rounded-xl bg-[#FFFFFF] text-[#1F2937] shadow-2xl transition-all">
             <div class="p-8">
                 <button onclick="hideDetailModal()" class="absolute top-4 right-6 text-[#1F2937] hover:opacity-75">
-                    <span class="material-symbols-outlined text-2xl font-bold">X</span>
+                    <span class="material-symbols-outlined text-2xl font-bold print-hide">X</span>
                 </button>
 
                 <div class="flex flex-col mb-6">
@@ -471,15 +442,13 @@ body.modal-open {
                 </div>
 
                 <div class="mt-8 flex justify-end gap-3 print-hide">
-    <button id="closeOverlay" onclick="hideDetailModal()" class="absolute top-4 right-6 text-[#1F2937] hover:opacity-75">
-                    <span class="material-symbols-outlined text-2xl font-bold">X</span>
-                </button>
-    <button onclick="printDetail()" class="flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors bg-[#FA812F] hover:bg-[#E37129]">
-       </i> Cetak </button>
-    </button>
-    <button onclick="hideDetailModal()" class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-black shadow-sm transition-colors hover:bg-gray-100">
-        </i> Tutup
-    </button> </div>
+                        <button onclick="printDetail()" class="flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors bg-[#FA812F] hover:bg-[#E37129]">
+                        </i> Cetak </button>
+                        </button>
+                        <button onclick="hideDetailModal()" class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-black shadow-sm transition-colors hover:bg-gray-100">
+                            </i> Tutup
+                        </button> 
+                </div>
             </div>
         </div>
     </div>
