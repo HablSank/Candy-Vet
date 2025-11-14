@@ -168,5 +168,19 @@ if (isset($conn)) {
     </section>
 
     <script src="ulasan.js"></script>
+    
+   
+    <?php if ($script_sukses): ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Ulasan Terkirim!',
+            text: 'Terima kasih atas ulasan Anda. Ulasan akan ditampilkan setelah diverifikasi oleh admin.',
+            confirmButtonColor: '#FA812F'
+        });
+    });
+        </script>
+    <?php endif; ?>
 </body>
 </html>

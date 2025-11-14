@@ -13,6 +13,7 @@ if (!isset($conn)) {
 
 $redirect_params = '';
 if(isset($_GET['page'])) $redirect_params .= '&page=' . (int)$_GET['page'];
+if(isset($_GET['status'])) $redirect_params .= '&status=' . urlencode($_GET['status']);
 
 if (isset($_GET['action']) && isset($_GET['id'])) {
     $id = intval($_GET['id']);
@@ -28,10 +29,10 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         $stmt = $conn->prepare("UPDATE tb_ulasan SET status = ? WHERE id = ?");
         $stmt->bind_param("si", $new_status, $id);
         
-        if ($stmt->execute()) {
-            header("Location: ulasan-admin?pesan=" . strtolower($new_status) . $redirect_params);
-            exit;
-        } else {
+       if ($stmt->execute()) {
+    header("Location: ulasan-admin.php?pesan=" . strtolower($new_status) . $redirect_params);
+    exit;
+    } else {
             die("Error moderasi: " . $stmt->error);
         }
     }
@@ -42,23 +43,42 @@ $halaman_sekarang = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_G
 if ($halaman_sekarang < 1) $halaman_sekarang = 1;
 $offset = ($halaman_sekarang - 1) * $items_per_page;
 
-$total_ulasan_query = $conn->query("SELECT COUNT(id) AS total FROM tb_ulasan WHERE status = 'Pending'");
-$total_ulasan = $total_ulasan_query->fetch_assoc()['total'];
+$status_filter = isset($_GET['status']) ? $_GET['status'] : 'Pending';
+$allowed_status = ['Pending', 'Approved', 'Rejected'];
+if (!in_array($status_filter, $allowed_status)) {
+    $status_filter = 'Pending';
+}
+
+$total_ulasan_query = $conn->prepare("SELECT COUNT(id) AS total FROM tb_ulasan WHERE status = ?");
+$total_ulasan_query->bind_param("s", $status_filter);
+$total_ulasan_query->execute();
+$total_ulasan_result = $total_ulasan_query->get_result();
+$total_ulasan = $total_ulasan_result->fetch_assoc()['total'];
+
+
 $total_halaman = ceil($total_ulasan / $items_per_page);
 
-$query_ulasan = "SELECT id, nm_majikan, nm_hewan, ulasan, tgl_ulasan FROM tb_ulasan WHERE status = 'Pending' ORDER BY tgl_ulasan DESC LIMIT ? OFFSET ?";
+$query_ulasan = "SELECT id, nm_majikan, nm_hewan, ulasan, tgl_ulasan 
+                 FROM tb_ulasan 
+                 WHERE status = ? 
+                 ORDER BY tgl_ulasan DESC 
+                 LIMIT ? OFFSET ?";
 $stmt_fetch = $conn->prepare($query_ulasan);
-$stmt_fetch->bind_param("ii", $items_per_page, $offset);
+$stmt_fetch->bind_param("sii", $status_filter,$items_per_page, $offset);
 $stmt_fetch->execute();
 $result = $stmt_fetch->get_result();
 
 $ulasan_data_js = [];
 if ($total_ulasan > 0) {
-    $full_result = $conn->query("SELECT id, ulasan FROM tb_ulasan WHERE status = 'Pending'");
+    $full_result_query = $conn->prepare("SELECT id, ulasan FROM tb_ulasan WHERE status = ?");
+    $full_result_query->bind_param("s", $status_filter);
+    $full_result_query->execute();
+    $full_result = $full_result_query->get_result();
+
     while ($row = $full_result->fetch_assoc()) {
         $ulasan_data_js[$row['id']] = $row['ulasan'];
     }
-}
+    }
 
 if (isset($stmt_fetch)) {
     $stmt_fetch->close(); 
@@ -128,6 +148,9 @@ if (isset($stmt_fetch)) {
             border: 1px solid #ced4da !important;
             font-weight: 600 !important;
         }
+        .swal2-styled.swal2-confirm-red {
+            background-color: #dc3545 !important;
+        }
     </style>
 </head>
 <body class="bg-OrenMuda font-sans flex min-h-screen text-HitamTeks">
@@ -176,30 +199,57 @@ if (isset($stmt_fetch)) {
         </header>
 
         <!-- Pesan Alert -->
-        <?php
-        if(isset($_GET['pesan'])){
-            $alert_text = '';
-            if($_GET['pesan'] == 'approved') $alert_text = '✓ Ulasan berhasil disetujui!';
-            elseif($_GET['pesan'] == 'rejected') $alert_text = '✓ Ulasan berhasil ditolak!';
-
-            if($alert_text){
-                echo '<div class="bg-green-100 text-green-800 font-semibold p-4 rounded-xl mb-6 shadow-soft animate-slideDown">'.$alert_text.'</div>';
-            }
-        }
-        ?>
+            <?php
+                if (isset($_GET['pesan'])) {
+                    $pesan = $_GET['pesan'];
+                    $text = '';
+                    $icon = '';
+                    if ($pesan == 'approved') {
+                        $text = 'Ulasan berhasil disetujui dan kini ditampilkan di halaman depan.';
+                        $icon = 'success';
+                    } elseif ($pesan == 'rejected') {
+                        $text = 'Ulasan berhasil ditolak dan tidak akan ditampilkan.';
+                        $icon = 'success';
+                    }
+                    echo "<script>
+                        Swal.fire({
+                            icon: '{$icon}',
+                            title: 'Berhasil!',
+                            text: '{$text}',
+                            showConfirmButton: false,
+                            timer: 2000 
+                        });
+                    </script>";
+                }
+                ?>
 
         <!-- Card Konten Utama -->
         <div class="bg-PutihCard p-8 rounded-3xl shadow-soft">
 
             <!-- Judul dengan Garis Oren Tua -->
             <div class="text-center mb-8">
+                <?php 
+                    $title_map = ['Pending' => 'Ulasan Menunggu Persetujuan', 'Approved' => 'Ulasan Diterima', 'Rejected' => 'Ulasan Ditolak'];
+                    $current_title = $title_map[$status_filter] ?? 'Riwayat Ulasan';
+                ?>
                 <h2 class="text-HitamTeks text-2xl font-bold relative inline-block pb-1.5">
-                    Ulasan Menunggu Persetujuan
+                    <?php echo $current_title; ?>
                     <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-0.5 bg-OrenTua rounded-full"></span>
                 </h2>
             </div>
 
+            <div class="flex gap-2 sm:gap-3 mb-6 flex-wrap justify-center">
+                <?php
+                $tabs = ['Pending'=>'Menunggu','Approved'=>'Diterima','Rejected'=>'Ditolak'];
+                foreach ($tabs as $key=>$label) {
+                    $active = ($status_filter == $key) ? 'bg-OrenTua text-white' : 'bg-gray-100 text-HitamTeks';
+                    echo "<a href='ulasan-admin?status=$key' class='px-4 sm:px-5 py-2 font-semibold rounded-xl transition hover:scale-[1.02] hover:bg-OrenTua hover:text-white $active'>$label</a>";
+                }
+                ?>
+            </div>
+
             <div class="overflow-x-auto">
+
                 <table class="w-full border-separate table-spacing">
                     <thead>
                         <tr>
@@ -253,10 +303,20 @@ if (isset($stmt_fetch)) {
                                 echo "</td>";
                                 
                                 echo "<td class='p-4 $border_class'>
-                                    <div class='flex gap-2 items-center'>
-                                        <a href='ulasan-admin?action=approve&id={$row['id']}{$redirect_params}' class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Setujui Ulasan'><i class='bx bx-check text-lg'></i></a>
-                                        <a href='ulasan-admin?action=reject&id={$row['id']}{$redirect_params}' class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Tolak Ulasan'><i class='bx bx-x text-lg'></i></a>
-                                    </div>
+                                    <div class='flex gap-2 items-center'>";
+                
+                                $id = intval($row['id']);
+                                $majikan_js = htmlspecialchars($row['nm_majikan'], ENT_QUOTES, 'UTF-8');
+                                if ($status_filter == 'Approved') {
+                                    echo "<a href='#' onclick=\"return confirmRejectUlasan($id, '$majikan_js', '$redirect_params');\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Tolak Ulasan'><i class='bx bx-x text-lg'></i></a>";
+                                } elseif ($status_filter == 'Rejected') {
+                                    echo "<a href='#' onclick=\"return confirmApproveUlasan($id, '$majikan_js', '$redirect_params');\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Setujui Ulasan'><i class='bx bx-check text-lg'></i></a>";
+                                } else {
+                                    echo "<a href='#' onclick=\"return confirmApproveUlasan($id, '$majikan_js', '$redirect_params');\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Setujui Ulasan'><i class='bx bx-check text-lg'></i></a>";
+                                    echo "<a href='#' onclick=\"return confirmRejectUlasan($id, '$majikan_js', '$redirect_params');\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Tolak Ulasan'><i class='bx bx-x text-lg'></i></a>";
+                                }
+                                
+                                echo "    </div>
                                 </td>";
                                 
                                 echo "</tr>";
@@ -269,17 +329,21 @@ if (isset($stmt_fetch)) {
                     </tbody>
                 </table>
 
-                <?php if ($total_halaman > 1): ?>
-                <nav class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-8 pt-6 border-t border-OrenMuda">
-                    
-                    <div class="text-sm text-gray-500">
+            <?php if ($total_halaman > 1): ?>
+                
+                <nav class="flex flex-col sm:flex-row justify-center items-center sm:items-center gap-4 mt-8 pt-6 border-t border-OrenMuda">
+                     <div class="text-sm text-gray-500">
                         Halaman <span class="font-bold text-HitamTeks"><?php echo $halaman_sekarang; ?></span> dari <span class="font-bold text-HitamTeks"><?php echo $total_halaman; ?></span>
                         (Total <?php echo $total_ulasan; ?> ulasan)
                     </div>
-
+                
                     <div class="flex gap-2 flex-wrap mx-auto">
+                        <?php 
+                           
+                            $status_param = '&status=' . urlencode($status_filter); 
+                        ?>
                         <?php if($halaman_sekarang > 1): ?>
-                            <a href="ulasan-admin?page=<?php echo $halaman_sekarang - 1; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
+                            <a href="ulasan-admin?page=<?php echo $halaman_sekarang - 1; ?><?php echo $status_param; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
                                 <span class="relative bottom-0.5">&laquo;</span>
                             </a>
                         <?php else: ?>
@@ -291,13 +355,13 @@ if (isset($stmt_fetch)) {
                                 $is_active = ($i == $halaman_sekarang);
                                 $active_class = $is_active ? 'bg-OrenTua text-white' : 'bg-gray-100 text-HitamTeks hover:bg-OrenMuda';
                             ?>
-                            <a href="ulasan-admin?page=<?php echo $i; ?>" class="px-4 py-2 text-sm font-semibold rounded-lg transition <?php echo $active_class; ?> <?php if(!$is_active) echo 'hidden sm:block'; ?>">
+                            <a href="ulasan-admin?page=<?php echo $i; ?><?php echo $status_param; ?>" class="px-4 py-2 text-sm font-semibold rounded-lg transition <?php echo $active_class; ?> <?php if(!$is_active) echo 'hidden sm:block'; ?>">
                                 <?php echo $i; ?>
                             </a>
                         <?php endfor; ?>
 
                         <?php if($halaman_sekarang < $total_halaman): ?>
-                            <a href="ulasan-admin?page=<?php echo $halaman_sekarang + 1; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
+                            <a href="ulasan-admin?page=<?php echo $halaman_sekarang + 1; ?><?php echo $status_param; ?>" class="px-4 py-2 text-sm font-semibold bg-gray-100 text-HitamTeks rounded-lg hover:bg-OrenTua hover:text-white transition">
                                 <span class="relative bottom-0.5">&raquo;</span>
                             </a>
                         <?php else: ?>
@@ -308,6 +372,7 @@ if (isset($stmt_fetch)) {
                     <div class="text-sm text-gray-500 invisible">
                     </div>
                 </nav>
+               
                 <?php endif; ?>
             </div>
         </div>
