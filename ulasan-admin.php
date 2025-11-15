@@ -217,7 +217,7 @@ if (isset($stmt_fetch)) {
                             title: 'Berhasil!',
                             text: '{$text}',
                             showConfirmButton: false,
-                            timer: 2000 
+                            timer: 3000 
                         });
                     </script>";
                 }
@@ -323,7 +323,14 @@ if (isset($stmt_fetch)) {
                                 $no++;
                             }
                         } else {
-                            echo '<tr><td colspan="6" class="text-center p-12 text-gray-500"><i class="bx bx-folder-open text-3xl mb-2 block"></i>Tidak ada ulasan yang menunggu persetujuan</td></tr>';
+                            if ($status_filter == 'Approved') {
+                                $empty_text = 'Tidak ada ulasan yang disetujui';
+                            } elseif ($status_filter == 'Rejected') {
+                                $empty_text = 'Tidak ada ulasan yang ditolak';
+                            } else {
+                                $empty_text = 'Tidak ada ulasan yang menunggu';
+                            }
+                            echo '<tr><td colspan="6" class="text-center p-12 text-gray-500"><i class="bx bx-folder-open text-3xl mb-2 block"></i>' . $empty_text . '</td></tr>';
                         }
                         ?>
                     </tbody>
