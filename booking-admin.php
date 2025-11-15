@@ -256,7 +256,7 @@ $id_jenis_kelamin_db = (int)($booking_data['id_jenis_kelamin'] ?? 0);
 
             <div>
                 <label for="usia_hewan" class="block text-lg font-semibold text-gray-700 mb-2">Usia Hewan (Tahun)</label>
-                <input type="number" name="usia_hewan" id="usia_hewan" value="<?php echo getData('usia_hewan'); ?>" placeholder="Masukkan Usia Hewan" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
+                <input type="number" name="usia_hewan" id="usia_hewan" value="<?php echo getData('usia_hewan'); ?>" placeholder="Masukkan Usia Hewan" min="1" max="99" required class="w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">
             </div>
 
             <div>
