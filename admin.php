@@ -200,6 +200,7 @@ body.modal-open {
 } 
 </style>
 </head>
+</head>
 <body class="bg-OrenMuda font-sans flex min-h-screen text-HitamTeks">
 
     <!-- SIDEBAR -->
@@ -243,10 +244,10 @@ body.modal-open {
         <!-- HEADER -->
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
             <div class="flex items-center w-full justify-between md:justify-start">
-                <button onclick="toggleSidebar()" class="lg:hidden text-OrenTua text-3xl mr-3 focus:outline-none">
-                    <i class='bx bx-menu'></i>
+                <button onclick="toggleSidebar()" class="lg:hidden text-white text-3xl mr-3 focus:outline-none">
+                    <i class='bx bx-menu text-red'></i>
                 </button>
-                <h1 class="text-HitamTeks text-4xl font-extrabold drop-shadow">RIWAYAT BOOKING</h1>
+                <h1 class="text-HitamTeks text-xl md:text-4xl font-extrabold drop-shadow">RIWAYAT BOOKING</h1>
             </div>
 
             <div class="relative w-full md:w-80">
@@ -276,72 +277,65 @@ body.modal-open {
                 $tabs = ['semua'=>'Semua','Aktif'=>'Aktif','Selesai'=>'Selesai','Dibatalkan'=>'Dibatalkan'];
                 foreach ($tabs as $key=>$label) {
                     $active = ($status_filter == $key) ? 'bg-OrenTua text-white' : 'bg-gray-100 text-HitamTeks';
-                    echo "<a href='admin?status=$key' class='px-4 sm:px-5 py-2 font-semibold rounded-xl transition hover:scale-[1.02] hover:bg-OrenTua hover:text-white $active'>$label</a>";
+                    echo "<a href='admin?status=$key' class='px-2 py-1 md:px-5 md:py-2 font-semibold rounded-xl transition hover:bg-OrenTua hover:text-white $active'>$label</a>";
                 }
                 ?>
             </div>
 
             <!-- TABEL -->
             <div class="overflow-x-auto">
-                <table class="w-full min-w-[720px] border-separate table-spacing">
+                <!-- DESKTOP TABLE -->
+                <table class="w-full border-separate table-spacing hidden sm:table">
                     <thead>
                         <tr>
-                            <?php
-                            $headers = ['No.', 'Nama Majikan', 'Nama Hewan', 'Jenis Hewan', 'Tanggal Booking', 'Status', 'Aksi'];
-                            foreach($headers as $i => $h){
-                                $rounded_l = ($i==0) ? 'rounded-l-xl' : '';
-                                $rounded_r = ($i==count($headers)-1) ? 'rounded-r-xl' : '';
-                                echo "<th class='p-4 text-left font-bold text-sm uppercase text-white bg-OrenTua $rounded_l $rounded_r'>$h</th>";
-                            }
-                            ?>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua rounded-l-xl border-r border-white text-center'>No.</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua border-r border-white text-center'>Nama</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua hidden md:table-cell border-r border-white text-center'>Nama Hewan</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua hidden md:table-cell border-r border-white text-center'>Jenis Hewan</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua hidden lg:table-cell border-r border-white text-center'>Tanggal Booking</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua border-r border-white text-center'>Status</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua rounded-r-xl text-center'>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         if(mysqli_num_rows($result) > 0){
                             $no = $offset + 1;
-                            $data_rows = [];
                             while($row = mysqli_fetch_assoc($result)) {
-                                $data_rows[] = $row;
-                            }
-                            $total_rows_on_page = count($data_rows);
-                            foreach($data_rows as $index => $row){
                                 $badge_class = 'bg-yellow-100 text-yellow-800';
                                 if($row['status'] == 'Aktif') $badge_class = 'bg-green-100 text-green-700';
                                 elseif($row['status'] == 'Selesai') $badge_class = 'bg-blue-100 text-blue-700';
                                 elseif($row['status'] == 'Dibatalkan') $badge_class = 'bg-red-100 text-red-700';
-                                $border_class = ($index < $total_rows_on_page - 1) ? 'border-b border-OrenTua' : '';
                                 
-                                // ✅ Tentukan jenis hewan yang ditampilkan (dengan JOIN)
+                                // Tentukan jenis hewan
                                 if ((int)$row['id_jenis_hewan'] == 4) {
-                                    // Jika Lainnya, gunakan custom
                                     $display_jenis_hewan = $row['jenis_hewan_custom'] ?? 'Lainnya';
                                 } else {
-                                    // Jika standar, gunakan dari JOIN
                                     $display_jenis_hewan = $row['nama_jenis_hewan'] ?? 'Data Salah';
                                 }
                                 
                                 $raw_date = $row['tanggal_booking'] ?? "";
                                 $formatted_date = (!empty($raw_date) && $raw_date != '0000-00-00') ? date('d F Y', strtotime($raw_date)) : "-";
                                 
-                                echo "<tr class='bg-PutihCard hover:bg-orange-50 transition'>";
-                                echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>$no</td>";
-                                echo "<td class='p-4 font-semibold text-HitamTeks $border_class'>".htmlspecialchars($row['nm_majikan'] ?? "")."</td>";
-                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($row['nm_hewan'] ?? "")."</td>";
-                                echo "<td class='p-4 text-HitamTeks $border_class'>".$display_jenis_hewan."</td>";
-                                echo "<td class='p-4 text-HitamTeks $border_class'>".htmlspecialchars($formatted_date)."</td>";
-                                echo "<td class='p-4 $border_class'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span></td>";
-                                echo "<td class='p-4 $border_class'>
-                                        <div class='flex gap-2 items-center'>
-                                            <button type='button' onclick='showDetailModal({$row['id']})' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></button>
-                                            <a href='booking-admin?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition' title='Edit Booking'><i class=\"bx bx-pencil text-md\"></i></a>";
+                                echo "<tr class='bg-PutihCard hover:bg-orange-50 transition border-b border-gray-200'>";
+                                echo "<td class='p-4 font-semibold text-HitamTeks border-r border-gray-200 text-center'>$no</td>";
+                                echo "<td class='p-4 font-semibold text-HitamTeks border-r border-gray-200 text-center'>".htmlspecialchars($row['nm_majikan'] ?? "")."</td>";
+                                echo "<td class='p-4 text-HitamTeks border-r border-gray-200 text-center hidden md:table-cell'>".htmlspecialchars($row['nm_hewan'] ?? "")."</td>";
+                                echo "<td class='p-4 text-HitamTeks border-r border-gray-200 text-center hidden md:table-cell'>".$display_jenis_hewan."</td>";
+                                echo "<td class='p-4 text-HitamTeks border-r border-gray-200 text-center hidden lg:table-cell'>".htmlspecialchars($formatted_date)."</td>";
+                                echo "<td class='p-4 border-r border-gray-200 text-center'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span></td>";
+                                echo "<td class='p-4 text-center'>
+                                    <div class='flex gap-1.5 sm:gap-2 items-center justify-center flex-wrap'>
+                                        <button type='button' onclick='showDetailModal({$row['id']})' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></button>
+                                        <a href='booking-admin?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition' title='Edit Booking'><i class=\"bx bx-pencil text-md\"></i></a>";
                                 if($row['status']=='Aktif'){
                                     echo "<a href='#' onclick=\"confirmSelesai({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Tandai Selesai'><i class=\"bx bx-check-circle text-md\"></i></a>
                                           <a href='#' onclick=\"confirmBatalkan({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Batalkan Booking'><i class=\"bx bx-x-circle text-md\"></i></a>";
                                 } elseif ($row['status'] == 'Selesai' || $row['status'] == 'Dibatalkan') {
                                     echo "<a href='#' onclick=\"confirmAktifkan({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-gray-200 text-HitamTeks rounded-full hover:bg-OrenTua hover:text-white transition' title='Aktifkan Kembali'><i class=\"bx bx-undo text-md\"></i></a>";
                                 }
-                                echo "</div></td></tr>";
+                                echo "</div>
+                                </td></tr>";
                                 $no++;
                             }
                         } else {
@@ -351,9 +345,54 @@ body.modal-open {
                     </tbody>
                 </table>
 
+                <!-- MOBILE VIEW -->
+                <div class="sm:hidden space-y-3">
+                    <?php
+                    // Reset hasil query untuk mobile view
+                    mysqli_data_seek($result, 0);
+                    $count = 0;
+                    if(mysqli_num_rows($result) > 0){
+                        $no = $offset + 1;
+                        while($row = mysqli_fetch_assoc($result)) {
+                            $count++;
+                            $badge_class = 'bg-yellow-100 text-yellow-800';
+                            if($row['status'] == 'Aktif') $badge_class = 'bg-green-100 text-green-700';
+                            elseif($row['status'] == 'Selesai') $badge_class = 'bg-blue-100 text-blue-700';
+                            elseif($row['status'] == 'Dibatalkan') $badge_class = 'bg-red-100 text-red-700';
+                            
+                            echo "<div class='bg-white rounded-xl p-4 shadow-soft border-l-4 border-OrenTua hover:shadow-md transition mobile-search-row'>";
+                            echo "<div class='flex items-start justify-between gap-2 mb-3'>";
+                            echo "<div class='flex-1 min-w-0'>";
+                            echo "<p class='text-xs text-gray-500 font-medium'>Nama Pemesan</p>";
+                            echo "<p class='font-bold text-HitamTeks text-base truncate'>".htmlspecialchars($row['nm_majikan'] ?? "")."</p>";
+                            echo "</div>";
+                            echo "<span class='px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span>";
+                            echo "</div>";
+                            echo "<div class='flex gap-2 justify-end pt-2 border-t border-gray-100'>";
+                            echo "<button type='button' onclick='showDetailModal({$row['id']})' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition text-sm' title='Lihat Detail'><i class=\"bx bx-file text-sm\"></i></button>";
+                            echo "<a href='booking-admin?id={$row['id']}' class='w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-700 hover:text-white transition text-sm' title='Edit Booking'><i class=\"bx bx-pencil text-sm\"></i></a>";
+                            if($row['status']=='Aktif'){
+                                echo "<a href='#' onclick=\"confirmSelesai({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition text-sm' title='Tandai Selesai'><i class=\"bx bx-check-circle text-sm\"></i></a>";
+                                echo "<a href='#' onclick=\"confirmBatalkan({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition text-sm' title='Batalkan Booking'><i class=\"bx bx-x-circle text-sm\"></i></a>";
+                            } elseif ($row['status'] == 'Selesai' || $row['status'] == 'Dibatalkan') {
+                                echo "<a href='#' onclick=\"confirmAktifkan({$row['id']}, '{$js_params}')\" class='w-8 h-8 flex items-center justify-center bg-gray-200 text-HitamTeks rounded-full hover:bg-OrenTua hover:text-white transition text-sm' title='Aktifkan Kembali'><i class=\"bx bx-undo text-sm\"></i></a>";
+                            }
+                            echo "</div>";
+                            echo "</div>";
+                            $no++;
+                        }
+                        if($count == 0) {
+                            echo '<div class="text-center p-12 text-gray-500"><i class="bx bx-folder-open text-3xl mb-2 block"></i><p>Tidak ada data booking</p></div>';
+                        }
+                    } else {
+                        echo '<div class="text-center p-12 text-gray-500"><i class="bx bx-folder-open text-3xl mb-2 block"></i><p>Tidak ada data booking</p></div>';
+                    }
+                    ?>
+                </div>
+
                 <!-- PAGINATION -->
                 <?php if ($total_halaman > 1): ?>
-                <nav class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-8 pt-6 border-t border-OrenMuda">
+                <nav class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mt-8 pt-6 border-t border-OrenMuda">
                     <div class="text-sm text-gray-500">
                         Halaman <span class="font-bold text-HitamTeks"><?php echo $halaman_sekarang; ?></span> dari <span class="font-bold text-HitamTeks"><?php echo $total_halaman; ?></span>
                         (Total <?php echo $total_data; ?> booking)
@@ -386,16 +425,16 @@ body.modal-open {
                         <?php endif; ?>
                     </div>
                     <a href="booking-admin">
-                        <button class="flex items-center gap-2 bg-UnguAksen text-white px-6 py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
-                            <i class='bx bx-plus text-2xl'></i> Tambah Booking Baru
+                        <button class="flex mx-auto items-center gap-2 bg-UnguAksen text-white px-3 py-2 md:px-6 md:py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
+                            <i class='bx bx-plus text:lg md:text-2xl'></i> Tambah Booking Baru
                         </button>
                     </a>
                 </nav>
                 <?php else: ?>
-                <div class="flex justify-end pt-6 border-t border-OrenTua">
+                <div class="flex justify-end\ pt-6 border-t border-OrenTua">
                     <a href="booking-admin">
-                        <button class="flex items-center gap-2 bg-UnguAksen text-white px-6 py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
-                            <i class='bx bx-plus text-2xl'></i> Tambah Booking Baru
+                        <button class="flex items-center gap-2 bg-UnguAksen text-white px-3 py-2 md:px-6 md:py-4 rounded-full font-bold shadow-lg hover:-translate-y-0.5 transition" title="Buat Booking Baru">
+                            <i class='bx bx-plus text:lg md:text-2xl'></i> Tambah Booking Baru
                         </button>
                     </a>
                 </div>
@@ -406,52 +445,55 @@ body.modal-open {
 
     <!-- MODAL DETAIL -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden" onclick="hideDetailModal()"></div>
-    <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto hidden">
-        <div class="relative z-20 w-full max-w-xl transform overflow-hidden rounded-xl bg-[#FFFFFF] text-[#1F2937] shadow-2xl transition-all">
-            <div class="p-8">
-                <button onclick="hideDetailModal()" class="absolute top-4 right-6 text-[#1F2937] hover:opacity-75">
-                    <span class="material-symbols-outlined text-2xl font-bold print-hide">X</span>
-                </button>
 
-                <div class="flex flex-col mb-6">
-                    <p class="text-3xl font-black text-[#FA812F]">Detail Booking</p>
-                    <p id="modalBookingId" class="text-sm font-normal text-[#1F2937]/70">Booking ID: ...</p>
-                </div>
+        <div id="detailModal" class="fixed inset-0 z-50 flex justify-center p-4 pt-12 md:pt-16 overflow-y-auto hidden">
+            
+            <div class="relative z-20 w-full max-w-xl transform overflow-hidden rounded-xl bg-[#FFFFFF] text-[#1F2937] shadow-2xl transition-all h-fit">
+                
+                <div class="p-5 sm:p-8">
+                    <button onclick="hideDetailModal()" class="absolute top-4 right-4 sm:top-4 sm:right-6 text-[#1F2937] hover:opacity-75 print-hide">
+                        <span id="closeOverlay" class="material-symbols-outlined text-xl sm:text-2xl font-bold">X</span>
+                    </button>
 
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-lg font-bold text-[#FA812F] mb-3">Informasi Majikan</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                            <div><p class="text-sm font-medium text-[#1F2937]/80">Nama Majikan</p><p id="modalNamaMajikan" class="text-base font-semibold">-</p></div>
-                            <div><p class="text-sm font-medium text-[#1F2937]/80">Email</p><p id="modalEmail" class="text-base font-semibold">-</p></div>
-                            <div><p class="text-sm font-medium text-[#1F2937]/80">No. Telepon</p><p id="modalTelepon" class="text-base font-semibold">-</p></div>
-                            <div><p class="text-sm font-medium text-[#1F2937]/80">Tanggal Booking</p><p id="modalTanggalBooking" class="text-base font-semibold">-</p></div>
+                    <div class="flex flex-col mb-4 sm:mb-6">
+                        <p class="text-2xl sm:text-3xl font-black text-[#FA812F]">Detail Booking</p>
+                        <p id="modalBookingId" class="text-xs sm:text-sm font-normal text-[#1F2937]/70">Booking ID: ...</p>
+                    </div>
+
+                    <div class="space-y-4 sm:space-y-6">
+                        <div>
+                            <h3 class="text-base sm:text-lg font-bold text-[#FA812F] mb-3">Informasi Majikan</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 sm:gap-x-6 sm:gap-y-4">
+                                <div><p class="text-xs sm:text-sm font-medium text-[#1F2937]/80">Nama Majikan</p><p id="modalNamaMajikan" class="text-sm sm:text-base font-semibold">-</p></div>
+                                <div><p class="text-xs sm:text-sm font-medium text-[#1F2937]/80">Email</p><p id="modalEmail" class="text-sm sm:text-base font-semibold">-</p></div>
+                                <div><p class="text-xs sm:text-sm font-medium text-[#1F2937]/80">No. Telepon</p><p id="modalTelepon" class="text-sm sm:text-base font-semibold">-</p></div>
+                                <div><p class="text-xs sm:text-sm font-medium text-[#1F2937]/80">Tanggal Booking</p><p id="modalTanggalBooking" class="text-sm sm:text-base font-semibold">-</p></div>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-200"></div>
+                        <div>
+                            <h3 class="text-base sm:text-lg font-bold text-[#FA812F] mb-3">Informasi Hewan</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 sm:gap-x-6 sm:gap-y-4">
+                                <div><p class="text-xs sm:text-sm font-medium text-[#1F2937]/80">Nama Hewan</p><p id="modalNamaHewan" class="text-sm sm:text-base font-semibold">-</p></div>
+                                <div><p class="text-xs sm:text-sm font-medium text-[#1F2937]/80">Jenis Hewan</p><p id="modalJenisHewan" class="text-sm sm:text-base font-semibold">-</p></div>
+                                <div><p class="text-xs sm:text-sm font-medium text-[#1F2937]/80">Jenis Kelamin</p><p id="modalJenisKelamin" class="text-sm sm:text-base font-semibold">-</p></div>
+                                <div><p class="text-xs sm:text-sm font-medium text-[#1F2937]/80">Usia Hewan</p><p id="modalUsiaHewan" class="text-sm sm:text-base font-semibold">-</p></div>
+                                <div class="sm:col-span-2"><p class="text-xs sm:text-sm font-medium text-[#1F2937]/80">Keluhan</p><p id="modalKeluhan" class="text-sm sm:text-base font-semibold">-</p></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="border-t border-gray-200"></div>
-                    <div>
-                        <h3 class="text-lg font-bold text-[#FA812F] mb-3">Informasi Hewan</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                            <div><p class="text-sm font-medium text-[#1F2937]/80">Nama Hewan</p><p id="modalNamaHewan" class="text-base font-semibold">-</p></div>
-                            <div><p class="text-sm font-medium text-[#1F2937]/80">Jenis Hewan</p><p id="modalJenisHewan" class="text-base font-semibold">-</p></div>
-                            <div><p class="text-sm font-medium text-[#1F2937]/80">Jenis Kelamin</p><p id="modalJenisKelamin" class="text-base font-semibold">-</p></div>
-                            <div><p class="text-sm font-medium text-[#1F2937]/80">Usia Hewan</p><p id="modalUsiaHewan" class="text-base font-semibold">-</p></div>
-                            <div class="sm:col-span-2"><p class="text-sm font-medium text-[#1F2937]/80">Keluhan</p><p id="modalKeluhan" class="text-base font-semibold">-</p></div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="mt-8 flex justify-end gap-3 print-hide">
-                        <button onclick="printDetail()" class="flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors bg-[#FA812F] hover:bg-[#E37129]">
-                        </i> Cetak </button>
+                    <div class="mt-6 sm:mt-8 flex justify-end gap-3 print-hide">
+                        <button onclick="printDetail()" class="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition-colors bg-[#FA812F] hover:bg-[#E37129]">
+                            Cetak
                         </button>
-                        <button onclick="hideDetailModal()" class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-black shadow-sm transition-colors hover:bg-gray-100">
-                            </i> Tutup
+                        <button onclick="hideDetailModal()" class="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-xs sm:text-sm font-semibold text-black shadow-sm transition-colors hover:bg-gray-100">
+                            Tutup
                         </button> 
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- SCRIPT SIDEBAR TOGGLE -->
     <script>

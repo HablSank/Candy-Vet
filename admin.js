@@ -1,5 +1,3 @@
-// ============ MODAL DETAIL FUNCTIONS ============
-
 function printDetail() {
     window.print();
 }
@@ -14,7 +12,7 @@ async function showDetailModal(id) {
     document.body.classList.add('modal-open');
     document.getElementById('modalOverlay').classList.remove('hidden');
     document.getElementById('detailModal').classList.remove('hidden');
-// Set loading state
+
     document.getElementById('modalNamaMajikan').textContent = 'Memuat...';
     document.getElementById('modalEmail').textContent = 'Memuat...';
     document.getElementById('modalTelepon').textContent = 'Memuat...';
@@ -27,7 +25,6 @@ async function showDetailModal(id) {
     document.getElementById('modalBookingId').textContent = `Booking ID: ${id}`;
     
     try {
-        // Fetch data dari server
         const response = await fetch(`get_booking_detail.php?id=${id}`);
         
         if (!response.ok) {
@@ -35,11 +32,9 @@ async function showDetailModal(id) {
         }
 
         const data = await response.json();
-        
-        // Debug log
+
         console.log('Data yang diterima:', data);
-        
-        // Set semua field
+
         document.getElementById('modalNamaMajikan').textContent = data.nm_majikan || '-';
         document.getElementById('modalEmail').textContent = data.email_majikan || '-';
         document.getElementById('modalTelepon').textContent = data.no_tlp_majikan || '-';
@@ -62,8 +57,6 @@ async function showDetailModal(id) {
         document.getElementById('modalKeluhan').textContent = 'Error: ' + error.message;
     }
 }
-
-// ============ KONFIRMASI ACTIONS ============
 
 function confirmSelesai(id, params) {
     Swal.fire({
@@ -145,14 +138,12 @@ function confirmlogout() {
     });
 }
 
-// ============ SEARCH FUNCTIONALITY ============
-
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('keyup', function() {
             const searchValue = this.value.toLowerCase();
-            const rows = document.querySelectorAll('tbody tr');
+            const rows = document.querySelectorAll('tbody tr, .mobile-search-row');
             
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();

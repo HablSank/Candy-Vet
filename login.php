@@ -27,8 +27,7 @@ if(isset($_POST['masuk'])){
     mysqli_stmt_bind_param($stmt, "s", $username);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
-    
-    // Penanda Login
+
     $login_sukses = false;
 
     if(mysqli_num_rows($result) > 0){

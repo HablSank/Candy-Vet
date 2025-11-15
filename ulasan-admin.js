@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (searchInput) {
         searchInput.addEventListener('keyup', function() {
             const searchValue = this.value.toLowerCase();
-            const rows = document.querySelectorAll('tbody tr');
+            const rows = document.querySelectorAll('tbody tr, .mobile-search-row');
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
                 row.style.display = text.includes(searchValue) ? '' : 'none';
@@ -93,3 +93,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
