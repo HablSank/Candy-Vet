@@ -15,7 +15,6 @@ $redirect_params = '';
 if(isset($_GET['page'])) $redirect_params .= '&page=' . (int)$_GET['page'];
 if(isset($_GET['status'])) $redirect_params .= '&status=' . urlencode($_GET['status']);
 
-// Logika Aksi (approve/reject)
 if (isset($_GET['action']) && isset($_GET['id'])) {
     $id = intval($_GET['id']);
     $new_status = '';
@@ -31,7 +30,6 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         $stmt->bind_param("si", $new_status, $id);
         
         if ($stmt->execute()) {
-            // FIX: Arahkan ke URL bersih
             header("Location: ulasan-admin?pesan=" . strtolower($new_status) . $redirect_params);
             exit;
         } else {
@@ -40,21 +38,18 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     }
 }
 
-// Logika Pagination
 $items_per_page = 5;
 $halaman_sekarang = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($halaman_sekarang < 1) $halaman_sekarang = 1;
 $offset = ($halaman_sekarang - 1) * $items_per_page;
 
-// Logika Filter
 $status_filter = isset($_GET['status']) ? $_GET['status'] : 'Pending';
 $allowed_status = ['Pending', 'Approved', 'Rejected'];
 if (!in_array($status_filter, $allowed_status)) {
     $status_filter = 'Pending';
 }
-$status_param_url = '&status=' . urlencode($status_filter); // Untuk link pagination
+$status_param_url = '&status=' . urlencode($status_filter);
 
-// Query Hitung Total
 $total_ulasan_query = $conn->prepare("SELECT COUNT(id) AS total FROM tb_ulasan WHERE status = ?");
 $total_ulasan_query->bind_param("s", $status_filter);
 $total_ulasan_query->execute();
@@ -62,7 +57,6 @@ $total_ulasan_result = $total_ulasan_query->get_result();
 $total_ulasan = $total_ulasan_result->fetch_assoc()['total'];
 $total_halaman = ceil($total_ulasan / $items_per_page);
 
-// Query Ambil Data (untuk Desktop & Mobile)
 $query_ulasan = "SELECT id, nm_majikan, nm_hewan, ulasan, tgl_ulasan 
                  FROM tb_ulasan 
                  WHERE status = ? 
@@ -73,17 +67,15 @@ $stmt_fetch->bind_param("sii", $status_filter, $items_per_page, $offset);
 $stmt_fetch->execute();
 $result = $stmt_fetch->get_result();
 
-$data_rows = []; // Simpan data di array
+$data_rows = []; 
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
         $data_rows[] = $row;
     }
 }
 
-// Ambil data ulasan lengkap untuk modal JS
 $ulasan_data_js = [];
 if ($total_ulasan > 0) {
-    // Ambil SEMUA ulasan di filter ini, bukan cuma 5 (untuk modal 'Baca Selengkapnya')
     $full_result_query = $conn->prepare("SELECT id, ulasan FROM tb_ulasan WHERE status = ?");
     $full_result_query->bind_param("s", $status_filter);
     $full_result_query->execute();
@@ -253,7 +245,6 @@ if (isset($full_result_query)) $full_result_query->close();
                             $total_rows_on_page = count($data_rows);
                             
                             foreach($data_rows as $index => $row){
-                                // PERBAIKAN BORDER: Terapkan ke <tr>
                                 $tr_border_class = ($index < $total_rows_on_page - 1) ? 'border-b border-gray-200' : ''; 
                                 
                                 $ulasan_lengkap = htmlspecialchars($row['ulasan']);
@@ -282,7 +273,6 @@ if (isset($full_result_query)) $full_result_query->close();
                                 $majikan_js = htmlspecialchars($row['nm_majikan'], ENT_QUOTES, 'UTF-8');
                                 $redirect_params_js = "page={$halaman_sekarang}&status=" . urlencode($status_filter);
 
-                                // Tombol-tombol ini sudah punya 'hover:... transition' (Sudah Benar)
                                 if ($status_filter == 'Approved') {
                                     echo "<a href='#' onclick=\"return confirmRejectUlasan($id, '$majikan_js', '$redirect_params_js');\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Tolak Ulasan'><i class='bx bx-x text-lg'></i></a>";
                                 } elseif ($status_filter == 'Rejected') {
@@ -320,10 +310,8 @@ if (isset($full_result_query)) $full_result_query->close();
                             $redirect_params_js = "page={$halaman_sekarang}&status=" . urlencode($status_filter);
                             $ulasan_lengkap_mobile = htmlspecialchars($row_mobile['ulasan']);
 
-                            // PERBAIKAN SEARCH: Tambah kelas 'mobile-search-row'
                             echo "<div class='bg-white rounded-xl p-4 shadow-soft border-l-4 border-OrenTua mobile-search-row'>";
                             
-                            // Header: Nama
                             echo "<div class='flex items-start justify-between gap-2 mb-2'>";
                             echo "<div class='flex-1 min-w-0'>";
                             echo "<p class='text-xs text-gray-500 font-medium'>Nama Pemesan</p>";
@@ -331,19 +319,14 @@ if (isset($full_result_query)) $full_result_query->close();
                             echo "</div>";
                             echo "</div>";
 
-                            // Konten: Ulasan
                             echo "<p class='text-sm text-gray-700 mb-3'>".$ulasan_lengkap_mobile."</p>";
 
-                            // Aksi (Footer)
                             echo "<div class='flex gap-2 justify-end pt-2 border-t border-gray-100'>";
                             if ($status_filter == 'Approved') {
-                                // PERBAIKAN HOVER: Tambah kelas hover:...
                                 echo "<a href='#' onclick=\"return confirmRejectUlasan($id_mobile, '$majikan_js_mobile', '$redirect_params_js');\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Tolak Ulasan'><i class='bx bx-x text-lg'></i></a>";
                             } elseif ($status_filter == 'Rejected') {
-                                // PERBAIKAN HOVER: Tambah kelas hover:...
                                 echo "<a href='#' onclick=\"return confirmApproveUlasan($id_mobile, '$majikan_js_mobile', '$redirect_params_js');\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Setujui Ulasan'><i class='bx bx-check text-lg'></i></a>";
-                            } else { // Pending
-                                // PERBAIKAN HOVER: Tambah kelas hover:...
+                            } else {
                                 echo "<a href='#' onclick=\"return confirmApproveUlasan($id_mobile, '$majikan_js_mobile', '$redirect_params_js');\" class='w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-full hover:bg-green-700 hover:text-white transition' title='Setujui Ulasan'><i class='bx bx-check text-lg'></i></a>";
                                 echo "<a href='#' onclick=\"return confirmRejectUlasan($id_mobile, '$majikan_js_mobile', '$redirect_params_js');\" class='w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-700 hover:text-white transition' title='Tolak Ulasan'><i class='bx bx-x text-lg'></i></a>";
                             }

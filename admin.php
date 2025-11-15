@@ -10,12 +10,10 @@ if (!isset($conn)) {
     die("Koneksi database gagal dimuat. Pastikan 'koneksi.php' mendefinisikan \$conn.");
 }
 
-// --- Kumpulkan Parameter URL untuk Redirect ---
 $redirect_params = '';
 if(isset($_GET['status'])) $redirect_params .= '&status=' . urlencode($_GET['status']); 
 if(isset($_GET['page'])) $redirect_params .= '&page=' . (int)$_GET['page'];
 
-// --- Logic untuk Batalkan, Selesai, Aktifkan ---
 if(isset($_GET['batalkan'])){
     $id = $_GET['batalkan'];
     $stmt = mysqli_prepare($conn, "UPDATE tb_form SET status = 'Dibatalkan' WHERE id = ?");
@@ -46,13 +44,11 @@ if(isset($_GET['aktifkan'])){
     }
 }
 
-// --- LOGIKA PAGINATION ---
 $data_per_halaman = 5;
 $halaman_sekarang = isset($_GET['page']) ? (int)$_GET['page'] : 1; 
 if ($halaman_sekarang < 1) $halaman_sekarang = 1;
 $offset = ($halaman_sekarang - 1) * $data_per_halaman; 
 
-// --- LOGIKA FILTER STATUS ---
 $status_filter = isset($_GET['status']) ? $_GET['status'] : 'semua';
 $status_param_url = ''; 
 $where_clause = ''; 
@@ -63,14 +59,12 @@ if($status_filter != 'semua'){
     $status_param_url = "&status=" . urlencode($status_filter);
 }
 
-// --- QUERY HITUNG TOTAL DATA ---
 $query_total = "SELECT COUNT(*) as total FROM tb_form f $where_clause";
 $result_total = mysqli_query($conn, $query_total);
 $data_total = mysqli_fetch_assoc($result_total);
 $total_data = (int)$data_total['total'];
 $total_halaman = ceil($total_data / $data_per_halaman);
 
-// --- QUERY AMBIL DATA DENGAN JOIN ---
 $query_data = "
     SELECT 
         f.id,
@@ -307,7 +301,6 @@ body.modal-open {
                                 elseif($row['status'] == 'Selesai') $badge_class = 'bg-blue-100 text-blue-700';
                                 elseif($row['status'] == 'Dibatalkan') $badge_class = 'bg-red-100 text-red-700';
                                 
-                                // Tentukan jenis hewan
                                 if ((int)$row['id_jenis_hewan'] == 4) {
                                     $display_jenis_hewan = $row['jenis_hewan_custom'] ?? 'Lainnya';
                                 } else {
@@ -345,10 +338,8 @@ body.modal-open {
                     </tbody>
                 </table>
 
-                <!-- MOBILE VIEW -->
                 <div class="sm:hidden space-y-3">
                     <?php
-                    // Reset hasil query untuk mobile view
                     mysqli_data_seek($result, 0);
                     $count = 0;
                     if(mysqli_num_rows($result) > 0){

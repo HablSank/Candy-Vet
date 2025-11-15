@@ -6,7 +6,6 @@ if(!isset($_SESSION['user'])){
 }
 include 'koneksi.php';
 
-// --- PETA DATA: Teks ke ID (Sesuai dengan tb_jenis_hewan & tb_jenis_kelamin) ---
 $map_hewan = [
     'Kucing' => 0,
     'Anjing' => 1,
@@ -18,12 +17,9 @@ $map_kelamin = [
     'Jantan' => 0,
     'Betina' => 1
 ];
-// --------------------------------------------------
 
-// --- LOGIKA 1: TANGANI SUBMIT FORM (POST) ---
 if(isset($_POST['submit'])) {
     
-    // --- Persiapan Data untuk Database ---
     $jenis_hewan_teks = $_POST['jenis_hewan'] ?? '';
     $id_jenis_hewan = $map_hewan[$jenis_hewan_teks] ?? 4;
     
@@ -35,12 +31,9 @@ if(isset($_POST['submit'])) {
     $jenis_kelamin_teks = $_POST['jenis_kelamin_hewan'] ?? '';
     $id_jenis_kelamin = $map_kelamin[$jenis_kelamin_teks] ?? 0;
     
-    // Cek apakah ini mode EDIT (ada 'id' yang dikirim) atau mode TAMBAH BARU
     if(isset($_POST['id']) && !empty($_POST['id'])) {
-        // --- Ini Mode UPDATE (Edit) ---
         $id_to_update = (int)$_POST['id'];
         
-       // ✅ PENTING: Gunakan nama kolom yang benar
 $stmt_update = $conn->prepare("UPDATE tb_form SET 
     nm_majikan = ?, 
     email_majikan = ?, 
@@ -57,13 +50,8 @@ if(!$stmt_update) {
     die("Prepare failed: " . $conn->error);
 }
 
-// ✅ DIPERBAIKI: Format string dari 11 karakter jadi 10 karakter
-// s = string, i = integer
-// 10 parameter: 9 data + 1 ID
-// Urutan: nm_majikan(s), email(s), telepon(s), nm_hewan(s), 
-//         id_jenis_hewan(i), custom(s), usia(s), id_kelamin(i), keluhan(s), id(i)
 $result = $stmt_update->bind_param(
-    "ssssissisi",  // ← INI YANG DIUBAH (dari "ssssisiiisi")
+    "ssssissisi",  
     $_POST['nm_majikan'],
     $_POST['email_majikan'],
     $_POST['no_tlp_majikan'],
@@ -88,7 +76,6 @@ if($stmt_update->execute()) {
 $stmt_update->close();
 
     } else {
-        // --- Ini Mode INSERT (Tambah Baru) ---
         $stmt_insert = $conn->prepare("INSERT INTO tb_form (
             nm_majikan, email_majikan, no_tlp_majikan, 
             nm_hewan, id_jenis_hewan, jenis_hewan_custom, 
@@ -128,7 +115,6 @@ $stmt_update->close();
     exit; 
 }
 
-// --- LOGIKA 2: PERSIAPAN HALAMAN (GET) ---
 $booking_data = []; 
 $is_edit_mode = false; 
 $page_title = "Tambah Booking Baru"; 
@@ -138,7 +124,6 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
     $page_title = "Edit Booking";
     $id = (int)$_GET['id'];
     
-    // ✅ Query dengan JOIN untuk pre-fill form
     $stmt_get = $conn->prepare("
         SELECT 
             f.id,
@@ -175,23 +160,19 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
     }
 }
 
-// Fungsi helper kecil untuk pre-fill form
 function getData($field) {
     global $booking_data;
     if ($booking_data && isset($booking_data[$field])) {
         $value = $booking_data[$field];
-        // Jangan gunakan htmlspecialchars untuk value attribute, gunakan untuk keamanan saja
         return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
     }
     return ''; 
 }
 
-// Persiapan untuk logic "Jenis Hewan Lainnya"
 $id_jenis_hewan_db = (int)($booking_data['id_jenis_hewan'] ?? 0);
 $jenis_hewan_custom_db = $booking_data['jenis_hewan_custom'] ?? '';
 $is_jenis_lainnya = ($id_jenis_hewan_db == 4);
 
-// Persiapan untuk Jenis Kelamin
 $id_jenis_kelamin_db = (int)($booking_data['id_jenis_kelamin'] ?? 0);
 ?>
 <!DOCTYPE html>

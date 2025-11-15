@@ -35,7 +35,6 @@ document.addEventListener('click', (event) => {
     }
 });
 
-// ============ TOGGLE INPUT UNTUK "LAINNYA" ============
 function toggleInput(selectElement) {
     const hewan_lainnya_input = document.getElementById('hewan_lainnya');
     const selectedValue = selectElement.value;
@@ -48,11 +47,10 @@ function toggleInput(selectElement) {
     } else {
         hewan_lainnya_input.classList.add('hidden');
         hewan_lainnya_input.removeAttribute('required');
-        hewan_lainnya_input.value = ''; // Clear value jika tidak dipilih
+        hewan_lainnya_input.value = ''; 
     }
 }
 
-// ============ RESET FORM ============
 function confirmreset() {
     Swal.fire({
         title: 'Reset Form?',
@@ -67,7 +65,6 @@ function confirmreset() {
         if (result.isConfirmed) {
             document.querySelectorAll('form')[0].reset();
             
-            // Reset toggle input jika ada
             const jenis_hewan_select = document.getElementById('jenis_hewan');
             if (jenis_hewan_select) {
                 toggleInput(jenis_hewan_select);
@@ -76,13 +73,11 @@ function confirmreset() {
     });
 }
 
-// ============ VALIDASI FORM SEBELUM SUBMIT ============
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
     
     if (form) {
         form.addEventListener('submit', function(e) {
-            // Cek jenis_hewan
             const jenis_hewan = document.getElementById('jenis_hewan');
             if (!jenis_hewan || !jenis_hewan.value) {
                 e.preventDefault();
@@ -90,7 +85,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
             
-            // Jika Lainnya, cek hewan_lainnya
             if (jenis_hewan.value === 'Lainnya') {
                 const hewan_lainnya = document.getElementById('hewan_lainnya');
                 if (!hewan_lainnya || !hewan_lainnya.value.trim()) {
@@ -100,7 +94,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Cek keluhan
             const keluhan = document.getElementById('keluhan');
             if (!keluhan || !keluhan.value.trim()) {
                 e.preventDefault();
@@ -108,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
             
-            // Cek jenis kelamin
             const jenis_kelamin = document.querySelector('input[name="jenis_kelamin_hewan"]:checked');
             if (!jenis_kelamin) {
                 e.preventDefault();
@@ -121,12 +113,10 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('- Keluhan:', keluhan.value);
             console.log('- Jenis Kelamin:', jenis_kelamin.value);
             
-            // Form valid, lanjutkan submit
         });
     }
 });
 
-// ============ DEBUG: Log semua field sebelum submit ============
 function logFormData() {
     const form = document.querySelector('form');
     const formData = new FormData(form);
@@ -137,6 +127,3 @@ function logFormData() {
     }
     console.log('===== END DEBUG =====');
 }
-
-// Tambahkan ini ke submit button jika perlu debug
-// onclick="logFormData(); return false;"

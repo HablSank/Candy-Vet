@@ -1,5 +1,4 @@
 <?php
-// Panggil library PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -8,63 +7,49 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 include 'koneksi.php';
 
-// --- PETA DATA: Teks ke ID (Sesuai dengan Database Baru) ---
 $map_hewan = [
-    'Kucing' => 0,      // ID di tb_jenis_hewan
+    'Kucing' => 0,      
     'Anjing' => 1,
     'Kelinci' => 2,
     'Burung' => 3,
     'Lainnya' => 4
 ];
 $map_kelamin = [
-    'Jantan' => 0,      // ID di tb_jenis_kelamin
+    'Jantan' => 0,    
     'Betina' => 1
 ];
-// --------------------------------------------------
 
 if(isset($_POST['submit'])) {
-
-    // --- Bagian 1: Persiapan Data untuk Database ---
-    
-    // Ambil teks dari form (cth: "Kucing" atau "Lainnya")
     $jenis_hewan_teks = $_POST['jenis_hewan']; 
     
-    // Ubah teks menjadi ID (cth: 0 atau 4)
     $id_jenis_hewan = $map_hewan[$jenis_hewan_teks] ?? 4;
     
-    // Siapkan kolom custom. Hanya diisi jika user memilih "Lainnya"
     $jenis_hewan_custom = NULL;
     if ($id_jenis_hewan == 4 && !empty($_POST['hewan_lainnya'])) {
         $jenis_hewan_custom = $_POST['hewan_lainnya'];
     }
 
-    // Ubah teks jenis kelamin menjadi ID (cth: 0 atau 1)
     $id_jenis_kelamin = $map_kelamin[$_POST['jenis_kelamin_hewan']] ?? 0;
 
-    // --- Bagian 2: Simpan data ke database ---
-    // ✅ NAMA KOLOM SUDAH BENAR (Sesuai STEP 1)
     $stmt = $conn->prepare("INSERT INTO tb_form (
         nm_majikan, email_majikan, no_tlp_majikan, 
         nm_hewan, id_jenis_hewan, jenis_hewan_custom, 
         usia_hewan, id_jenis_kelamin, keluhan
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
-    // Tipe: s=string, i=integer
-    // 9 parameter: (s)(s)(s)(s)(i)(s)(i)(i)(s)
     $stmt->bind_param("ssssisiis",
         $_POST['nm_majikan'],
         $_POST['email_majikan'],
         $_POST['no_tlp_majikan'],
         $_POST['nm_hewan'],
-        $id_jenis_hewan,        // ✅ ID INTEGER
-        $jenis_hewan_custom,    // string (atau NULL)
-        $_POST['usia_hewan'],   // integer
-        $id_jenis_kelamin,      // ✅ ID INTEGER
+        $id_jenis_hewan,       
+        $jenis_hewan_custom,    
+        $_POST['usia_hewan'],   
+        $id_jenis_kelamin,      
         $_POST['keluhan']
     );
     
     if($stmt->execute()){
-        // --- Bagian 3: Kirim email konfirmasi ke user ---
         $mail = new PHPMailer(true);
 
         try {
@@ -79,7 +64,6 @@ if(isset($_POST['submit'])) {
             $mail->setFrom('no-reply@candyvet.com', 'Admin CandyVet');
             $mail->addAddress($_POST['email_majikan'], $_POST['nm_majikan']);
 
-            // Logika ini sudah benar, menampilkan teks yg diisi user
             $display_hewan_email = $_POST['jenis_hewan'];
             if ($display_hewan_email == 'Lainnya' && !empty($_POST['hewan_lainnya'])) {
                 $display_hewan_email = $_POST['hewan_lainnya'];
@@ -101,13 +85,10 @@ if(isset($_POST['submit'])) {
             $mail->send();
 
         } catch (Exception $e) {
-            // Jika email gagal, proses tetap lanjut
         }
 
-        // --- Bagian 4: Siapkan & Redirect ke WhatsApp ---
         $nomorAdminWA = $_ENV['ADMIN_WHATSAPP'];
         
-        // Logika ini sudah benar, menggunakan teks
         $display_hewan_wa = $_POST['jenis_hewan'];
         if ($display_hewan_wa == 'Lainnya' && !empty($_POST['hewan_lainnya'])) {
             $display_hewan_wa = $_POST['hewan_lainnya'];
