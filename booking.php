@@ -214,7 +214,6 @@ if(isset($_POST['submit'])) {
                     <option value="Lainnya">Lainnya</option>
                 </select>
 
-                <!-- SVG panah -->
                 <svg class="absolute right-4 top-[54px] w-5 h-5 text-gray-500 pointer-events-none"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -222,7 +221,6 @@ if(isset($_POST['submit'])) {
                     <path d="M29.0561 3.14713e-05L29.0561 9.21603L14.5281 23.936L7.24792e-05 9.21603V3.14713e-05L14.5281 14.784L29.0561 3.14713e-05Z" fill="#DD0303"/>
                 </svg>
 
-                <!-- Input muncul jika pilih 'Lainnya' -->
                 <input type="text" id="hewan_lainnya" name="hewan_lainnya"
                     placeholder="Tulis jenis hewan" required
                     class="hidden mt-3 w-full px-5 py-3 text-base border-2 border-[#FA812F] rounded-xl bg-white text-gray-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition">

@@ -227,7 +227,7 @@ if (isset($full_result_query)) $full_result_query->close();
 
             <div class="overflow-x-auto">
 
-                <table class="w-full border-separate table-spacing hidden sm:table">
+                <table class="w-full border-collapse hidden sm:table">
                     <thead>
                         <tr>
                             <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua rounded-l-xl'>No.</th>
@@ -245,7 +245,7 @@ if (isset($full_result_query)) $full_result_query->close();
                             $total_rows_on_page = count($data_rows);
                             
                             foreach($data_rows as $index => $row){
-                                $tr_border_class = ($index < $total_rows_on_page - 1) ? 'border-b border-gray-200' : ''; 
+                                $tr_border_class = ($index < $total_rows_on_page - 1) ? 'border-b border-OrenTua' : ''; 
                                 
                                 $ulasan_lengkap = htmlspecialchars($row['ulasan']);
                                 $ulasan_singkat = strlen($ulasan_lengkap) > 60 ? substr($ulasan_lengkap, 0, 60) . '...' : $ulasan_lengkap;
@@ -345,7 +345,7 @@ if (isset($full_result_query)) $full_result_query->close();
 
             </div>
             <?php if ($total_halaman > 1): ?>
-                <nav class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mt-8 pt-6 border-t border-OrenMuda">
+                <nav class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pt-6 border-t border-OrenTua">
                     
                     <div class="text-sm text-gray-500">
                         Halaman <span class="font-bold text-HitamTeks"><?php echo $halaman_sekarang; ?></span> dari <span class="font-bold text-HitamTeks"><?php echo $total_halaman; ?></span>

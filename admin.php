@@ -197,7 +197,6 @@ body.modal-open {
 </head>
 <body class="bg-OrenMuda font-sans flex min-h-screen text-HitamTeks">
 
-    <!-- SIDEBAR -->
     <aside id="sidebar"
         class="fixed top-0 left-0 w-72 bg-PutihCard p-8 h-screen rounded-e-3xl flex flex-col justify-between shadow-lg z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
         <div>
@@ -232,10 +231,8 @@ body.modal-open {
 
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
 
-    <!-- MAIN CONTENT -->
     <main class="flex-1 lg:ml-72 p-6 sm:p-10 w-full transition-all duration-300">
 
-        <!-- HEADER -->
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
             <div class="flex items-center w-full justify-between md:justify-start">
                 <button onclick="toggleSidebar()" class="lg:hidden text-white text-3xl mr-3 focus:outline-none">
@@ -251,10 +248,8 @@ body.modal-open {
             </div>
         </header>
 
-        <!-- CARD UTAMA -->
         <div class="bg-PutihCard p-6 sm:p-8 rounded-3xl shadow-soft">
 
-            <!-- Judul -->
             <div class="text-center mb-8">
                 <h2 class="text-HitamTeks text-2xl font-bold relative inline-block pb-1.5">
                     <?php 
@@ -265,7 +260,6 @@ body.modal-open {
                 </h2>
             </div>
 
-            <!-- Filter Tabs -->
             <div class="flex gap-2 sm:gap-3 mb-6 flex-wrap justify-center">
                 <?php
                 $tabs = ['semua'=>'Semua','Aktif'=>'Aktif','Selesai'=>'Selesai','Dibatalkan'=>'Dibatalkan'];
@@ -276,18 +270,16 @@ body.modal-open {
                 ?>
             </div>
 
-            <!-- TABEL -->
             <div class="overflow-x-auto">
-                <!-- DESKTOP TABLE -->
-                <table class="w-full border-separate table-spacing hidden sm:table">
+                <table class="w-full border-collapse hidden sm:table">
                     <thead>
                         <tr>
-                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua rounded-l-xl border-r border-white text-center'>No.</th>
-                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua border-r border-white text-center'>Nama</th>
-                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua hidden md:table-cell border-r border-white text-center'>Nama Hewan</th>
-                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua hidden md:table-cell border-r border-white text-center'>Jenis Hewan</th>
-                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua hidden lg:table-cell border-r border-white text-center'>Tanggal Booking</th>
-                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua border-r border-white text-center'>Status</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua rounded-l-xl text-center'>No.</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua text-center'>Nama</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua hidden md:table-cell text-center'>Nama Hewan</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua hidden md:table-cell text-center'>Jenis Hewan</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua hidden lg:table-cell text-center'>Tanggal Booking</th>
+                            <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua text-center'>Status</th>
                             <th class='p-4 font-bold text-sm uppercase text-white bg-OrenTua rounded-r-xl text-center'>Aksi</th>
                         </tr>
                     </thead>
@@ -310,13 +302,13 @@ body.modal-open {
                                 $raw_date = $row['tanggal_booking'] ?? "";
                                 $formatted_date = (!empty($raw_date) && $raw_date != '0000-00-00') ? date('d F Y', strtotime($raw_date)) : "-";
                                 
-                                echo "<tr class='bg-PutihCard hover:bg-orange-50 transition border-b border-gray-200'>";
-                                echo "<td class='p-4 font-semibold text-HitamTeks border-r border-gray-200 text-center'>$no</td>";
-                                echo "<td class='p-4 font-semibold text-HitamTeks border-r border-gray-200 text-center'>".htmlspecialchars($row['nm_majikan'] ?? "")."</td>";
-                                echo "<td class='p-4 text-HitamTeks border-r border-gray-200 text-center hidden md:table-cell'>".htmlspecialchars($row['nm_hewan'] ?? "")."</td>";
-                                echo "<td class='p-4 text-HitamTeks border-r border-gray-200 text-center hidden md:table-cell'>".$display_jenis_hewan."</td>";
-                                echo "<td class='p-4 text-HitamTeks border-r border-gray-200 text-center hidden lg:table-cell'>".htmlspecialchars($formatted_date)."</td>";
-                                echo "<td class='p-4 border-r border-gray-200 text-center'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span></td>";
+                                echo "<tr class='bg-PutihCard hover:bg-orange-50 transition border-b border-OrenTua'>";
+                                echo "<td class='p-4 font-semibold text-HitamTeks text-center'>$no</td>";
+                                echo "<td class='p-4 font-semibold text-HitamTeks text-center'>".htmlspecialchars($row['nm_majikan'] ?? "")."</td>";
+                                echo "<td class='p-4 text-HitamTeks text-center hidden md:table-cell'>".htmlspecialchars($row['nm_hewan'] ?? "")."</td>";
+                                echo "<td class='p-4 text-HitamTeks text-center hidden md:table-cell'>".$display_jenis_hewan."</td>";
+                                echo "<td class='p-4 text-HitamTeks text-center hidden lg:table-cell'>".htmlspecialchars($formatted_date)."</td>";
+                                echo "<td class='p-4 text-center'><span class='px-4 py-1.5 rounded-full text-xs font-bold $badge_class'>".htmlspecialchars($row['status'] ?? "")."</span></td>";
                                 echo "<td class='p-4 text-center'>
                                     <div class='flex gap-1.5 sm:gap-2 items-center justify-center flex-wrap'>
                                         <button type='button' onclick='showDetailModal({$row['id']})' class='w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-700 rounded-full hover:bg-gray-700 hover:text-white transition' title='Lihat Detail'><i class=\"bx bx-file text-md\"></i></button>
@@ -381,9 +373,8 @@ body.modal-open {
                     ?>
                 </div>
 
-                <!-- PAGINATION -->
                 <?php if ($total_halaman > 1): ?>
-                <nav class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mt-8 pt-6 border-t border-OrenMuda">
+                <nav class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pt-6">
                     <div class="text-sm text-gray-500">
                         Halaman <span class="font-bold text-HitamTeks"><?php echo $halaman_sekarang; ?></span> dari <span class="font-bold text-HitamTeks"><?php echo $total_halaman; ?></span>
                         (Total <?php echo $total_data; ?> booking)
@@ -434,7 +425,6 @@ body.modal-open {
         </div>
     </main>
 
-    <!-- MODAL DETAIL -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden" onclick="hideDetailModal()"></div>
 
         <div id="detailModal" class="fixed inset-0 z-50 flex justify-center p-4 pt-12 md:pt-16 overflow-y-auto hidden">
@@ -486,7 +476,6 @@ body.modal-open {
             </div>
         </div>
 
-    <!-- SCRIPT SIDEBAR TOGGLE -->
     <script>
         const sidebar = document.getElementById("sidebar");
         const sidebarOverlay = document.getElementById("sidebarOverlay");
