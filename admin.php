@@ -215,7 +215,7 @@ body.modal-open {
                 <li>
                     <a href="ulasan-admin"
                         class="flex items-center gap-3 py-3 px-5 text-HitamTeks hover:bg-gray-100 hover:shadow-soft hover:text-UnguAksen font-semibold rounded-xl transition-all">
-                        <i class='bx bx-store text-2xl'></i>
+                        <i class='bx bxs-message-dots text-2xl'></i>
                         Riwayat Ulasan
                     </a>
                 </li>

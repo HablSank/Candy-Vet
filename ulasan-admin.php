@@ -151,7 +151,7 @@ if (isset($full_result_query)) $full_result_query->close();
                 </li>
                 <li>
                     <a href="ulasan-admin" class="flex items-center gap-3 py-3 px-5 bg-OrenTua text-white font-semibold rounded-xl shadow-soft transition-all hover:bg-UnguAksen hover:shadow-lg">
-                        <i class='bx bx-store text-2xl'></i>
+                        <i class='bx bxs-message-dots text-2xl'></i>
                         Riwayat Ulasan
                     </a>
                 </li>
